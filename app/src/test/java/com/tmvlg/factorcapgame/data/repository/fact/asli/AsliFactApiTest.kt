@@ -7,7 +7,7 @@ internal class AsliFactApiTest {
     @Test
     fun `Get fact from asli api should be successful`() = runBlocking {
         for (i in 1..5) {
-            AsliFactApi.retrofitService.getFact()
+            println(AsliFactApi.retrofitService.getFact())
         }
     }
 }
