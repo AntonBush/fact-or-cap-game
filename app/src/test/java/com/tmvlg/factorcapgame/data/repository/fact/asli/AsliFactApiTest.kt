@@ -1,7 +1,7 @@
 package com.tmvlg.factorcapgame.data.repository.fact.asli
 
 import kotlinx.coroutines.runBlocking
-import org.junit.*
+import org.junit.Test
 
 internal class AsliFactApiTest {
     @Test

@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.data.repository.fact
 
-import com.tmvlg.factorcapgame.data.repository.fact.asli.AsliFactApiService
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 

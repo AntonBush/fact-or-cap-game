@@ -1,7 +1,7 @@
 package com.tmvlg.factorcapgame.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 
 class MainActivity : AppCompatActivity() {
