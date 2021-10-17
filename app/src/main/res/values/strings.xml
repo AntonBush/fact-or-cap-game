@@ -10,6 +10,9 @@
     <string name="change_language_placeholder">Change language</string>
     <string name="profile_picture_placeholder">Profile picture</string>
     <string name="change_username_menu_String">Change username</string>
+    <string name="create_username_string">Create a username</string>
+    <string name="create_username_hint_string">Username can only contain 4-20 letters and numbers</string>
+    <string name="type_here_string">Type here</string>
     <string name="game_name">Fact or Cap</string>
     <!-- TODO: Remove later 1-->
     <string name="username_menu_string">User1</string>
