@@ -1,5 +1,7 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,7 +12,7 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
 import java.lang.RuntimeException
 
-class SingleGameFragment : Fragment() {
+class SingleGameFinishedFragment : Fragment() {
 
     private lateinit var viewModel: SingleGameViewModel
 
@@ -38,24 +40,12 @@ class SingleGameFragment : Fragment() {
 
         viewModel = ViewModelProvider(this)[SingleGameViewModel::class.java]
 
-        observeViewModel()
-
-        binding.agreeButton.setOnClickListener {
-            viewModel.sendAnswer(true)
-        }
-
-        binding.disagreeButton.setOnClickListener {
-            viewModel.sendAnswer(false)
-        }
-
     }
 
-    fun observeViewModel() {
+    companion object {
 
-        viewModel.gameFinished.observe(viewLifecycleOwner) {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, SingleGameFinishedFragment.newInstance())
-                .commit()
+        fun newInstance(): SingleGameFinishedFragment {
+            return SingleGameFinishedFragment()
         }
 
     }
