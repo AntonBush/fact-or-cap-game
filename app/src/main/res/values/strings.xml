@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Fact or Cap game</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="go_back_previous_tab">go_back_previous_tab</string>
+    <string name="statisctics_header">Statistics</string>
+    <string name="total_games_string">Total games</string>
+    <string name="highest_score_string">Highest Score</string>
+    <string name="last_score_string">Last score</string>
+    <string name="average_score_string">Average score</string>
 </resources>
