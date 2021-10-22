@@ -5,7 +5,5 @@
         android:id="@+id/main_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.MainActivity"
-        android:name="com.tmvlg.factorcapgame.ui.menu.MenuFragment">
-
+        tools:context=".ui.MainActivity">
 </androidx.fragment.app.FragmentContainerView>
