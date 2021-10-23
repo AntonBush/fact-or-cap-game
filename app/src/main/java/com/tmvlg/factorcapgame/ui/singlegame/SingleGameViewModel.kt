@@ -27,5 +27,4 @@ class SingleGameViewModel : ViewModel() {
     private fun getFact() {
 
     }
-
 }

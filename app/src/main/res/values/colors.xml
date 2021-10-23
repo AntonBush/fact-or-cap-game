@@ -12,4 +12,8 @@
     <color name="disagree_button_background_color">#FFFFA18B</color>
     <color name="ripple_color">#a1ffffff</color>
     <color name="textColor">#FF47525E</color>
+    <color name="primarygreen">#C9FB88</color>
+    <color name="secondarygreen">#55E4BC</color>
+    <color name="primaryred">#FD7E7E</color>
+
 </resources>
