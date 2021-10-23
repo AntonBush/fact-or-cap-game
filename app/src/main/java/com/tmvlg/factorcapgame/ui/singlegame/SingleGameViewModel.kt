@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,7 +16,7 @@ class SingleGameViewModel : ViewModel() {
     private var rightAnswersCount = 0
 
     fun sendAnswer(answer: Boolean) {
-
+        // TODO
     }
 
     private fun endGame() {
@@ -25,6 +24,6 @@ class SingleGameViewModel : ViewModel() {
     }
 
     private fun getFact() {
-
+        // TODO
     }
 }

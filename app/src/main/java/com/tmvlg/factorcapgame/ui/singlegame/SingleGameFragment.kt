@@ -47,7 +47,6 @@ class SingleGameFragment : Fragment() {
         binding.disagreeButton.setOnClickListener {
             viewModel.sendAnswer(false)
         }
-
     }
 
     fun observeViewModel() {
