@@ -1,13 +1,15 @@
 package com.tmvlg.factorcapgame.ui.menu
 
+import android.R
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
-import java.lang.RuntimeException
+
 
 class MenuFragment : Fragment() {
 
