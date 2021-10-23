@@ -11,5 +11,9 @@
     <color name="secondarygreen">#55E4BC</color>
     <color name="primaryred">#FD7E7E</color>
     <color name="grey">#47525E</color>
-
+    <color name="score_background_color">#FF55E4BC</color>
+    <color name="agree_button_background_color">#FFC9FC89</color>
+    <color name="disagree_button_background_color">#FFFFA18B</color>
+    <color name="ripple_color">#a1ffffff</color>
+    <color name="textColor">#FF47525E</color>
 </resources>

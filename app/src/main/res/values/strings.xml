@@ -7,4 +7,19 @@
     <string name="highest_score_string">Highest Score</string>
     <string name="last_score_string">Last score</string>
     <string name="average_score_string">Average score</string>
+    <string name="single_play_placeholder">Play singlemode</string>
+    <string name="multiplayer_play_placeholder">Play online</string>
+    <string name="join_room_placeholder">Join room</string>
+    <string name="create_room_placeholder">Create room</string>
+    <string name="statistic_placeholder">Statistics</string>
+    <string name="leaderboard_placeholder">Leaderboard</string>
+    <string name="change_language_placeholder">Change language</string>
+    <string name="profile_picture_placeholder">Profile picture</string>
+    <string name="change_username_menu_String">Change username</string>
+    <string name="create_username_string">Create a username</string>
+    <string name="create_username_hint_string">Username can only contain 4-20 letters and numbers</string>
+    <string name="type_here_string">Type here</string>
+    <string name="game_name">Fact or Cap</string>
+    <string name="username_menu_string">User1</string>
 </resources>
+

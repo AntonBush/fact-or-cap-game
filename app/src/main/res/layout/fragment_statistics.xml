@@ -167,6 +167,5 @@
             android:layout_height="wrap_content"
             app:layout_constraintGuide_percent="0.5"
             android:id="@+id/guideline2" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
+
