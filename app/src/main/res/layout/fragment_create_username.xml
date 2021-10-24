@@ -17,7 +17,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:text="@string/create_username_string"
-            android:textSize="60sp"
+            android:textSize="40sp"
             android:textColor="@color/black"
             android:fontFamily="@font/norwester"
             android:textAlignment="center"/>
@@ -28,9 +28,31 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/create_username_textview"
-            app:layout_constraintVertical_bias="0.3"
-            android:hint="@string/type_here_string"/>
+            app:layout_constraintTop_toBottomOf="@id/create_username_textview"
+            app:layout_constraintVertical_bias="0.02"
+            app:layout_constraintHorizontal_bias="0.4"
+            android:hint="@string/type_here_string"
+            android:inputType="textMultiLine"
+            android:autofillHints="name"
+            android:lines="1"/>
+    <Button
+            android:id="@+id/confirm_username_button"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/create_username_edittext"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/create_username_textview"
+            app:layout_constraintVertical_bias="0.02"
+            app:layout_constraintHorizontal_bias="0.1"
+            android:scaleType="centerCrop"
+            android:background="@drawable/roundedbutton"
+            android:backgroundTint="@color/primarygreen"
+            android:text="@string/ok_string"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/norwester"
+            android:textAlignment="center"/>
     <TextView
             android:id="@+id/create_username_hint_textview"
             android:layout_width="wrap_content"
@@ -41,7 +63,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/create_username_edittext"
             android:text="@string/create_username_hint_string"
-            android:textSize="40sp"
+            android:textSize="20sp"
             android:textColor="@color/black"
             android:fontFamily="@font/norwester"
             android:textAlignment="center"/>
