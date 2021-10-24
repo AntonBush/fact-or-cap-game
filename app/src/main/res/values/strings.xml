@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Fact or Cap game</string>
-    <string name="hello_blank_fragment">Hello</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="go_back_previous_tab">go_back_previous_tab</string>
+    <string name="statisctics_header">Statistics</string>
+    <string name="total_games_string">Total games</string>
+    <string name="highest_score_string">Highest Score</string>
+    <string name="last_score_string">Last score</string>
+    <string name="average_score_string">Average score</string>
     <string name="single_play_placeholder">Play singlemode</string>
     <string name="multiplayer_play_placeholder">Play online</string>
     <string name="join_room_placeholder">Join room</string>
@@ -14,6 +20,6 @@
     <string name="create_username_hint_string">Username can only contain 4-20 letters and numbers</string>
     <string name="type_here_string">Type here</string>
     <string name="game_name">Fact or Cap</string>
-    <!-- TODO: Remove later 1-->
     <string name="username_menu_string">User1</string>
 </resources>
+
