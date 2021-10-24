@@ -58,4 +58,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     // Kotlin reflect
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.31'
+    // Android Room Database
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
 }
