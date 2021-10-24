@@ -1,6 +1,6 @@
 package com.tmvlg.factorcapgame.data.repository.fact
 
-import retrofit.Retrofit
+import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 
 open class FactApi<T : FactApiService>(
