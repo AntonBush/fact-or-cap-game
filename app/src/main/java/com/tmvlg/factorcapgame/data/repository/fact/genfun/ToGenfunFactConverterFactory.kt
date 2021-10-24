@@ -10,11 +10,13 @@ import java.lang.reflect.Type
 <div id='gencont'>
     <hr size=0 style='border-color:grey;opacity:.5;'>
     <div><p>
-        The longest game of mah-jong ever lasted for three years. It finished when the house it was being played in burned down.
+        The longest game of mah-jong ever lasted for three years. It finished when the house it was
+            being played in burned down.
     </p></div>
     <hr size=0 style='border-color:grey;opacity:.5;'>
     <div><p>
-        The national anthem of Lithuania is palindromic. It plays backwards exactly the same way that it plays forwards.
+        The national anthem of Lithuania is palindromic. It plays backwards exactly the same way
+            that it plays forwards.
     </p></div>
     <hr size=0 style='border-color:grey;opacity:.5;'>
     </div>
@@ -24,7 +26,8 @@ import java.lang.reflect.Type
 
 class ToGenfunFactConverterFactory : Converter.Factory() {
     override fun responseBodyConverter(
-        type: Type, annotations: Array<Annotation?>?,
+        type: Type,
+        annotations: Array<Annotation?>?,
         retrofit: Retrofit?
     ): Converter<ResponseBody, *>? {
         return if (GenfunFact::class.java == type) {
