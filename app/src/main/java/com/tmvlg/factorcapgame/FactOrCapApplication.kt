@@ -11,7 +11,7 @@ class FactOrCapApplication : Application() {
     val applicationScope = CoroutineScope(SupervisorJob())
 
     val database by lazy { FactOrCapDatabase.getDatabase(this, applicationScope) }
-    val repository by lazy { GameRepositoryImpl(database.gameDao()) }
+    val gameRepository by lazy { GameRepositoryImpl(database.gameDao()) }
 
     val factRepository by lazy { FactRepository.newInstance() }
 }

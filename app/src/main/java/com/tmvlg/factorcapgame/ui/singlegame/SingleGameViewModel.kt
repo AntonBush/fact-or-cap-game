@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 
-class SingleGameViewModel : ViewModel() {
-
-    private val repository = GameRepositoryImpl()
+class SingleGameViewModel(
+    private val repository: GameRepositoryImpl
+) : ViewModel() {
 
     private val _gameFinished = MutableLiveData<Boolean>()
     val gameFinished: LiveData<Boolean>
