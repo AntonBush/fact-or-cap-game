@@ -17,12 +17,13 @@
     <string name="profile_picture_placeholder">Profile picture</string>
     <string name="change_username_menu_String">Change username</string>
     <string name="create_username_string">Create a username</string>
-    <string name="create_username_hint_string">Username can only contain 4-20 letters and numbers</string>
+    <string name="create_username_hint_string">Username can only contain 4–20 letters and numbers</string>
     <string name="type_here_string">Type here</string>
     <string name="game_name">Fact or Cap</string>
     <string name="username_menu_string">User1</string>
     <string name="your_games_header">Your games</string>
     <string name="score_attribute_text">Score</string>
     <string name="date_attribute_text">Date</string>
+    <string name="ok_string">OK</string>
 </resources>
 

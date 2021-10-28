@@ -17,8 +17,8 @@
             android:text="@string/username_menu_string"
             android:textSize="30sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/norwester"
-            />
+            android:fontFamily="@font/norwester" />
+
     <ImageView
             android:id="@+id/profile_picture_image"
             android:layout_width="wrap_content"
@@ -32,7 +32,8 @@
             android:background="@drawable/roundedbutton"
             android:src="@drawable/ic_person"
             android:contentDescription="@string/profile_picture_placeholder"
-            />
+            android:scaleType="center"/>
+
     <TextView
             android:id="@+id/change_username_button"
             android:layout_width="wrap_content"
@@ -43,8 +44,7 @@
             android:text="@string/change_username_menu_String"
             android:textSize="15sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/norwester"
-            />
+            android:fontFamily="@font/norwester"/>
 
     <TextView
             android:id="@+id/game_logo_textview"
@@ -62,7 +62,8 @@
             android:text="@string/game_name"
             android:fontFamily="@font/norwester" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ImageButton
+            android:id="@+id/single_game_button"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:layout_constraintHorizontal_bias="0.3"
@@ -72,22 +73,13 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:background = "@drawable/roundedbutton"
-            android:backgroundTint="@color/primarygreen">
-        <ImageButton
-                android:id="@+id/single_game_button"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_play"
-                android:scaleType="centerInside"
-                android:contentDescription="@string/single_play_placeholder"
-                />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
+            android:backgroundTint="@color/primarygreen"
+            android:src="@drawable/ic_play"
+            android:scaleType="center"
+            android:contentDescription="@string/single_play_placeholder" />
+
+    <ImageButton
+            android:id="@+id/multiplayer_game_button"
             android:layout_width="100dp"
             android:layout_height="100dp"
             app:layout_constraintHorizontal_bias="0.7"
@@ -97,22 +89,14 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background = "@drawable/roundedbutton"
-            android:backgroundTint="@color/primarygreen">
-        <ImageButton
-                android:id="@+id/multiplayer_game_button"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_group"
-                android:scaleType="centerInside"
-                android:contentDescription="@string/multiplayer_play_placeholder"
-                />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
+            android:backgroundTint="@color/primarygreen"
+            android:src="@drawable/ic_group"
+            android:scaleType="center"
+            android:contentDescription="@string/multiplayer_play_placeholder" />
+
+    <ImageButton
+            android:visibility="invisible"
+            android:id="@+id/create_room_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
             app:layout_constraintHorizontal_bias="0.9"
@@ -122,22 +106,14 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background = "@drawable/roundedbutton"
-            android:backgroundTint="@color/primarygreen">
-        <ImageButton
-                android:id="@+id/create_room_button"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:src="@drawable/ic_create"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/create_room_placeholder"
-                />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
+            android:backgroundTint="@color/primarygreen"
+            android:src="@drawable/ic_create"
+            android:scaleType="center"
+            android:contentDescription="@string/create_room_placeholder" />
+
+    <ImageButton
+            android:visibility="invisible"
+            android:id="@+id/join_room_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
             app:layout_constraintHorizontal_bias="0.9"
@@ -147,21 +123,11 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:background = "@drawable/roundedbutton"
-            android:backgroundTint="@color/primarygreen">
-        <ImageButton
-                android:id="@+id/join_room_button"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:src="@drawable/ic_join"
-                android:scaleType="centerInside"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/join_room_placeholder"
-                />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:backgroundTint="@color/primarygreen"
+            android:src="@drawable/ic_join"
+            android:scaleType="center"
+            android:contentDescription="@string/join_room_placeholder" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/status_buttons_layout"
             android:layout_width="wrap_content"
@@ -181,7 +147,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="@id/leaderboard_button"
                 android:src="@drawable/ic_stat"
-                android:scaleType="centerCrop"
+                android:scaleType="center"
                 android:backgroundTint="@android:color/transparent"
                 android:contentDescription="@string/statistic_placeholder"/>
         <ImageButton
@@ -193,7 +159,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:src="@drawable/ic_cup"
-                android:scaleType="centerCrop"
+                android:scaleType="center"
                 android:backgroundTint="@android:color/transparent"
                 android:contentDescription="@string/leaderboard_placeholder"/>
         <ImageButton
@@ -205,7 +171,7 @@
                 app:layout_constraintLeft_toRightOf="@+id/leaderboard_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:src="@drawable/ic_globe"
-                android:scaleType="centerCrop"
+                android:scaleType="center"
                 android:backgroundTint="@android:color/transparent"
                 android:contentDescription="@string/change_language_placeholder"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

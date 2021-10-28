@@ -10,6 +10,9 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModel
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModelFactory
+import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
+import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class StatisticsFragment : Fragment() {
 
@@ -33,6 +36,12 @@ class StatisticsFragment : Fragment() {
     ): View {
 
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
+
+        binding.returnButton.setOnClickListener() {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, MenuFragment())
+                .commit()
+        }
 
         return binding.root
     }
