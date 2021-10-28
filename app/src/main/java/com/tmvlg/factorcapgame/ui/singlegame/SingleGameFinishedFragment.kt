@@ -5,41 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.tmvlg.factorcapgame.FactOrCapApplication
+import androidx.lifecycle.MutableLiveData
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameFinishedBinding
 
 class SingleGameFinishedFragment : Fragment() {
-
-    private lateinit var viewModel: SingleGameViewModel
-
     private var _binding: FragmentSingleGameFinishedBinding? = null
+
     private val binding: FragmentSingleGameFinishedBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private val singleGameViewModelFactory by lazy {
-        SingleGameViewModelFactory(
-            (activity?.application as FactOrCapApplication).gameRepository,
-            (activity?.application as FactOrCapApplication).factRepository,
-            (activity?.application as FactOrCapApplication).userRepository
-        )
-    }
+    private val score = MutableLiveData(0)
+    private val isHighScore = MutableLiveData(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        parseArgs()
+        loadState(requireArguments())
     }
-
-    private var score: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentSingleGameFinishedBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -50,38 +38,52 @@ class SingleGameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = ViewModelProvider(
-            this,
-            singleGameViewModelFactory
-        )[SingleGameViewModel::class.java]
-
-        observeViewModel()
-
-        viewModel.saveStats(score = score)
-
-        binding.tvScorePoints.text = "$score Points"
-
-    }
-
-    private fun observeViewModel() {
-        viewModel.isHighScore.observe(viewLifecycleOwner) {
-            binding.tvHighscore.visibility = View.VISIBLE
+        if (savedInstanceState != null) {
+            loadState(savedInstanceState)
+        }
+        score.observe(viewLifecycleOwner) { score ->
+            binding.tvScorePoints.text = ("$score Points")
+        }
+        isHighScore.observe(viewLifecycleOwner) { isHighScore ->
+            binding.tvHighscore.visibility = if (isHighScore) {
+                View.VISIBLE
+            } else {
+                View.INVISIBLE
+            }
         }
     }
 
-    private fun parseArgs() {
-        score = requireArguments().getInt(KEY_SCORE)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveState(outState)
+    }
+
+    private fun saveState(outState: Bundle) {
+        val sc = score.value
+        if (sc != null) {
+            outState.putInt(KEY_SCORE, sc)
+        }
+        val ihs = isHighScore.value
+        if (ihs != null) {
+            outState.putBoolean(KEY_IS_HIGH_SCORE, ihs)
+        }
+    }
+
+    private fun loadState(bundle: Bundle) {
+        score.postValue(bundle.getInt(KEY_SCORE))
+        isHighScore.postValue(bundle.getBoolean(KEY_IS_HIGH_SCORE))
     }
 
     companion object {
 
         const val KEY_SCORE = "score"
+        const val KEY_IS_HIGH_SCORE = "is_high_score"
 
-        fun newInstance(score: Int): SingleGameFinishedFragment {
+        fun newInstance(score: Int, isHighScore: Boolean): SingleGameFinishedFragment {
             return SingleGameFinishedFragment().apply {
                 arguments = Bundle().apply {
                     putInt(KEY_SCORE, score)
+                    putBoolean(KEY_IS_HIGH_SCORE, isHighScore)
                 }
             }
         }
