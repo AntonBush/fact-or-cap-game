@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.FactOrCapApplication
-import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameFinishedBinding
 
 class SingleGameFinishedFragment : Fragment() {
