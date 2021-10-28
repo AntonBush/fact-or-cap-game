@@ -8,10 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModel
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModelFactory
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class StatisticsFragment : Fragment() {
