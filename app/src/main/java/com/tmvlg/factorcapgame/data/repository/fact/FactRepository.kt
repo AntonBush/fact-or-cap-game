@@ -24,8 +24,8 @@ class FactRepository(
 
     @WorkerThread
     suspend fun loadFact() {
-//        fact = factApiList.random().retrofitService.getFact() // RIP ASLI API
-        fact = factApiList[1].retrofitService.getFact() //LOADS ONLY FAKE FACTS
+        fact = factApiList.random().retrofitService.getFact() // RIP ASLI API
+//        fact = factApiList[1].retrofitService.getFact() //LOADS ONLY FAKE FACTS
         factLD.postValue(fact ?: throw RuntimeException("Cannot load fact"))
     }
 
