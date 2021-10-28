@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.menu
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,34 +40,34 @@ class MenuFragment : Fragment() {
             putString("Username", username)
         }
 
-        binding.singleGameButton.setOnClickListener(){
+        binding.singleGameButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container,singleGameFragmentWU)
+                .replace(R.id.main_fragment_container, singleGameFragmentWU)
                 .commit()
         }
-        binding.statButton.setOnClickListener(){
+        binding.statButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container,statisticsFragmentWU)
+                .replace(R.id.main_fragment_container, statisticsFragmentWU)
                 .commit()
         }
-        binding.leaderboardButton.setOnClickListener(){
-            Toast.makeText(this.context,"In development", Toast.LENGTH_SHORT).show()
+        binding.leaderboardButton.setOnClickListener() {
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.changeLanguageButton.setOnClickListener(){
-            Toast.makeText(this.context,"In development", Toast.LENGTH_SHORT).show()
+        binding.changeLanguageButton.setOnClickListener() {
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.changeUsernameButton.setOnClickListener(){
-            Toast.makeText(this.context,"In development", Toast.LENGTH_SHORT).show()
+        binding.changeUsernameButton.setOnClickListener() {
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.createRoomButton.setOnClickListener(){
-            Toast.makeText(this.context,"In development", Toast.LENGTH_SHORT).show()
+        binding.createRoomButton.setOnClickListener() {
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.joinRoomButton.setOnClickListener(){
-            Toast.makeText(this.context,"In development", Toast.LENGTH_SHORT).show()
+        binding.joinRoomButton.setOnClickListener() {
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.multiplayerGameButton.setOnClickListener(){
-            binding.joinRoomButton.visibility=binding.joinRoomButton.visibility.xor(4)
-            binding.createRoomButton.visibility=binding.createRoomButton.visibility.xor(4)
+        binding.multiplayerGameButton.setOnClickListener() {
+            binding.joinRoomButton.visibility = binding.joinRoomButton.visibility.xor(4)
+            binding.createRoomButton.visibility = binding.createRoomButton.visibility.xor(4)
         }
         return binding.root
     }
@@ -82,5 +81,4 @@ class MenuFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }
