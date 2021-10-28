@@ -100,7 +100,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/statistics_header"
             android:layout_marginBottom="12dp"
-            android:text="0"
             android:textSize="25sp"
             android:textColor="@color/grey"
             android:fontFamily="@font/norwester"
@@ -113,7 +112,6 @@
             app:layout_constraintStart_toStartOf="@id/total_games_value"
             app:layout_constraintTop_toBottomOf="@+id/total_games_value"
             android:layout_marginVertical="12dp"
-            android:text="0"
             android:textSize="25sp"
             android:textColor="@color/grey"
             android:fontFamily="@font/norwester" />
@@ -125,7 +123,6 @@
             app:layout_constraintStart_toStartOf="@id/highest_score_value"
             app:layout_constraintTop_toBottomOf="@+id/highest_score_value"
             android:layout_marginVertical="12dp"
-            android:text="0"
             android:textSize="25sp"
             android:textColor="@color/grey"
             android:fontFamily="@font/norwester"
@@ -139,7 +136,6 @@
             app:layout_constraintStart_toStartOf="@id/last_score_value"
             app:layout_constraintTop_toBottomOf="@+id/last_score_value"
             android:layout_marginVertical="12dp"
-            android:text="0"
             android:textSize="25sp"
             android:textColor="@color/grey"
             android:fontFamily="@font/norwester"
@@ -151,6 +147,46 @@
             android:layout_height="wrap_content"
             app:layout_constraintGuide_percent="0.5"
             android:id="@+id/guideline2" />
+  
+    <TextView
+            android:id="@+id/your_games_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/your_games_header"
+            android:textSize="40sp"
+            android:fontFamily="@font/norwester"
+            android:textColor="@color/grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/average_score_text"
+            android:layout_marginTop="50dp"
+            />
 
+    <TextView
+            app:layout_constraintEnd_toEndOf="@id/guideline2"
+            android:id="@+id/your_games_score_attribute"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/score_attribute_text"
+            android:fontFamily="@font/norwester"
+            android:textColor="@color/grey"
+            android:textSize="30sp"
+            app:layout_constraintTop_toBottomOf="@id/your_games_header"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="14dp"/>
+
+    <TextView
+            app:layout_constraintTop_toBottomOf="@id/your_games_header"
+            app:layout_constraintStart_toEndOf="@id/guideline2"
+            android:id="@+id/your_games_date_attribute"
+            android:layout_marginStart="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/date_attribute_text"
+            android:fontFamily="@font/norwester"
+            android:textColor="@color/grey"
+            android:textSize="30sp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/your_games_score_attribute" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

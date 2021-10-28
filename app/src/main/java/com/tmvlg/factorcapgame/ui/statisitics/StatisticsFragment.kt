@@ -6,6 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.tmvlg.factorcapgame.FactOrCapApplication
+import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
+import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModel
+import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModelFactory
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
@@ -17,6 +21,13 @@ class StatisticsFragment : Fragment() {
     private var _binding: FragmentStatisticsBinding? = null
     private val binding: FragmentStatisticsBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
+
+
+    val statisticsViewModelFactory by lazy {
+        StatisticsViewModelFactory(
+            (activity?.application as FactOrCapApplication).userRepository
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,11 +49,28 @@ class StatisticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[StatisticsViewModel::class.java]
+        viewModel = ViewModelProvider(this, statisticsViewModelFactory)[StatisticsViewModel::class.java]
+
+        observeStatisticViewModel()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun observeStatisticViewModel(){
+        viewModel.totalGames.observe(viewLifecycleOwner){
+            binding.totalGamesValue.text = it.toString()
+        }
+        viewModel.highestScore.observe(viewLifecycleOwner){
+            binding.highestScoreValue.text = it.toString()
+        }
+        viewModel.lastScore.observe(viewLifecycleOwner){
+            binding.lastScoreValue.text = it.toString()
+        }
+        viewModel.averageScore.observe(viewLifecycleOwner){
+            binding.averageScoreValue.text = it.toString()
+        }
     }
 }
