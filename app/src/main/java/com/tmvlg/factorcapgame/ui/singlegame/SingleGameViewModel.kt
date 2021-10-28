@@ -1,12 +1,9 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
-import com.tmvlg.factorcapgame.data.repository.user.Statistics
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
@@ -16,62 +13,46 @@ class SingleGameViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _gameFinished = MutableLiveData<Boolean>()
-    val gameFinished: LiveData<Boolean>
-        get() = _gameFinished
+    private val _gameFinished = MutableLiveData(false)
+    val gameFinished: LiveData<Boolean> = _gameFinished.map { it }
 
-    private val _isHighScore = MutableLiveData<Boolean>()
-    val isHighScore: LiveData<Boolean>
-        get() = _isHighScore
+    private val _isHighScore = MutableLiveData(false)
+    val isHighScore: LiveData<Boolean> = _isHighScore.map { it }
 
+    private val _rightAnswersCount = MutableLiveData(0)
+    val rightAnswersCount: LiveData<Int> = _rightAnswersCount.map { it }
 
-    private val _rightAnswersCount = MutableLiveData<Int>()
-    val rightAnswersCount: LiveData<Int>
-        get() = _rightAnswersCount
-
-    var fact = factRepository.getFact()
+    private val _fact = MutableLiveData<Fact>()
+    val fact = _fact.map { it }
 
     fun sendAnswer(answer: Boolean) {
-        when (factRepository.isAnswerCorrect(answer)) {
-            true -> {
-                getFact()
-                _rightAnswersCount.value = _rightAnswersCount.value?.plus(1)
-            }
-            false -> {
-                endGame()
-            }
+        if (fact.value?.isTrue == answer) {
+            getFact()
+            _rightAnswersCount.postValue(_rightAnswersCount.value?.plus(1))
+        } else {
+            _gameFinished.postValue(true)
         }
     }
 
-    private fun endGame() {
-        _gameFinished.value = true
-    }
-
-    fun saveStats(score: Int) {
+    fun saveStats(score: Int) = viewModelScope.launch {
         val stats = userRepository.getStats()
         stats.last_score = score
         stats.all_scores += score
         stats.total_games += 1
         stats.average_score = stats.all_scores / stats.total_games
-        checkForHighScore(stats, score)
+        if (score > stats.highest_score) {
+            stats.highest_score = score
+            _isHighScore.postValue(true)
+        }
         userRepository.saveGame(stats)
     }
 
-    private fun checkForHighScore(stats: Statistics, score: Int) {
-        if (score > stats.highest_score) {
-            stats.highest_score = score
-            _isHighScore.value = true
-        }
+    private fun getFact() = viewModelScope.launch {
+        _fact.postValue(factRepository.getFact())
     }
 
-    private fun getFact() {
-        viewModelScope.launch {
-            factRepository.loadFact()
-        }
-    }
 
     init {
-        _rightAnswersCount.value = 0
         getFact()
     }
 }
