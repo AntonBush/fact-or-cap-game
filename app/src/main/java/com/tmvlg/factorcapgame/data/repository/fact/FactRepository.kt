@@ -4,8 +4,7 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.tmvlg.factorcapgame.data.repository.fact.asli.AsliFactApi
-import com.tmvlg.factorcapgame.data.repository.fact.genfun.GenfunFactApi
-import java.lang.RuntimeException
+import com.tmvlg.factorcapgame.data.repository.fact.random.RandomFactApi
 
 class FactRepository(
     private val factApiList: List<FactApi<*>>
@@ -32,7 +31,7 @@ class FactRepository(
 
     companion object {
         fun newInstance(): FactRepository {
-            return FactRepository(listOf(AsliFactApi, GenfunFactApi))
+            return FactRepository(listOf(AsliFactApi, RandomFactApi))
         }
     }
 }
