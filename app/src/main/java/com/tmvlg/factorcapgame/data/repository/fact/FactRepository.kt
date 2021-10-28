@@ -2,7 +2,7 @@ package com.tmvlg.factorcapgame.data.repository.fact
 
 import androidx.annotation.WorkerThread
 import com.tmvlg.factorcapgame.data.repository.fact.asli.AsliFactApi
-import com.tmvlg.factorcapgame.data.repository.fact.genfun.GenfunFactApi
+import com.tmvlg.factorcapgame.data.repository.fact.random.RandomFactApi
 
 class FactRepository(
     private val factApiList: List<FactApi<*>>
@@ -14,7 +14,7 @@ class FactRepository(
 
     companion object {
         fun newInstance(): FactRepository {
-            return FactRepository(listOf(AsliFactApi, GenfunFactApi))
+            return FactRepository(listOf(AsliFactApi, RandomFactApi))
         }
     }
 }
