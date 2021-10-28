@@ -18,13 +18,20 @@ class SingleGameFinishedFragment : Fragment() {
     private val binding: FragmentSingleGameFinishedBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    val singleGameViewModelFactory by lazy {
+    private val singleGameViewModelFactory by lazy {
         SingleGameViewModelFactory(
             (activity?.application as FactOrCapApplication).gameRepository,
             (activity?.application as FactOrCapApplication).factRepository,
             (activity?.application as FactOrCapApplication).userRepository
         )
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseArgs()
+    }
+
+    private var score: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,12 +56,35 @@ class SingleGameFinishedFragment : Fragment() {
             this,
             singleGameViewModelFactory
         )[SingleGameViewModel::class.java]
+
+        observeViewModel()
+
+        viewModel.saveStats(score = score)
+
+        binding.tvScorePoints.text = "$score Points"
+
+    }
+
+    private fun observeViewModel() {
+        viewModel.isHighScore.observe(viewLifecycleOwner) {
+            binding.tvHighscore.visibility = View.VISIBLE
+        }
+    }
+
+    private fun parseArgs() {
+        score = requireArguments().getInt(KEY_SCORE)
     }
 
     companion object {
 
-        fun newInstance(): SingleGameFinishedFragment {
-            return SingleGameFinishedFragment()
+        const val KEY_SCORE = "score"
+
+        fun newInstance(score: Int): SingleGameFinishedFragment {
+            return SingleGameFinishedFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(KEY_SCORE, score)
+                }
+            }
         }
     }
 }

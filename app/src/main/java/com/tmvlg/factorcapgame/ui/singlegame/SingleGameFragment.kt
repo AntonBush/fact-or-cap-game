@@ -20,7 +20,7 @@ class SingleGameFragment : Fragment() {
     private val binding: FragmentSingleGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    val singleGameViewModelFactory by lazy {
+    private val singleGameViewModelFactory by lazy {
         SingleGameViewModelFactory(
             (activity?.application as FactOrCapApplication).gameRepository,
             (activity?.application as FactOrCapApplication).factRepository,
@@ -68,7 +68,10 @@ class SingleGameFragment : Fragment() {
         viewModel.gameFinished.observe(viewLifecycleOwner) {
             Log.d("1", "observeViewModel: game finished")
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, SingleGameFinishedFragment.newInstance())
+                .replace(
+                    R.id.main_fragment_container,
+                    SingleGameFinishedFragment.newInstance(viewModel.rightAnswersCount.value!!)
+                )
                 .commit()
         }
         viewModel.fact.observe(viewLifecycleOwner) {
