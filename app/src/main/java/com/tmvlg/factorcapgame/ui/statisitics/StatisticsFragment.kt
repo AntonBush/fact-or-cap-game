@@ -11,7 +11,6 @@ import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModel
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModelFactory
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class StatisticsFragment : Fragment() {
@@ -37,9 +36,13 @@ class StatisticsFragment : Fragment() {
 
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
 
+        val menuFragmentWU = MenuFragment()
+        menuFragmentWU.arguments = Bundle().apply {
+            putString("Username", arguments?.getString("Username").toString())
+        }
         binding.returnButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
+                .replace(R.id.main_fragment_container, menuFragmentWU)
                 .commit()
         }
 
