@@ -18,6 +18,14 @@ class SingleGameFinishedFragment : Fragment() {
     private val binding: FragmentSingleGameFinishedBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
+    val singleGameViewModelFactory by lazy {
+        SingleGameViewModelFactory(
+            (activity?.application as FactOrCapApplication).gameRepository,
+            (activity?.application as FactOrCapApplication).factRepository,
+            (activity?.application as FactOrCapApplication).userRepository
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,7 +47,7 @@ class SingleGameFinishedFragment : Fragment() {
 
         viewModel = ViewModelProvider(
             this,
-            (activity?.application as FactOrCapApplication).singleGameViewModelFactory
+            singleGameViewModelFactory
         )[SingleGameViewModel::class.java]
     }
 

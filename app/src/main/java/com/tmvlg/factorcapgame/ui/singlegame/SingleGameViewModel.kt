@@ -1,16 +1,19 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
+import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
 class SingleGameViewModel(
     private val gameRepository: GameRepositoryImpl,
-    private var factRepository: FactRepository
+    private val factRepository: FactRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _gameFinished = MutableLiveData<Boolean>()
@@ -38,6 +41,11 @@ class SingleGameViewModel(
 
     private fun endGame() {
         _gameFinished.value = true
+        saveStats()
+    }
+
+    private fun saveStats() {
+
     }
 
     private fun getFact() {

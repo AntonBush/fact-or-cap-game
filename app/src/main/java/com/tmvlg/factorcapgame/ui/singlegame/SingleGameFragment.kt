@@ -23,7 +23,8 @@ class SingleGameFragment : Fragment() {
     val singleGameViewModelFactory by lazy {
         SingleGameViewModelFactory(
             (activity?.application as FactOrCapApplication).gameRepository,
-            (activity?.application as FactOrCapApplication).factRepository
+            (activity?.application as FactOrCapApplication).factRepository,
+            (activity?.application as FactOrCapApplication).userRepository
         )
     }
 
