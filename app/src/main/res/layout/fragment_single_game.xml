@@ -7,20 +7,31 @@
         android:background="@drawable/main_background"
         android:padding="32dp">
 
-    <TextView
-            android:id="@+id/tv_fact"
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="The sharks are dangerous birds"
-            android:textSize="40sp"
-            android:fontFamily="@font/norwester"
-            android:textAlignment="center"
-            android:layout_marginTop="36dp"
+            android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/score_container">
+            android:layout_marginTop="36dp"
+            android:layout_marginBottom="36dp"
+            android:scrollbarAlwaysDrawHorizontalTrack="true"
+            app:layout_constraintTop_toBottomOf="@+id/score_container"
+            app:layout_constraintBottom_toTopOf="@id/agree_button">
 
-    </TextView>
+
+        <TextView
+                android:id="@+id/tv_fact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="The sharks are dangerous birds"
+                android:textSize="40sp"
+                android:fontFamily="@font/norwester"
+                android:textAlignment="center">
+
+        </TextView>
+
+    </ScrollView>
+
 
     <FrameLayout
             android:id="@+id/score_container"
@@ -39,9 +50,10 @@
         </ImageView>
 
         <TextView
+                android:id="@+id/tv_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="25"
+                tools:text="25"
                 android:fontFamily="@font/norwester"
                 android:singleLine="true"
                 android:textSize="40sp"

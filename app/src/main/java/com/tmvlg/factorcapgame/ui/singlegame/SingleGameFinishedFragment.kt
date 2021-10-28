@@ -6,14 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
+import com.tmvlg.factorcapgame.databinding.FragmentSingleGameFinishedBinding
 
 class SingleGameFinishedFragment : Fragment() {
 
     private lateinit var viewModel: SingleGameViewModel
 
-    private var _binding: FragmentSingleGameBinding? = null
-    private val binding: FragmentSingleGameBinding
+    private var _binding: FragmentSingleGameFinishedBinding? = null
+    private val binding: FragmentSingleGameFinishedBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     override fun onCreateView(
@@ -22,7 +24,7 @@ class SingleGameFinishedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentSingleGameBinding.inflate(inflater, container, false)
+        _binding = FragmentSingleGameFinishedBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -35,7 +37,10 @@ class SingleGameFinishedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[SingleGameViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            (activity?.application as FactOrCapApplication).singleGameViewModelFactory
+        )[SingleGameViewModel::class.java]
     }
 
     companion object {

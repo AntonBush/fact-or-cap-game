@@ -1,11 +1,14 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
+import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
 
@@ -16,6 +19,13 @@ class SingleGameFragment : Fragment() {
     private var _binding: FragmentSingleGameBinding? = null
     private val binding: FragmentSingleGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
+
+    val singleGameViewModelFactory by lazy {
+        SingleGameViewModelFactory(
+            (activity?.application as FactOrCapApplication).gameRepository,
+            (activity?.application as FactOrCapApplication).factRepository
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,7 +46,10 @@ class SingleGameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[SingleGameViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            singleGameViewModelFactory
+        )[SingleGameViewModel::class.java]
 
         observeViewModel()
 
@@ -49,12 +62,19 @@ class SingleGameFragment : Fragment() {
         }
     }
 
-    fun observeViewModel() {
+    private fun observeViewModel() {
 
         viewModel.gameFinished.observe(viewLifecycleOwner) {
+            Log.d("1", "observeViewModel: game finished")
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFinishedFragment.newInstance())
                 .commit()
+        }
+        viewModel.fact.observe(viewLifecycleOwner) {
+            binding.tvFact.text = it.text
+        }
+        viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
+            binding.tvScore.text = it.toString()
         }
     }
 }

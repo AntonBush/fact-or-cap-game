@@ -4,6 +4,7 @@ import android.app.Application
 import com.tmvlg.factorcapgame.data.FactOrCapDatabase
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
+import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
@@ -14,4 +15,6 @@ class FactOrCapApplication : Application() {
     val gameRepository by lazy { GameRepositoryImpl(database.gameDao()) }
 
     val factRepository by lazy { FactRepository.newInstance() }
+
+    val singleGameViewModelFactory by lazy { SingleGameViewModelFactory(gameRepository, factRepository) }
 }

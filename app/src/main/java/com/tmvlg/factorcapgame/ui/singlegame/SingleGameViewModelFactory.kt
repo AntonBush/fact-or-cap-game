@@ -1,0 +1,19 @@
+package com.tmvlg.factorcapgame.ui.singlegame
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
+import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
+import java.lang.RuntimeException
+
+class SingleGameViewModelFactory(
+    private val gameRepository: GameRepositoryImpl,
+    private var factRepository: FactRepository
+): ViewModelProvider.Factory {
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(SingleGameViewModel::class.java))
+            return SingleGameViewModel(gameRepository, factRepository) as T
+        throw RuntimeException("Unknown view model class $modelClass")
+    }
+}
