@@ -21,5 +21,8 @@
     <string name="type_here_string">Type here</string>
     <string name="game_name">Fact or Cap</string>
     <string name="username_menu_string">User1</string>
+    <string name="your_games_header">Your games</string>
+    <string name="score_attribute_text">Score</string>
+    <string name="date_attribute_text">Date</string>
 </resources>
 
