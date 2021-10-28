@@ -1,8 +1,8 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import androidx.lifecycle.ViewModel
-import com.tmvlg.factorcapgame.data.repository.user.UserRepositoryImpl
+import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
 class MenuViewModel : ViewModel() {
-    val repository = UserRepositoryImpl()
+//    val repository = UserRepository()
 }
