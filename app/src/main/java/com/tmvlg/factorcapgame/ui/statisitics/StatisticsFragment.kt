@@ -34,9 +34,13 @@ class StatisticsFragment : Fragment() {
 
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
 
+        val menuFragmentWU = MenuFragment()
+        menuFragmentWU.arguments = Bundle().apply {
+            putString("Username", arguments?.getString("Username").toString())
+        }
         binding.returnButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
+                .replace(R.id.main_fragment_container, menuFragmentWU)
                 .commit()
         }
 
