@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "877670729983",
+    "project_id": "fact-or-cap-game",
+    "storage_bucket": "fact-or-cap-game.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877670729983:android:51751e5facec0a467424ca",
+        "android_client_info": {
+          "package_name": "com.tmvlg.factorcapgame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877670729983-s9uaha4jjmi38ah723f77oko1s3sftit.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tmvlg.factorcapgame",
+            "certificate_hash": "d2475fc549c0d754ef304f98e6056ddc06210529"
+          }
+        },
+        {
+          "client_id": "877670729983-mvkvseh5nvfue06vf6m01nutqmqp46oi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI8Gi8Fuc7MYBj-vqleaPrD9n6-j8xVy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877670729983-mvkvseh5nvfue06vf6m01nutqmqp46oi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

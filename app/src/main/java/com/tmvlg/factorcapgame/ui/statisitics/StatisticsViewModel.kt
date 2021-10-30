@@ -1,17 +1,14 @@
 package com.tmvlg.factorcapgame.ui.statisitics
 
-import android.annotation.SuppressLint
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.user.Statistics
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
 class StatisticsViewModel(userRepository: UserRepository) : ViewModel() {
 
-    private val statistics : Statistics = userRepository.getStats()
+    private val statistics: Statistics = userRepository.getStats()
     private val _totalGames = MutableLiveData<Int>()
     val totalGames: LiveData<Int>
         get() = _totalGames
@@ -34,6 +31,5 @@ class StatisticsViewModel(userRepository: UserRepository) : ViewModel() {
         _lastScore.value = statistics.last_score
         _averageScore.value = statistics.average_score
         _allScores.value = statistics.all_scores
-
     }
 }
