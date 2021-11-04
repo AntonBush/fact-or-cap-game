@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/main_background"
+        android:background="@drawable/ic_wallpaper"
         android:padding="32dp">
 
     <ScrollView
@@ -26,6 +26,7 @@
                 tools:text="The sharks are dangerous birds"
                 android:textSize="40sp"
                 android:fontFamily="@font/norwester"
+                android:textColor="@color/font_color"
                 android:textAlignment="center">
 
         </TextView>
@@ -35,8 +36,8 @@
 
     <FrameLayout
             android:id="@+id/score_container"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:gravity="center">
@@ -54,9 +55,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="25"
+                android:textColor="@color/font_color"
                 android:fontFamily="@font/norwester"
                 android:singleLine="true"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:layout_gravity="center">
 
         </TextView>
@@ -67,8 +69,8 @@
             android:id="@+id/agree_button"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:background="@drawable/button_agree_background"
-            android:src="@drawable/round_check_24"
+            android:background="@drawable/green_round_background"
+            android:src="@drawable/ic_agree"
             android:layout_marginBottom="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent">
@@ -79,8 +81,8 @@
             android:id="@+id/disagree_button"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:background="@drawable/button_disagree_background"
-            android:src="@drawable/round_close_24"
+            android:background="@drawable/red_round_bacground"
+            android:src="@drawable/ic_disagree"
             android:layout_marginBottom="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent">
