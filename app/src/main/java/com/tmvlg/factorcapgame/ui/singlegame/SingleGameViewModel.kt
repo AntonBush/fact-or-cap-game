@@ -1,17 +1,21 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class SingleGameViewModel(
     private val gameRepository: GameRepositoryImpl,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
+    private val _exception = MutableLiveData<IOException?>(null)
+    val exception = _exception.map { it }
 
     private val _gameFinished = MutableLiveData(false)
     val gameFinished = _gameFinished.map { it }
@@ -49,11 +53,12 @@ class SingleGameViewModel(
         userRepository.saveGame(stats)
     }
 
-    private fun getFact() = viewModelScope.launch {
-        _fact.postValue(factRepository.getFact())
-    }
-
-    init {
-        getFact()
+    fun getFact() = viewModelScope.launch {
+        try {
+            _fact.postValue(factRepository.getFact())
+            _exception.postValue(null)
+        } catch (e: IOException) {
+            _exception.postValue(e)
+        }
     }
 }
