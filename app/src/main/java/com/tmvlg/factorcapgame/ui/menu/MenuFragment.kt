@@ -1,9 +1,11 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -29,7 +31,11 @@ class MenuFragment : Fragment() {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
 
         val username = arguments?.getString("Username").toString()
-        binding.usernameTextview.text = username
+        /*
+        TODO("нужно сделать xml авторизованного пользователя,
+          подставить вместо google_sign_in.xml и передать туда username")
+        binding.signInLayout.usernameTextview.text = username
+        */
 
         val singleGameFragmentWU = SingleGameFragment()
         singleGameFragmentWU.arguments = Bundle().apply {
@@ -56,7 +62,7 @@ class MenuFragment : Fragment() {
         binding.changeLanguageButton.setOnClickListener() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.changeUsernameButton.setOnClickListener() {
+        binding.signInLayout.googleSignIn.setOnClickListener {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         binding.createRoomButton.setOnClickListener() {
@@ -66,8 +72,7 @@ class MenuFragment : Fragment() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         binding.multiplayerGameButton.setOnClickListener() {
-            binding.joinRoomButton.visibility = binding.joinRoomButton.visibility.xor(4)
-            binding.createRoomButton.visibility = binding.createRoomButton.visibility.xor(4)
+            toggleMultiplayerButton()
         }
         return binding.root
     }
@@ -80,5 +85,24 @@ class MenuFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun toggleMultiplayerButton() {
+        val visibility = binding.joinRoomButton.visibility.xor(4)
+        val upperAnim = if (visibility == View.VISIBLE) {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_upper)
+        } else {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_out_upper)
+        }
+        val lowerAnim = if (visibility == View.VISIBLE) {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_lower)
+        } else {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_out_lower)
+        }
+        Log.d("1", "toggleMultiplayerButton: visibility=$visibility")
+        binding.createRoomButton.visibility = visibility
+        binding.createRoomButton.startAnimation(upperAnim)
+        binding.joinRoomButton.visibility = visibility
+        binding.joinRoomButton.startAnimation(lowerAnim)
     }
 }

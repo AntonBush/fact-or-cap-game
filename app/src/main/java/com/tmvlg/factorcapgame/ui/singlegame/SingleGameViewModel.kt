@@ -16,8 +16,14 @@ class SingleGameViewModel(
     private val _gameFinished = MutableLiveData(false)
     val gameFinished: LiveData<Boolean> = _gameFinished.map { it }
 
+//    NOT WORKS
+//    private val _isHighScore = MutableLiveData(false)
+//    val isHighScore: LiveData<Boolean> = _isHighScore.map { it }
+
+//    WORKS
     private val _isHighScore = MutableLiveData(false)
-    val isHighScore: LiveData<Boolean> = _isHighScore.map { it }
+    val isHighScore: LiveData<Boolean>
+        get() = _isHighScore
 
     private val _rightAnswersCount = MutableLiveData(0)
     val rightAnswersCount: LiveData<Int> = _rightAnswersCount.map { it }
@@ -34,15 +40,16 @@ class SingleGameViewModel(
         }
     }
 
-    fun saveStats(score: Int) = viewModelScope.launch {
+    fun saveStats() = viewModelScope.launch {
         val stats = userRepository.getStats()
+        val score = _rightAnswersCount.value ?: 0
         stats.last_score = score
         stats.all_scores += score
         stats.total_games += 1
         stats.average_score = stats.all_scores / stats.total_games
         if (score > stats.highest_score) {
             stats.highest_score = score
-            _isHighScore.postValue(true)
+            _isHighScore.value = true
         }
         userRepository.saveGame(stats)
     }
