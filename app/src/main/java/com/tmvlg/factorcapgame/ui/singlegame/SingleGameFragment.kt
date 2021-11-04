@@ -29,7 +29,7 @@ class SingleGameFragment : Fragment() {
     private val binding: FragmentSingleGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private var isEnabled = true
+    private var isEnabled = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,7 +65,6 @@ class SingleGameFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
-                viewModel.saveStats()
                 endGame()
             }
         }

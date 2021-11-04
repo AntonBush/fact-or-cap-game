@@ -14,42 +14,37 @@ class SingleGameViewModel(
 ) : ViewModel() {
 
     private val _gameFinished = MutableLiveData(false)
-    val gameFinished: LiveData<Boolean> = _gameFinished.map { it }
+    val gameFinished = _gameFinished.map { it }
 
-//    NOT WORKS
-//    private val _isHighScore = MutableLiveData(false)
-//    val isHighScore: LiveData<Boolean> = _isHighScore.map { it }
-
-//    WORKS
     private val _isHighScore = MutableLiveData(false)
-    val isHighScore: LiveData<Boolean>
-        get() = _isHighScore
+    val isHighScore = _isHighScore.map { it }
 
     private val _rightAnswersCount = MutableLiveData(0)
-    val rightAnswersCount: LiveData<Int> = _rightAnswersCount.map { it }
+    val rightAnswersCount = _rightAnswersCount.map { it }
 
     private val _fact = MutableLiveData<Fact>()
     val fact = _fact.map { it }
 
-    fun sendAnswer(answer: Boolean) {
+    fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
+            _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
             getFact()
-            _rightAnswersCount.postValue(_rightAnswersCount.value?.plus(1))
         } else {
+            saveStats().join()
             _gameFinished.postValue(true)
         }
     }
 
     fun saveStats() = viewModelScope.launch {
         val stats = userRepository.getStats()
-        val score = _rightAnswersCount.value ?: 0
+        val score = rightAnswersCount.value ?: 0
         stats.last_score = score
         stats.all_scores += score
         stats.total_games += 1
         stats.average_score = stats.all_scores / stats.total_games
         if (score > stats.highest_score) {
             stats.highest_score = score
-            _isHighScore.value = true
+            _isHighScore.postValue(true)
         }
         userRepository.saveGame(stats)
     }
@@ -57,7 +52,6 @@ class SingleGameViewModel(
     private fun getFact() = viewModelScope.launch {
         _fact.postValue(factRepository.getFact())
     }
-
 
     init {
         getFact()
