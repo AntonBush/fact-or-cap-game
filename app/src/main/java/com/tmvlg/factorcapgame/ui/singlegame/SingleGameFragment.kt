@@ -1,10 +1,10 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
@@ -27,7 +27,7 @@ class SingleGameFragment : Fragment() {
     private val binding: FragmentSingleGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private var isEnabled = true
+    private var isEnabled = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +45,6 @@ class SingleGameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observeViewModel()
         binding.agreeButton.setOnClickListener {
             if (isEnabled) {
                 isEnabled = false
@@ -58,9 +57,16 @@ class SingleGameFragment : Fragment() {
                 viewModel.sendAnswer(false)
             }
         }
+        observeViewModel()
+        viewModel.getFact()
     }
 
     private fun observeViewModel() {
+        viewModel.exception.observe(viewLifecycleOwner) { e ->
+            if (e != null) {
+                Toast.makeText(this.context, e.message, Toast.LENGTH_LONG).show()
+            }
+        }
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
                 endGame()
@@ -76,7 +82,6 @@ class SingleGameFragment : Fragment() {
     }
 
     private fun endGame() {
-        Log.d("1", "observeViewModel: game finished")
         val score = viewModel.rightAnswersCount.value ?: 0
         val isHighScore = viewModel.isHighScore.value ?: false
         requireActivity().supportFragmentManager.beginTransaction()

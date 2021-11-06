@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -43,9 +44,37 @@ class MenuFragment : Fragment() {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
         auth = Firebase.auth
 
-        val defusername = arguments?.getString("Username").toString()
-        binding.usernameTextview.text = defusername
+        val username = arguments?.getString("Username").toString()
 
+        if (username == "") {
+            binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
+            binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
+        } else {
+            binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
+            binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
+            binding.signInLayoutAuthorized.usernameTextview.text = "Hello, $username"
+        }
+
+        val singleGameFragmentWU = SingleGameFragment()
+        singleGameFragmentWU.arguments = Bundle().apply {
+            putString("Username", username)
+        }
+        val statisticsFragmentWU = StatisticsFragment()
+        statisticsFragmentWU.arguments = Bundle().apply {
+            putString("Username", username)
+        }
+        binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
+            //TODO("Реализация входа в аккаунт")
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+        }
+        binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
+            binding.signInLayoutAuthorized.signOutLayout.visibility =
+                binding.signInLayoutAuthorized.signOutLayout.visibility.xor(8)
+        }
+        binding.signInLayoutAuthorized.signOutLayout.setOnClickListener {
+            //TODO("Реализация выхода из аккаунта")
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+        }
         binding.singleGameButton.setOnClickListener() {
             val singleGameFragmentWU = SingleGameFragment()
             singleGameFragmentWU.arguments = Bundle().apply {
@@ -82,9 +111,6 @@ class MenuFragment : Fragment() {
             }
             Log.d(TAG, "PRESSED")
         }
-        binding.changeUsernameButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
         binding.createRoomButton.setOnClickListener() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
@@ -92,8 +118,7 @@ class MenuFragment : Fragment() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         binding.multiplayerGameButton.setOnClickListener() {
-            binding.joinRoomButton.visibility = binding.joinRoomButton.visibility.xor(4)
-            binding.createRoomButton.visibility = binding.createRoomButton.visibility.xor(4)
+            toggleMultiplayerButton()
         }
         return binding.root
     }
@@ -173,4 +198,21 @@ class MenuFragment : Fragment() {
 //            val uid = user.uid
 //        }
 //    }
+    private fun toggleMultiplayerButton() {
+        val visibility = binding.joinRoomButton.visibility.xor(4)
+        val upperAnim = if (visibility == View.VISIBLE) {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_upper)
+        } else {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_out_upper)
+        }
+        val lowerAnim = if (visibility == View.VISIBLE) {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_lower)
+        } else {
+            AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_out_lower)
+        }
+        binding.createRoomButton.visibility = visibility
+        binding.createRoomButton.startAnimation(upperAnim)
+        binding.joinRoomButton.visibility = visibility
+        binding.joinRoomButton.startAnimation(lowerAnim)
+    }
 }

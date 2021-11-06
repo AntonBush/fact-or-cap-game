@@ -5,41 +5,51 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import android.util.Log
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
+import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class SingleGameViewModel(
     private val gameRepository: GameRepositoryImpl,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
+    private val _exception = MutableLiveData<IOException?>(null)
+    val exception = _exception.map { it }
 
     private val _gameFinished = MutableLiveData(false)
-    val gameFinished: LiveData<Boolean> = _gameFinished.map { it }
+    val gameFinished = _gameFinished.map { it }
 
     private val _isHighScore = MutableLiveData(false)
-    val isHighScore: LiveData<Boolean> = _isHighScore.map { it }
+    val isHighScore = _isHighScore.map { it }
 
     private val _rightAnswersCount = MutableLiveData(0)
-    val rightAnswersCount: LiveData<Int> = _rightAnswersCount.map { it }
+    val rightAnswersCount = _rightAnswersCount.map { it }
 
     private val _fact = MutableLiveData<Fact>()
     val fact = _fact.map { it }
 
-    fun sendAnswer(answer: Boolean) {
+    private var timeElapsed: Long = 0
+
+    fun sendAnswer(answer: Boolean)= viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
+            _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
             getFact()
-            _rightAnswersCount.postValue(_rightAnswersCount.value?.plus(1))
         } else {
+            saveStats().join()
             _gameFinished.postValue(true)
         }
     }
 
-    fun saveStats(score: Int) = viewModelScope.launch {
+    fun saveStats() = viewModelScope.launch {
         val stats = userRepository.getStats()
+        val score = rightAnswersCount.value ?: 0
         stats.last_score = score
         stats.all_scores += score
         stats.total_games += 1
@@ -51,11 +61,32 @@ class SingleGameViewModel(
         userRepository.saveGame(stats)
     }
 
-    private fun getFact() = viewModelScope.launch {
-        _fact.postValue(factRepository.getFact())
+    fun getFact() = viewModelScope.launch {
+        try {
+            _fact.postValue(factRepository.getFact())
+            _exception.postValue(null)
+        } catch (e: IOException) {
+            _exception.postValue(e)
+        }
+    }
+    fun saveGame() = viewModelScope.launch {
+        val score = (_rightAnswersCount.value ?: 0).toLong()
+        val game = Game(score, timeElapsed)
+        gameRepository.insert(game)
+        Log.d("1", "saveGame: allGames=${gameRepository.allGames}")
+    }
+
+    private fun startGame() {
+        getFact()
+        viewModelScope.launch {
+            do {
+                timeElapsed += 100
+                delay(100)
+            } while (!_gameFinished.value!!)
+        }
     }
 
     init {
-        getFact()
+        startGame()
     }
 }

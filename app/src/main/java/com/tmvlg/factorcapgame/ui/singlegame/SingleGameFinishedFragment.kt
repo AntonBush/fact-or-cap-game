@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameFinishedBinding
+import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class SingleGameFinishedFragment : Fragment() {
     private var _binding: FragmentSingleGameFinishedBinding? = null
@@ -50,6 +52,16 @@ class SingleGameFinishedFragment : Fragment() {
             } else {
                 View.INVISIBLE
             }
+        }
+        binding.menuButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, MenuFragment())
+                .commit()
+        }
+        binding.restartButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, SingleGameFragment())
+                .commit()
         }
     }
 

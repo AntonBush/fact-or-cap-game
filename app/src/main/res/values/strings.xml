@@ -25,5 +25,9 @@
     <string name="score_attribute_text">Score</string>
     <string name="date_attribute_text">Date</string>
     <string name="ok_string">OK</string>
+    <string name="new_highscore">New Highscore!</string>
+    <string name="game_score">Game score</string>
+    <string name="menu">Menu</string>
+    <string name="play_again">Play Again</string>
 </resources>
 

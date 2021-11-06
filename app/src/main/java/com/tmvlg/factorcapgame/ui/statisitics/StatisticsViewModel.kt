@@ -3,33 +3,40 @@ package com.tmvlg.factorcapgame.ui.statisitics
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import android.annotation.SuppressLint
+import android.app.Application
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.user.Statistics
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class StatisticsViewModel(userRepository: UserRepository) : ViewModel() {
-
-    private val statistics: Statistics = userRepository.getStats()
+    
     private val _totalGames = MutableLiveData<Int>()
-    val totalGames: LiveData<Int>
-        get() = _totalGames
+    val totalGames = _totalGames.map { it }
+
     private val _highestScore = MutableLiveData<Int>()
-    val highestScore: LiveData<Int>
-        get() = _highestScore
+    val highestScore = _highestScore.map { it }
+
     private val _lastScore = MutableLiveData<Int>()
-    val lastScore: LiveData<Int>
-        get() = _lastScore
+    val lastScore = _lastScore.map { it }
+
     private val _averageScore = MutableLiveData<Int>()
-    val averageScore: LiveData<Int>
-        get() = _averageScore
+    val averageScore = _averageScore.map { it }
+
     private val _allScores = MutableLiveData<Int>()
-    val allScores: LiveData<Int>
-        get() = _allScores
+    val allScores = _allScores.map { it }
 
     init {
-        _totalGames.value = statistics.total_games
-        _highestScore.value = statistics.highest_score
-        _lastScore.value = statistics.last_score
-        _averageScore.value = statistics.average_score
-        _allScores.value = statistics.all_scores
+        viewModelScope.launch {
+            val statistics = userRepository.getStats()
+            _totalGames.postValue(statistics.total_games)
+            _highestScore.postValue(statistics.highest_score)
+            _lastScore.postValue(statistics.last_score)
+            _averageScore.postValue(statistics.average_score)
+            _allScores.postValue(statistics.all_scores)
+        }
     }
 }
