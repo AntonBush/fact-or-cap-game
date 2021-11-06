@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
+import kotlinx.coroutines.GlobalScope
+import java.lang.RuntimeException
 
 class SingleGameFragment : Fragment() {
 
@@ -63,6 +65,8 @@ class SingleGameFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
+                viewModel.saveStats()
+                viewModel.saveGame()
                 endGame()
             }
         }
@@ -76,7 +80,6 @@ class SingleGameFragment : Fragment() {
     }
 
     private fun endGame() {
-        Log.d("1", "observeViewModel: game finished")
         val score = viewModel.rightAnswersCount.value ?: 0
         val isHighScore = viewModel.isHighScore.value ?: false
         requireActivity().supportFragmentManager.beginTransaction()
