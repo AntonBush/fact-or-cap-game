@@ -46,14 +46,7 @@ class MenuFragment : Fragment() {
 
         val username = arguments?.getString("Username").toString()
 
-        if (username == "") {
-            binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
-            binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
-        } else {
-            binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
-            binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
-            binding.signInLayoutAuthorized.usernameTextview.text = "Hello, $username"
-        }
+        checkuser(username)
 
         val singleGameFragmentWU = SingleGameFragment()
         singleGameFragmentWU.arguments = Bundle().apply {
@@ -63,22 +56,20 @@ class MenuFragment : Fragment() {
         statisticsFragmentWU.arguments = Bundle().apply {
             putString("Username", username)
         }
-        binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
-            //TODO("Реализация входа в аккаунт")
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
+
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
             binding.signInLayoutAuthorized.signOutLayout.visibility =
                 binding.signInLayoutAuthorized.signOutLayout.visibility.xor(8)
         }
-        binding.signInLayoutAuthorized.signOutLayout.setOnClickListener {
-            //TODO("Реализация выхода из аккаунта")
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+        binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
+            Log.d("UpdateUI", "sign out")
+            auth.signOut()
+            updateUI(auth.currentUser)
         }
         binding.singleGameButton.setOnClickListener() {
             val singleGameFragmentWU = SingleGameFragment()
             singleGameFragmentWU.arguments = Bundle().apply {
-                putString("Username", binding.usernameTextview.text.toString())
+                putString("Username", username)
             }
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, singleGameFragmentWU)
@@ -87,7 +78,7 @@ class MenuFragment : Fragment() {
         binding.statButton.setOnClickListener() {
             val statisticsFragmentWU = StatisticsFragment()
             statisticsFragmentWU.arguments = Bundle().apply {
-                putString("Username", binding.usernameTextview.text.toString())
+                putString("Username", username)
             }
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, statisticsFragmentWU)
@@ -96,7 +87,9 @@ class MenuFragment : Fragment() {
         binding.leaderboardButton.setOnClickListener() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        binding.signInWithGoogleButton.setOnClickListener() {
+        binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
+            //TODO("Реализация входа в аккаунт")
+            //Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
             if (auth.currentUser != null) {
                 Log.d(TAG, "User already logged in")
                 updateUI(auth.currentUser)
@@ -137,6 +130,18 @@ class MenuFragment : Fragment() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
+    private fun checkuser(username:String){
+        if (username == "") {
+            binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
+            binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
+        } else {
+            binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
+            binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
+            binding.signInLayoutAuthorized.usernameTextview.text = "Hello, $username"
+        }
+    }
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
@@ -171,8 +176,11 @@ class MenuFragment : Fragment() {
     }
 
     private fun updateUI(user: FirebaseUser?) {
-        val username = user?.email.toString()
-        binding.usernameTextview.text = username.substring(0, username.length - 10)
+        val username: String = user?.email ?: ""
+        Log.d("UpdateUI", username +"         " + auth.currentUser?.email.toString())
+        checkuser(username)
+        //TODO(ОБЕРНУТЬ В ФУНКЦИЮ)
+        binding.signInLayoutAuthorized.usernameTextview.text = username.dropLast(10)
     }
 
     override fun onDestroyView() {

@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         val fragment: Fragment
         fragment = MenuFragment()
         fragment.arguments = Bundle().apply {
-            putString("Username", "Username")
+            putString("Username", "")
         }
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_fragment_container, fragment)

@@ -1,10 +1,8 @@
 package com.tmvlg.factorcapgame.ui.statisitics
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import android.annotation.SuppressLint
 import android.app.Application
+import androidx.lifecycle.*
 import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.user.Statistics
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
