@@ -1,7 +1,6 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,11 +30,15 @@ class MenuFragment : Fragment() {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
 
         val username = arguments?.getString("Username").toString()
-        /*
-        TODO("нужно сделать xml авторизованного пользователя,
-          подставить вместо google_sign_in.xml и передать туда username")
-        binding.signInLayout.usernameTextview.text = username
-        */
+
+        if (username == "") {
+            binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
+            binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
+        } else {
+            binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
+            binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
+            binding.signInLayoutAuthorized.usernameTextview.text = "Hello, $username"
+        }
 
         val singleGameFragmentWU = SingleGameFragment()
         singleGameFragmentWU.arguments = Bundle().apply {
@@ -45,7 +48,18 @@ class MenuFragment : Fragment() {
         statisticsFragmentWU.arguments = Bundle().apply {
             putString("Username", username)
         }
-
+        binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
+            //TODO("Реализация входа в аккаунт")
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+        }
+        binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
+            binding.signInLayoutAuthorized.signOutLayout.visibility =
+                binding.signInLayoutAuthorized.signOutLayout.visibility.xor(8)
+        }
+        binding.signInLayoutAuthorized.signOutLayout.setOnClickListener {
+            //TODO("Реализация выхода из аккаунта")
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+        }
         binding.singleGameButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, singleGameFragmentWU)
@@ -60,9 +74,6 @@ class MenuFragment : Fragment() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         binding.changeLanguageButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
-        binding.signInLayout.googleSignIn.setOnClickListener {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         binding.createRoomButton.setOnClickListener() {
@@ -99,7 +110,6 @@ class MenuFragment : Fragment() {
         } else {
             AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_out_lower)
         }
-        Log.d("1", "toggleMultiplayerButton: visibility=$visibility")
         binding.createRoomButton.visibility = visibility
         binding.createRoomButton.startAnimation(upperAnim)
         binding.joinRoomButton.visibility = visibility

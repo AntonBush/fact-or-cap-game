@@ -81,7 +81,7 @@
             android:id="@+id/disagree_button"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:background="@drawable/red_round_bacground"
+            android:background="@drawable/red_round_background"
             android:src="@drawable/ic_disagree"
             android:layout_marginBottom="24dp"
             app:layout_constraintBottom_toBottomOf="parent"

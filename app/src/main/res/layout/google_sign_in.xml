@@ -5,7 +5,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.cardview.widget.CardView
-            android:id="@+id/google_sign_in"
+            android:id="@+id/google_sign_in_cardview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardElevation="0dp"
@@ -32,7 +32,6 @@
                     android:scaleType="center" />
 
             <TextView
-                    android:id="@+id/username_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
