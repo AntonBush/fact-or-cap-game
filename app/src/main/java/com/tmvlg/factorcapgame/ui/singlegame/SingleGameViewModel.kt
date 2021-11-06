@@ -1,10 +1,13 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
+import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SingleGameViewModel(
@@ -31,6 +34,8 @@ class SingleGameViewModel(
     private val _fact = MutableLiveData<Fact>()
     val fact = _fact.map { it }
 
+    private var timeElapsed: Long = 0
+
     fun sendAnswer(answer: Boolean) {
         if (fact.value?.isTrue == answer) {
             getFact()
@@ -54,12 +59,29 @@ class SingleGameViewModel(
         userRepository.saveGame(stats)
     }
 
+    fun saveGame() = viewModelScope.launch {
+        val score = (_rightAnswersCount.value ?: 0).toLong()
+        val game = Game(score, timeElapsed)
+        gameRepository.insert(game)
+        Log.d("1", "saveGame: allGames=${gameRepository.allGames}")
+    }
+
     private fun getFact() = viewModelScope.launch {
         _fact.postValue(factRepository.getFact())
     }
 
+    private fun startGame() {
+        getFact()
+        viewModelScope.launch {
+            do {
+                timeElapsed += 100
+                delay(100)
+            } while (!_gameFinished.value!!)
+        }
+    }
+
 
     init {
-        getFact()
+        startGame()
     }
 }

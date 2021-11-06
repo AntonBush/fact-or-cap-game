@@ -66,6 +66,7 @@ class SingleGameFragment : Fragment() {
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
                 viewModel.saveStats()
+                viewModel.saveGame()
                 endGame()
             }
         }

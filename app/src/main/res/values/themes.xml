@@ -16,4 +16,7 @@
     <style name="Button.Main" parent="ThemeOverlay.AppCompat">
         <item name="colorPrimary">@color/primary_green</item>
     </style>
+    <style name="Button.Variant" parent="ThemeOverlay.AppCompat">
+        <item name="colorPrimary">@color/primary_red</item>
+    </style>
 </resources>
