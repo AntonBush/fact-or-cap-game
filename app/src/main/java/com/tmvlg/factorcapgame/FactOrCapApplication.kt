@@ -6,7 +6,6 @@ import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
@@ -21,5 +20,4 @@ class FactOrCapApplication : Application() {
     val preferenceProvider by lazy { PreferenceProvider(this) }
 
     val userRepository by lazy { UserRepository(preferenceProvider) }
-
 }
