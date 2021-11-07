@@ -58,7 +58,6 @@ class SingleGameFragment : Fragment() {
             }
         }
         observeViewModel()
-        viewModel.getFact()
     }
 
     private fun observeViewModel() {
