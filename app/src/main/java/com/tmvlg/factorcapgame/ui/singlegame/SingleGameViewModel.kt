@@ -43,6 +43,7 @@ class SingleGameViewModel(
             getFact()
         } else {
             saveStats().join()
+            saveGame().join()
             _gameFinished.postValue(true)
         }
     }

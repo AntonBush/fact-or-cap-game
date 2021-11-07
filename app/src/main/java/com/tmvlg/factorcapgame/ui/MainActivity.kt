@@ -11,14 +11,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val fragment: Fragment
-        fragment = MenuFragment()
-        fragment.arguments = Bundle().apply {
-            putString("Username", "")
-        }
+        // Set MenuFragment as first
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_fragment_container, fragment)
+            .replace(R.id.main_fragment_container, MenuFragment())
             .commit()
     }
 }

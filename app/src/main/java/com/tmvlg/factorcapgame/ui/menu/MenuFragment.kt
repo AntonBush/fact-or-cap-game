@@ -1,7 +1,6 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -28,8 +29,9 @@ import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
 class MenuFragment : Fragment() {
 
     private lateinit var viewModel: MenuViewModel
-    private lateinit var auth: FirebaseAuth
-    private lateinit var googleSignInClient: GoogleSignInClient
+
+    private lateinit var auth: FirebaseAuth // Var for Firebase auth
+    private lateinit var googleSignInClient: GoogleSignInClient // Var for Google auth
 
     private var _binding: FragmentMenuBinding? = null
     private val binding: FragmentMenuBinding
@@ -40,78 +42,65 @@ class MenuFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
         auth = Firebase.auth
 
-        val username = arguments?.getString("Username").toString()
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build() // Setting up google sign in parameters
+        googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso)
 
-        checkuser(username)
+        updateUI(auth.currentUser) // Update UI if user is signed in or not
 
-        val singleGameFragmentWU = SingleGameFragment()
-        singleGameFragmentWU.arguments = Bundle().apply {
-            putString("Username", username)
+        // Start single game button listener
+        binding.singleGameButton.setOnClickListener() {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, SingleGameFragment())
+                .commit()
         }
-        val statisticsFragmentWU = StatisticsFragment()
-        statisticsFragmentWU.arguments = Bundle().apply {
-            putString("Username", username)
+        // Statistics button listener
+        binding.statButton.setOnClickListener() {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, StatisticsFragment())
+                .commit()
         }
-
+        // Leader button listener
+        binding.leaderboardButton.setOnClickListener() {
+            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+        }
+        // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
             binding.signInLayoutAuthorized.signOutLayout.visibility =
                 binding.signInLayoutAuthorized.signOutLayout.visibility.xor(8)
         }
-        binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
-            Log.d("UpdateUI", "sign out")
-            auth.signOut()
-            updateUI(auth.currentUser)
-        }
-        binding.singleGameButton.setOnClickListener() {
-            val singleGameFragmentWU = SingleGameFragment()
-            singleGameFragmentWU.arguments = Bundle().apply {
-                putString("Username", username)
-            }
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, singleGameFragmentWU)
-                .commit()
-        }
-        binding.statButton.setOnClickListener() {
-            val statisticsFragmentWU = StatisticsFragment()
-            statisticsFragmentWU.arguments = Bundle().apply {
-                putString("Username", username)
-            }
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, statisticsFragmentWU)
-                .commit()
-        }
-        binding.leaderboardButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
+        // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
-            //TODO("Реализация входа в аккаунт")
-            //Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+            // Check if user is signed in in firebase
             if (auth.currentUser != null) {
-                Log.d(TAG, "User already logged in")
+                Log.d(GOOGLETAG, "User already signed in")
                 updateUI(auth.currentUser)
             } else {
-                Log.d(TAG, "Signing in")
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build()
-                googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso)
-                startSignInIntent()
+                Log.d(GOOGLETAG, "Signing in")
+                startSignInIntent() // Calling sign in intent; Start auth via Google
             }
-            Log.d(TAG, "PRESSED")
         }
+        // Sign out button listener
+        binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
+            Log.d(GOOGLETAG, "Sign out")
+            googleSignOut() // Calling sign out function
+        }
+        // Multiplayer game button listener
+        binding.multiplayerGameButton.setOnClickListener() {
+            toggleMultiplayerButton() // Calling toggle mpb function
+        }
+        // Create room button listener
         binding.createRoomButton.setOnClickListener() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
+        // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
             Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
-        binding.multiplayerGameButton.setOnClickListener() {
-            toggleMultiplayerButton()
         }
         return binding.root
     }
@@ -119,19 +108,61 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
-        if (auth.currentUser != null) {
-            Log.d(TAG, "User already logged in")
-            updateUI(auth.currentUser)
+    }
+    // Google start auth function
+    private fun startSignInIntent() {
+        val signInIntent = googleSignInClient.signInIntent // Init google sign in intent
+        launcher.launch(signInIntent) // Same as startActivityForResult
+    }
+    // Same as onActivityResult (Listener)
+    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                val account = task.getResult(ApiException::class.java)!! // Get signed in account
+                Log.d(GOOGLETAG, "firebaseAuthWithGoogle:" + account.id)
+                firebaseAuthWithGoogle(account.idToken!!) // Call auth with Firebase
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Log.d(GOOGLETAG, "Google sign in failed")
+                Toast.makeText(this.context, "Authentication via Google failed", Toast.LENGTH_SHORT).show()
+            }
         }
     }
-    // Надо переделать под новый стиль
-    private fun startSignInIntent() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
+    // Function auth in Firebase with Google token
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null) // Get user data from firebase
+        auth.signInWithCredential(credential) // Sign in with firebase user data
+            .addOnCompleteListener(this.activity as Activity) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(GOOGLETAG, "signInWithCredential:success")
+                    updateUI(auth.currentUser) // UpdateUI with user
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(GOOGLETAG, "signInWithCredential:failure", task.exception)
+                    Toast.makeText(this.context, "Authentication via Firebase failed", Toast.LENGTH_SHORT).show()
+                    updateUI(null) // UpdateUI with no user
+                }
+            }
 
-    private fun checkuser(username:String){
-        if (username == "") {
+    }
+    // Sign out function
+    private fun googleSignOut(){
+        googleSignInClient.signOut() // Sign out from Google
+        auth.signOut() // Sign out from Firebase
+        updateUI(auth.currentUser) // UpdateUI
+    }
+    // Function to Update Username and sign in status on fragment
+    private fun updateUI(user: FirebaseUser?) {
+        val username: String = user?.email ?: "" // Get user email from firebase
+        Log.d(GOOGLETAG, username +" - " + auth.currentUser?.email.toString())
+        checkUser(username.dropLast(10)) // Update xml dep on sign in status
+    }
+    // Function to update xml dep on sign in status
+    private fun checkUser(username:String){
+        if (username.isEmpty()) {
             binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
             binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
         } else {
@@ -141,71 +172,11 @@ class MenuFragment : Fragment() {
         }
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!!
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Log.d(TAG, "Google sign in failed")
-            }
-        }
-    }
-
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this.activity as Activity) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = auth.currentUser
-                    updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
-                }
-            }
-    }
-
-    private fun updateUI(user: FirebaseUser?) {
-        val username: String = user?.email ?: ""
-        Log.d("UpdateUI", username +"         " + auth.currentUser?.email.toString())
-        checkuser(username)
-        //TODO(ОБЕРНУТЬ В ФУНКЦИЮ)
-        binding.signInLayoutAuthorized.usernameTextview.text = username.dropLast(10)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-    companion object {
-        private const val TAG = "GoogleActivity"
-        private const val RC_SIGN_IN = 9001
-    }
-
-// Этот код можно будет использовать позже в сетевой игре
-//
-//    private fun getUserInfo() {
-//        val user = auth.currentUser
-//        user?.let {
-//            val playerName = user.displayName
-//            val email = user.email
-//            // The user's Id, unique to the Firebase project.
-//            // Do NOT use this value to authenticate with your backend server, if you
-//            // have one; use FirebaseUser.getIdToken() instead.
-//            val uid = user.uid
-//        }
-//    }
+    // Animation
     private fun toggleMultiplayerButton() {
         val visibility = binding.joinRoomButton.visibility.xor(4)
         val upperAnim = if (visibility == View.VISIBLE) {
@@ -222,5 +193,8 @@ class MenuFragment : Fragment() {
         binding.createRoomButton.startAnimation(upperAnim)
         binding.joinRoomButton.visibility = visibility
         binding.joinRoomButton.startAnimation(lowerAnim)
+    }
+    companion object {
+        private const val GOOGLETAG = "GoogleActivity"
     }
 }
