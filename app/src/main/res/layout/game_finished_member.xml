@@ -2,46 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:padding="10dp"
+        android:padding="5dp"
         android:layout_weight="1">
 
     <ImageView
-            android:id="@+id/winner_portrait"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:id="@+id/member_portrait"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/circle_background"
             android:backgroundTint="@color/font_color"
             android:src="@drawable/ic_person"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_vertical"
             android:contentDescription="@string/profile_picture_placeholder"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            android:layout_marginRight="10dp"/>
 
 
     <TextView
-            android:id="@+id/winner_username"
+            android:id="@+id/member_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="User1"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:textSize="20sp"
             android:fontFamily="@font/norwester"
             android:textColor="@color/font_color"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_vertical"
             android:maxLines="1" />
 
     <TextView
-            android:id="@+id/winner_result"
+            android:id="@+id/member_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="35 points"
-            android:layout_weight="1"
-            android:textSize="12sp"
+            android:textSize="20sp"
             android:fontFamily="@font/norwester"
             android:textColor="@color/offline_indicator_color"
-            android:layout_gravity="center_horizontal"
-            android:maxLines="1"
-            android:layout_marginTop="5dp"/>
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"/>
 
 </LinearLayout>
