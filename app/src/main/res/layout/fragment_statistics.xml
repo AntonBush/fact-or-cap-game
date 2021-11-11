@@ -19,6 +19,8 @@
             android:textSize="40sp"
             android:textColor="@color/font_color"
             android:text="@string/statisctics_header"
+            android:maxLines="1"
+            app:autoSizeTextType="uniform"
             android:fontFamily="@font/norwester"
             app:layout_constraintTop_toBottomOf="@+id/return_button" />
 
@@ -45,7 +47,7 @@
             app:layout_constraintBottom_toTopOf="@id/highest_score_text"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="12dp"
-            android:layout_marginStart="85dp"
+            android:layout_marginStart="35dp"
             android:text="@string/total_games_string"
             android:textSize="25sp"
             android:textColor="@color/font_color"
@@ -70,7 +72,6 @@
             app:layout_constraintStart_toStartOf="@id/highest_score_text"
             app:layout_constraintTop_toBottomOf="@id/highest_score_text"
             android:layout_marginVertical="12dp"
-            android:layout_marginEnd="145dp"
             android:text="@string/last_score_string"
             android:textSize="25sp"
             android:textColor="@color/font_color"
@@ -83,7 +84,6 @@
             app:layout_constraintStart_toStartOf="@id/last_score_text"
             app:layout_constraintTop_toBottomOf="@id/last_score_text"
             android:layout_marginVertical="12dp"
-            android:layout_marginEnd="105dp"
             android:text="@string/average_score_string"
             android:textSize="25sp"
             android:textColor="@color/font_color"
@@ -94,14 +94,14 @@
             android:id="@+id/total_games_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/guideline2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/statistics_header"
-            android:layout_marginBottom="12dp"
+            tools:text="4"
             android:textSize="25sp"
             android:textColor="@color/font_color"
             android:fontFamily="@font/norwester"
-            android:layout_marginTop="15dp" />
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toEndOf="@+id/total_games_text" />
 
     <TextView
             android:id="@+id/highest_score_value"
@@ -110,6 +110,7 @@
             app:layout_constraintStart_toStartOf="@id/total_games_value"
             app:layout_constraintTop_toBottomOf="@+id/total_games_value"
             android:layout_marginVertical="12dp"
+            tools:text="41"
             android:textSize="25sp"
             android:textColor="@color/font_color"
             android:fontFamily="@font/norwester" />
@@ -121,6 +122,7 @@
             app:layout_constraintStart_toStartOf="@id/highest_score_value"
             app:layout_constraintTop_toBottomOf="@+id/highest_score_value"
             android:layout_marginVertical="12dp"
+            tools:text="444"
             android:textSize="25sp"
             android:textColor="@color/font_color"
             android:fontFamily="@font/norwester"
@@ -134,10 +136,10 @@
             app:layout_constraintStart_toStartOf="@id/last_score_value"
             app:layout_constraintTop_toBottomOf="@+id/last_score_value"
             android:layout_marginVertical="12dp"
+            tools:text="4124"
             android:textSize="25sp"
             android:textColor="@color/font_color"
-            android:fontFamily="@font/norwester"
-            app:layout_constraintHorizontal_bias="0.415" />
+            android:fontFamily="@font/norwester" />
 
     <androidx.constraintlayout.widget.Guideline
             android:orientation="vertical"
@@ -156,6 +158,8 @@
             android:textColor="@color/font_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:maxLines="1"
+            app:autoSizeTextType="uniform"
             app:layout_constraintTop_toBottomOf="@id/average_score_text"
             android:layout_marginTop="50dp"
             />
