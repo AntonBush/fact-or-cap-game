@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.menu.MenuViewModel
 
 class MainActivity : AppCompatActivity() {
-
+    lateinit var viewModel: MenuViewModel
+    lateinit var username: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
