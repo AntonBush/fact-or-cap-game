@@ -8,6 +8,8 @@ import java.io.IOException
 class FactRepository(
     private val factApiList: List<FactApi<*>>
 ) {
+
+    //returns new fact
     @WorkerThread
     suspend fun getFact(): Fact {
         var fact: Fact? = null
@@ -29,6 +31,7 @@ class FactRepository(
         return fact
     }
 
+    //fetches new fact from apis
     @WorkerThread
     private suspend fun loadFact(): Fact {
         return factApiList.random()
@@ -37,8 +40,10 @@ class FactRepository(
     }
 
     companion object {
+
+        //calls at application level to init repository
         fun newInstance(): FactRepository {
-            return FactRepository(listOf(GenfunFactApi, RandomFactApi))
+            return FactRepository(listOf(GenfunFactApi, RandomFactApi)) //api list
         }
 
         private const val ATTEMPTS_COUNT = 3

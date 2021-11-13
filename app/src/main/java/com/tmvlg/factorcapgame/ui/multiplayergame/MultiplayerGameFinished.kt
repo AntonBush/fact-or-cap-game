@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
+import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFinishedFragment
 
 class MultiplayerGameFinished : Fragment() {
 
@@ -32,7 +34,29 @@ class MultiplayerGameFinished : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.restartButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, LobbyFragment())
+                .commit()
+        }
+        binding.menuButton.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, MenuFragment())
+                .commit()
+        }
+    }
 
+    companion object {
+        const val KEY_SCORE = "score"
+
+        //calls from MultiplayerGameFragment.kt to create this fragment and pass arguments
+        fun newInstance(score: Int): MultiplayerGameFinished {
+            return MultiplayerGameFinished().apply {
+                arguments = Bundle().apply {
+                    putInt(KEY_SCORE, score)
+                }
+            }
+        }
     }
 
 }

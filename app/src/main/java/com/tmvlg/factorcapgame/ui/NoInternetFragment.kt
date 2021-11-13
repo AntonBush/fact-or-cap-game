@@ -1,28 +1,30 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame
+package com.tmvlg.factorcapgame.ui
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
+import com.tmvlg.factorcapgame.databinding.FragmentNoInternetBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
 
+class NoInternetFragment : Fragment() {
 
-class LobbyFragment : Fragment() {
+    private var _binding: FragmentNoInternetBinding? = null
 
-    private var _binding: FragmentLobbyBinding? = null
-
-    private val binding: FragmentLobbyBinding
+    private val binding: FragmentNoInternetBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentLobbyBinding.inflate(inflater, container, false)
+        // Inflate the layout for this fragment
+        _binding = FragmentNoInternetBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -33,24 +35,11 @@ class LobbyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.returnButton.setOnClickListener {
+        binding.menuButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
-        binding.inviteButton.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, InviteFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-        binding.startButton.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MultiplayerGameFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-
     }
 
 }

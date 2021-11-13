@@ -15,6 +15,8 @@ import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFinishedFragment
 class MultiplayerGameFragment : Fragment() {
 
     private val viewModel: MultiplayerGameViewModel by viewModels {
+
+        //inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MultiplayerGameViewModelFactory(
             app.gameRepository,
@@ -23,6 +25,7 @@ class MultiplayerGameFragment : Fragment() {
         )
     }
 
+    //check for fact is shown, enables agree and disagree buttons if true
     private var isEnabled = false
 
     private var _binding: FragmentMultiplayerGameBinding? = null
@@ -43,14 +46,19 @@ class MultiplayerGameFragment : Fragment() {
         _binding = null
     }
 
+    //all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
             if (isEnabled) {
                 isEnabled = false
                 viewModel.sendAnswer(true)
             }
         }
+
+        //sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
             if (isEnabled) {
                 isEnabled = false
@@ -62,37 +70,46 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+
+        //throws exception if can't fetch a fact for some reason
         viewModel.exception.observe(viewLifecycleOwner) { e ->
             if (e != null) {
                 Toast.makeText(this.context, e.message, Toast.LENGTH_LONG).show()
             }
         }
+
+        //observes if game finished (timer is 00:00)
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
                 endGame()
             }
         }
+
+        //bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
             binding.tvFact.text = it.text
             isEnabled = true
         }
+
+        //right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
         }
+
+        //binds how much time left
         viewModel.timeLeftFormatted.observe(viewLifecycleOwner) {
             binding.tvTimer.text = it
         }
     }
 
+    //calls when game is finished. Goes to finish fragment with score results
     private fun endGame() {
         val score = viewModel.rightAnswersCount.value ?: 0
-        val isHighScore = viewModel.isHighScore.value ?: false
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.main_fragment_container,
-                SingleGameFinishedFragment.newInstance(
+                MultiplayerGameFinished.newInstance(
                     score,
-                    isHighScore
                 )
             )
             .commit()

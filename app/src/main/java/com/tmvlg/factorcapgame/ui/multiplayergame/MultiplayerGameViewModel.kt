@@ -1,20 +1,19 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
-import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
-import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
+import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 
 class MultiplayerGameViewModel(
-    private val gameRepository: GameRepositoryImpl,
+    private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository
 ): ViewModel() {
@@ -23,9 +22,6 @@ class MultiplayerGameViewModel(
 
     private val _gameFinished = MutableLiveData(false)
     val gameFinished = _gameFinished.map { it }
-
-    private val _isHighScore = MutableLiveData(false)
-    val isHighScore = _isHighScore.map { it }
 
     private val _rightAnswersCount = MutableLiveData(0)
     val rightAnswersCount = _rightAnswersCount.map { it }

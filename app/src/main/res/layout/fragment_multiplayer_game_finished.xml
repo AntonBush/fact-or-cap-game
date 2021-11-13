@@ -44,7 +44,7 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Game results"
+            android:text="@string/game_results"
             android:layout_weight="3"
             android:textSize="25sp"
             android:fontFamily="@font/norwester"
@@ -99,7 +99,7 @@
             android:letterSpacing="0"
             android:padding="13dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/play_again"
+            android:text="@string/to_lobby"
             android:textSize="35sp"
             android:textColor="@color/font_color"
             android:fontFamily="@font/norwester"

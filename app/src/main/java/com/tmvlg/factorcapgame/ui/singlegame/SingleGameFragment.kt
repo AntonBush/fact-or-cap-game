@@ -10,10 +10,13 @@ import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
+import com.tmvlg.factorcapgame.ui.NoInternetFragment
 
 class SingleGameFragment : Fragment() {
 
     private val viewModel: SingleGameViewModel by viewModels {
+
+        //inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels SingleGameViewModelFactory(
             app.gameRepository,
@@ -27,6 +30,7 @@ class SingleGameFragment : Fragment() {
     private val binding: FragmentSingleGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
+    //check for fact is shown, enables agree and disagree buttons if true
     private var isEnabled = false
 
     override fun onCreateView(
@@ -43,14 +47,17 @@ class SingleGameFragment : Fragment() {
         _binding = null
     }
 
+    //all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
             if (isEnabled) {
                 isEnabled = false
                 viewModel.sendAnswer(true)
             }
         }
+        //sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
             if (isEnabled) {
                 isEnabled = false
@@ -61,25 +68,33 @@ class SingleGameFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        //throws exception if can't fetch a fact for some reason
         viewModel.exception.observe(viewLifecycleOwner) { e ->
             if (e != null) {
                 Toast.makeText(this.context, e.message, Toast.LENGTH_LONG).show()
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, NoInternetFragment())
+                    .commit()
             }
         }
+        //observes if game finished (wrong answer)
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
                 endGame()
             }
         }
+        //bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
             binding.tvFact.text = it.text
             isEnabled = true
         }
+        //right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
         }
     }
 
+    //calls when game is finished. Goes to finish fragment with score results
     private fun endGame() {
         val score = viewModel.rightAnswersCount.value ?: 0
         val isHighScore = viewModel.isHighScore.value ?: false
