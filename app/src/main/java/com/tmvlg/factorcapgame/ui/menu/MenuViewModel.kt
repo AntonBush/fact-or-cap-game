@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
+
 class MenuViewModel : ViewModel() {
     lateinit var auth: FirebaseAuth // Var for Firebase auth
     lateinit var googleSignInClient: GoogleSignInClient // Var for Google auth
@@ -47,12 +48,8 @@ fun googleAuth(result: ActivityResult, activity: Activity, context: Context){
                     menufragment.updateUI(null) // UpdateUI with no user
                 }
             }
-
     }
     companion object {
         private const val GOOGLETAG = "GoogleActivityViewModel"
     }
 }
-
-
-

@@ -1,19 +1,18 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
-import androidx.lifecycle.LiveData
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import android.util.Log
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import java.io.IOException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class SingleGameViewModel(
     private val gameRepository: GameRepositoryImpl,
@@ -37,7 +36,7 @@ class SingleGameViewModel(
 
     private var timeElapsed: Long = 0
 
-    fun sendAnswer(answer: Boolean)= viewModelScope.launch {
+    fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
             getFact()
@@ -51,12 +50,12 @@ class SingleGameViewModel(
     fun saveStats() = viewModelScope.launch {
         val stats = userRepository.getStats()
         val score = rightAnswersCount.value ?: 0
-        stats.last_score = score
-        stats.all_scores += score
-        stats.total_games += 1
-        stats.average_score = stats.all_scores / stats.total_games
-        if (score > stats.highest_score) {
-            stats.highest_score = score
+        stats.lastScore = score
+        stats.allScores += score
+        stats.totalGames += 1
+        stats.averageScore = stats.allScores / stats.totalGames
+        if (score > stats.highestScore) {
+            stats.highestScore = score
             _isHighScore.postValue(true)
         }
         userRepository.saveGame(stats)
@@ -81,13 +80,17 @@ class SingleGameViewModel(
         getFact()
         viewModelScope.launch {
             do {
-                timeElapsed += 100
-                delay(100)
+                timeElapsed += DELAY_MILLIS
+                delay(DELAY_MILLIS)
             } while (!_gameFinished.value!!)
         }
     }
 
     init {
         startGame()
+    }
+
+    companion object {
+        private const val DELAY_MILLIS = 100L
     }
 }

@@ -15,7 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -132,10 +131,11 @@ class MenuFragment : Fragment() {
         val username: String = user?.email ?: "" // Get user email from firebase
         (activity as MainActivity).username = username // Update username in MainActivity
         Log.d(GOOGLETAG, username +" - " + viewModel.auth.currentUser?.email.toString())
+
         checkUser(username.dropLast(10)) // Update xml dep on sign in status
     }
     // Function to update xml dep on sign in status
-    private fun checkUser(username:String){
+    private fun checkUser(username: String) {
         if (username.isEmpty()) {
             binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
             binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
