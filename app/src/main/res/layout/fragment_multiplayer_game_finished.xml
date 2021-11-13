@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:background="@drawable/ic_wallpaper"
         android:padding="32dp">
 
     <TextView
-            android:id="@+id/tv_gamescore"
+            android:id="@+id/tv_game_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/game_score"
+            android:text="You win!"
             android:textSize="50sp"
             android:fontFamily="@font/norwester"
             android:textColor="@color/font_color"
@@ -35,33 +35,41 @@
             android:layout_marginTop="15dp"
             android:maxLines="1"
             app:autoSizeTextType="uniform"
-            app:layout_constraintTop_toBottomOf="@+id/tv_gamescore"
-            app:layout_constraintEnd_toEndOf="@+id/tv_gamescore"
-            app:layout_constraintStart_toStartOf="@+id/tv_gamescore">
+            app:layout_constraintTop_toBottomOf="@+id/tv_game_result"
+            app:layout_constraintEnd_toEndOf="@+id/tv_game_result"
+            app:layout_constraintStart_toStartOf="@+id/tv_game_result">
 
     </TextView>
 
     <TextView
-            android:id="@+id/tv_highscore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:text="@string/new_highscore"
-            android:textColor="@color/font_color"
-            android:textSize="28sp"
+            android:text="@string/game_results"
+            android:layout_weight="3"
+            android:textSize="25sp"
             android:fontFamily="@font/norwester"
-            android:layout_marginTop="15dp"
+            android:textColor="@color/font_color"
+            android:layout_gravity="center_vertical"
             android:maxLines="1"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintTop_toBottomOf="@+id/tv_score_points"
-            app:layout_constraintEnd_toEndOf="@+id/tv_score_points"
-            app:layout_constraintStart_toStartOf="@+id/tv_score_points">
+            app:layout_constraintBottom_toTopOf="@+id/members_rv"
+            app:layout_constraintStart_toStartOf="@+id/members_rv" />
 
-    </TextView>
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/members_rv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:listitem="@layout/game_finished_member"
+            tools:itemCount="4"
+            android:layout_marginTop="60dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_score_points" />
 
     <Button
             android:id="@+id/menu_button"
-            android:layout_width="0dp"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             app:cornerRadius="80dp"
             android:textAllCaps="false"
@@ -77,21 +85,21 @@
             android:maxLines="1"
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/tv_gamescore"
-            app:layout_constraintStart_toStartOf="@+id/tv_gamescore">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
     </Button>
 
     <Button
             android:id="@+id/restart_button"
-            android:layout_width="0dp"
+            android:layout_width="270dp"
             android:layout_height="wrap_content"
             app:cornerRadius="80dp"
             android:textAllCaps="false"
             android:letterSpacing="0"
             android:padding="13dp"
             android:layout_marginBottom="10dp"
-            android:text="@string/play_again"
+            android:text="@string/to_lobby"
             android:textSize="35sp"
             android:textColor="@color/font_color"
             android:fontFamily="@font/norwester"
@@ -100,8 +108,8 @@
             android:src="@drawable/green_round_background"
             android:theme="@style/Button.Main"
             app:layout_constraintBottom_toTopOf="@id/menu_button"
-            app:layout_constraintEnd_toEndOf="@+id/tv_gamescore"
-            app:layout_constraintStart_toStartOf="@+id/tv_gamescore">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
     </Button>
 

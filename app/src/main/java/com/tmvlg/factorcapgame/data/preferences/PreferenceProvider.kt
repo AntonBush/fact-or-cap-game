@@ -9,6 +9,7 @@ class PreferenceProvider(context: Context) {
     private val preference: SharedPreferences
         get() = appContext.getSharedPreferences(APP_USER_PREFERENCES, 0)
 
+    //saves statistics to shared pref
     fun saveStatistics(statistics: Statistics) {
         preference.edit().putInt(
             KEY_TOTAL_GAMES,
@@ -28,6 +29,7 @@ class PreferenceProvider(context: Context) {
         ).apply()
     }
 
+    //loads statistics from shared pref
     fun getStatistics(): Statistics {
 
         val totalGames = preference.getInt(

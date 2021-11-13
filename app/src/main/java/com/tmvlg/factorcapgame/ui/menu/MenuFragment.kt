@@ -22,6 +22,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
+import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
@@ -86,11 +88,15 @@ class MenuFragment : Fragment() {
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, LobbyFragment())
+                .commit()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, FindLobbyFragment())
+                .commit()
         }
         return binding.root
     }
