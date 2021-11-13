@@ -1,14 +1,7 @@
 package com.tmvlg.factorcapgame.ui.statisitics
-
-import android.annotation.SuppressLint
-import android.app.Application
 import androidx.lifecycle.*
-import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
-import com.tmvlg.factorcapgame.data.repository.user.Statistics
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class StatisticsViewModel(userRepository: UserRepository) : ViewModel() {
     

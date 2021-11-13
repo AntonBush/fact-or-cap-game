@@ -29,5 +29,6 @@
     <string name="game_score">Game score</string>
     <string name="menu">Menu</string>
     <string name="play_again">Play Again</string>
+    <string name="your_games_duration_attribute">Duration</string>
 </resources>
 
