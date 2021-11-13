@@ -1,10 +1,10 @@
 package com.tmvlg.factorcapgame.data.repository.fact.random
 
-import java.lang.reflect.Type
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Retrofit
+import java.lang.reflect.Type
 
 /*
 <div id='z'>Crocodile babies don't have sex chromosomes; the temperature at which

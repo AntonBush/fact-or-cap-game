@@ -13,51 +13,51 @@ class PreferenceProvider(context: Context) {
     fun saveStatistics(statistics: Statistics) {
         preference.edit().putInt(
             KEY_TOTAL_GAMES,
-            statistics.total_games
+            statistics.totalGames
         ).putInt(
             KEY_HIGHEST_SCORE,
-            statistics.highest_score
+            statistics.highestScore
         ).putInt(
             KEY_LAST_SCORE,
-            statistics.last_score
+            statistics.lastScore
         ).putInt(
             KEY_AVERAGE_SCORE,
-            statistics.average_score
+            statistics.averageScore
         ).putInt(
             KEY_ALL_SCORES,
-            statistics.all_scores
+            statistics.allScores
         ).apply()
     }
 
     //loads statistics from shared pref
     fun getStatistics(): Statistics {
 
-        val total_games = preference.getInt(
+        val totalGames = preference.getInt(
             KEY_TOTAL_GAMES,
             0
         )
-        val highest_score = preference.getInt(
+        val highestScore = preference.getInt(
             KEY_HIGHEST_SCORE,
             0
         )
-        val last_score = preference.getInt(
+        val lastScore = preference.getInt(
             KEY_LAST_SCORE,
             0
         )
-        val average_score = preference.getInt(
+        val averageScore = preference.getInt(
             KEY_AVERAGE_SCORE,
             0
         )
-        val all_scores = preference.getInt(
+        val allScores = preference.getInt(
             KEY_ALL_SCORES,
             0
         )
         return Statistics(
-            total_games,
-            highest_score,
-            last_score,
-            average_score,
-            all_scores
+            totalGames,
+            highestScore,
+            lastScore,
+            averageScore,
+            allScores
         )
     }
 
