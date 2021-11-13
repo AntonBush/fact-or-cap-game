@@ -1,18 +1,18 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
 import android.util.Log
-import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import java.io.IOException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 class SingleGameViewModel(
     private val gameRepository: GameRepositoryImpl,
