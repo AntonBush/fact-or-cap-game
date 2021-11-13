@@ -34,15 +34,15 @@ jobs:
       - name: 💚 Checkstyle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./checkstyle -f
+        run: ./checkstyle
       - name: 💙 Ktlint
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./ktlint -F
+        run: ./ktlint
       - name: 💜 Detekt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./detekt -ac
+        run: ./detekt
   check_aseemble:
     runs-on: ubuntu-latest
     steps:
