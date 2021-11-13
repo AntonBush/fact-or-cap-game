@@ -8,6 +8,11 @@ import java.io.IOException
 class FactRepository(
     private val factApiList: List<FactApi<*>>
 ) {
+    /**
+     * Tries to load fact from net [ATTEMPTS_COUNT] times
+     * @throws IOException if fails to load fact from net [ATTEMPTS_COUNT] times
+     * @return loaded fact
+     */
     @WorkerThread
     suspend fun getFact(): Fact {
         var fact: Fact? = null
@@ -29,6 +34,10 @@ class FactRepository(
         return fact
     }
 
+    /**
+     * Tries load random fact
+     * @return loaded fact
+     */
     @WorkerThread
     private suspend fun loadFact(): Fact {
         return factApiList.random()
@@ -37,10 +46,18 @@ class FactRepository(
     }
 
     companion object {
+        /**
+         * Fabric method
+         * @return new FactRepository
+         */
         fun newInstance(): FactRepository {
             return FactRepository(listOf(GenfunFactApi, RandomFactApi))
         }
 
+        /**
+         * Count of attempts to load fact
+         * @see getFact
+         */
         private const val ATTEMPTS_COUNT = 3
     }
 }
