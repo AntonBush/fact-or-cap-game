@@ -67,17 +67,20 @@ class MenuFragment : Fragment() {
                 updateUI(viewModel.auth.currentUser)
             } else {
                 Log.d(GOOGLETAG, "Signing in")
-                startSignInIntent() // Calling sign in intent; Start auth via Google
+                // Calling sign in intent; Start auth via Google
+                startSignInIntent()
             }
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
             Log.d(GOOGLETAG, "Sign out")
-            googleSignOut() // Calling sign out function
+            // Calling sign out function
+            googleSignOut()
         }
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
-            toggleMultiplayerButton() // Calling toggle mpb function
+            // Calling toggle mpb function
+            toggleMultiplayerButton()
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
@@ -97,41 +100,53 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
-        viewModel.menufragment = this // Setting viewmodel variables
-        viewModel.auth = Firebase.auth // Setting viewmodel variables
+        // Setting viewmodel variables
+        viewModel.menufragment = this
+        viewModel.auth = Firebase.auth
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
-            .build() // Setting up google sign in parameters
-        viewModel.googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso) // Setting viewmodel variables
-        updateUI(viewModel.auth.currentUser) // Update UI if user is signed in or not
+            // Setting up google sign in parameters
+            .build()
+        // Setting viewmodel variables
+        viewModel.googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso)
+        // Update UI if user is signed in or not
+        updateUI(viewModel.auth.currentUser)
     }
 
     // Google start auth function
     private fun startSignInIntent() {
-        val signInIntent = viewModel.googleSignInClient.signInIntent // Init google sign in intent
-        launcher.launch(signInIntent) // Same as startActivityForResult
+        // Init google sign in intent
+        val signInIntent = viewModel.googleSignInClient.signInIntent
+        // Same as startActivityForResult
+        launcher.launch(signInIntent)
     }
     // Same as onActivityResult (Listener)
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.googleAuth(result, (activity as Activity), requireContext()) // Calling viewmodel function to get data
+            // Calling viewmodel function to get data
+            viewModel.googleAuth(result, (activity as Activity), requireContext())
         }
     }
     // Sign out function
     private fun googleSignOut() {
-        viewModel.googleSignInClient.signOut() // Sign out from Google
-        viewModel.auth.signOut() // Sign out from Firebase
-        updateUI(viewModel.auth.currentUser) // UpdateUI
+        // Sign out from Google
+        viewModel.googleSignInClient.signOut()
+        // Sign out from Firebase
+        viewModel.auth.signOut()
+        // UpdateUI
+        updateUI(viewModel.auth.currentUser)
     }
     // Function to Update Username and sign in status on fragment
     fun updateUI(user: FirebaseUser?) {
-        val username: String = user?.email ?: "" // Get user email from firebase
-        (activity as MainActivity).username = username // Update username in MainActivity
+        // Get user email from firebase
+        val username: String = user?.email ?: ""
+        // Update username in MainActivity
+        (activity as MainActivity).username = username
         Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
-
-        checkUser(username.dropLast(10)) // Update xml dep on sign in status
+        // Update xml dep on sign in status
+        checkUser(username.dropLast(10))
     }
     // Function to update xml dep on sign in status
     private fun checkUser(username: String) {
