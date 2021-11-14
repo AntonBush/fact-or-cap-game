@@ -6,7 +6,7 @@ import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
-//this class needed to pass arguments to the viewmodel
+// this class needed to pass arguments to the viewmodel
 class SingleGameViewModelFactory(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,

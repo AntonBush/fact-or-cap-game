@@ -16,7 +16,7 @@ class MultiplayerGameViewModel(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository
-): ViewModel() {
+) : ViewModel() {
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
 
@@ -35,7 +35,7 @@ class MultiplayerGameViewModel(
     private var timeElapsed: Long = 0
     private var timeLeft: Long = GAME_DURATION_MS
 
-    fun sendAnswer(answer: Boolean)= viewModelScope.launch {
+    fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
             timeLeft += EXTRA_TIME_FOR_RIGHT_ANSWER

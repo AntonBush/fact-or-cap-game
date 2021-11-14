@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-
 
 class LobbyFragment : Fragment() {
 
@@ -19,7 +17,8 @@ class LobbyFragment : Fragment() {
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLobbyBinding.inflate(inflater, container, false)
@@ -50,7 +49,5 @@ class LobbyFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-
     }
-
 }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
-import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class FindLobbyFragment : Fragment() {
@@ -18,7 +17,8 @@ class FindLobbyFragment : Fragment() {
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFindLobbyBinding.inflate(inflater, container, false)
@@ -30,8 +30,6 @@ class FindLobbyFragment : Fragment() {
         _binding = null
     }
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
@@ -40,9 +38,7 @@ class FindLobbyFragment : Fragment() {
                 .commit()
         }
         binding.joinButton.setOnClickListener {
-            //TODO("Join lobby")
+            // TODO("Join lobby")
         }
     }
-
-
 }

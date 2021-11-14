@@ -12,28 +12,21 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
-import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
 
 class MenuFragment : Fragment() {
 
     private lateinit var viewModel: MenuViewModel
-
-
-
     private var _binding: FragmentMenuBinding? = null
     private val binding: FragmentMenuBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
@@ -123,11 +116,11 @@ class MenuFragment : Fragment() {
     // Same as onActivityResult (Listener)
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            viewModel.googleAuth(result,(activity as Activity),requireContext()) // Calling viewmodel function to get data
+            viewModel.googleAuth(result, (activity as Activity), requireContext()) // Calling viewmodel function to get data
         }
     }
     // Sign out function
-    private fun googleSignOut(){
+    private fun googleSignOut() {
         viewModel.googleSignInClient.signOut() // Sign out from Google
         viewModel.auth.signOut() // Sign out from Firebase
         updateUI(viewModel.auth.currentUser) // UpdateUI
@@ -136,7 +129,7 @@ class MenuFragment : Fragment() {
     fun updateUI(user: FirebaseUser?) {
         val username: String = user?.email ?: "" // Get user email from firebase
         (activity as MainActivity).username = username // Update username in MainActivity
-        Log.d(GOOGLETAG, username +" - " + viewModel.auth.currentUser?.email.toString())
+        Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
 
         checkUser(username.dropLast(10)) // Update xml dep on sign in status
     }
@@ -148,7 +141,7 @@ class MenuFragment : Fragment() {
         } else {
             binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
             binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
-            binding.signInLayoutAuthorized.usernameTextview.text = "Hello, $username"
+            binding.signInLayoutAuthorized.usernameTextview.text = getString(R.string.hello_string, username);
         }
     }
 
