@@ -156,7 +156,8 @@ class MenuFragment : Fragment() {
         } else {
             binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
             binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
-            binding.signInLayoutAuthorized.usernameTextview.text = getString(R.string.hello_string, username)
+            val usernameS = getString(R.string.hello_string, username)
+            binding.signInLayoutAuthorized.usernameTextview.text = usernameS
         }
     }
 
