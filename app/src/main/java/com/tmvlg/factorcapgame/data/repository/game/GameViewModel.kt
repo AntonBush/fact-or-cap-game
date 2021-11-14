@@ -5,19 +5,13 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(gameRepository: GameRepositoryImpl) : ViewModel() {
 
-    private val repository: GameRepositoryImpl
 
-    val allGames: LiveData<List<Game>>
 
     init {
-        val gamesDao = GameRoomDatabase.getDatabase(application, viewModelScope).gameDao()
-        repository = GameRepositoryImpl(gamesDao)
-        allGames = repository.allGames
+
     }
 
-    fun insertGame(game: Game) = viewModelScope.launch(Dispatchers.IO) {
-        repository.insert(game)
-    }
+
 }

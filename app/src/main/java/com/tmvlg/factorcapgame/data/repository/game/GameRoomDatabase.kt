@@ -22,8 +22,8 @@ abstract class GameRoomDatabase : RoomDatabase() {
                     var gameDao = database.gameDao()
                     gameDao.deleteUnnecessary()
                     // Add sample game.
-                    var game = Game(10, 3, 1636652224779)
-                    gameDao.insert(game)
+//                    var game = Game(10, 3, 1636652224779)
+//                    gameDao.insert(game)
 //                    game = Game(3, 1, 1636652245730)
 //                    gameDao.insert(game)
                 }

@@ -18,8 +18,6 @@ class StatisticsFragment : Fragment() {
 
     private lateinit var viewModel: StatisticsViewModel
 
-    private val gameViewModel: GameViewModel by viewModels()
-
     private var _binding: FragmentStatisticsBinding? = null
     private val binding: FragmentStatisticsBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
@@ -27,7 +25,8 @@ class StatisticsFragment : Fragment() {
 
     val statisticsViewModelFactory by lazy {
         StatisticsViewModelFactory(
-            (activity?.application as FactOrCapApplication).userRepository
+            (activity?.application as FactOrCapApplication).userRepository,
+            (activity?.application as FactOrCapApplication).gameRepository
         )
     }
 
@@ -66,7 +65,7 @@ class StatisticsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
 
-        gameViewModel.allGames.observe(viewLifecycleOwner) { games ->
+        viewModel.allGames.observe(viewLifecycleOwner) { games ->
             games.let { adapter.updateList(it)
             }
         }

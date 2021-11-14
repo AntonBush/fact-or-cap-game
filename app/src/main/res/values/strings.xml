@@ -30,5 +30,6 @@
     <string name="menu">Menu</string>
     <string name="play_again">Play Again</string>
     <string name="your_games_duration_attribute">Duration</string>
+    <string name="your_games_duration_attribute_text">Duration</string>
 </resources>
 

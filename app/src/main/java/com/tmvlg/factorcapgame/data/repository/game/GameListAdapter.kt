@@ -38,10 +38,11 @@ class GameListAdapter :
 
         val currentGame = allGames[position]
         holder.score.text = currentGame.score.toString()
-        holder.duration.text = currentGame.duration.toString()
-        val sdf = SimpleDateFormat("dd-MM-yy")
-        val resultdate = sdf.format(Date(currentGame.date))
-
+        var sdf = SimpleDateFormat("mm:ss")
+        var resultdate = sdf.format(Date(currentGame.duration))
+        holder.duration.text = resultdate.toString()
+        sdf = SimpleDateFormat("yy-MM-dd HH:mm")
+        resultdate = sdf.format(Date(currentGame.date))
         holder.date.text = resultdate.toString()
     }
 
