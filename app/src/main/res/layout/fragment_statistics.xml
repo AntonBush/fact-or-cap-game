@@ -205,10 +205,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/games_statistics_list"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/your_games_score_attribute"
-            app:layout_constraintStart_toStartOf="@id/your_games_score_attribute"
+            app:layout_constraintStart_toStartOf="parent"
             />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
