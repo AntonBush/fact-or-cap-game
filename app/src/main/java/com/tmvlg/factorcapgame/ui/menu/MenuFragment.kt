@@ -57,7 +57,7 @@ class MenuFragment : Fragment() {
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
             binding.signInLayoutAuthorized.signOutLayout.visibility =
-                binding.signInLayoutAuthorized.signOutLayout.visibility.xor(8)
+                binding.signInLayoutAuthorized.signOutLayout.visibility.xor(XOR_VISIBLE_VALUE_1)
         }
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
@@ -146,7 +146,7 @@ class MenuFragment : Fragment() {
         (activity as MainActivity).username = username
         Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
         // Update xml dep on sign in status
-        checkUser(username.dropLast(10))
+        checkUser(username.dropLast(EMAIL_LETTERS_COUNT))
     }
     // Function to update xml dep on sign in status
     private fun checkUser(username: String) {
@@ -170,7 +170,7 @@ class MenuFragment : Fragment() {
     }
     // Animation
     private fun toggleMultiplayerButton() {
-        val visibility = binding.joinRoomButton.visibility.xor(4)
+        val visibility = binding.joinRoomButton.visibility.xor(XOR_VISIBLE_VALUE_2)
         val upperAnim = if (visibility == View.VISIBLE) {
             AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_upper)
         } else {
@@ -187,6 +187,9 @@ class MenuFragment : Fragment() {
         binding.joinRoomButton.startAnimation(lowerAnim)
     }
     companion object {
+        const val XOR_VISIBLE_VALUE_1 = 8
+        const val XOR_VISIBLE_VALUE_2 = 4
+        const val EMAIL_LETTERS_COUNT = 10
         private const val GOOGLETAG = "GoogleActivity"
     }
 }

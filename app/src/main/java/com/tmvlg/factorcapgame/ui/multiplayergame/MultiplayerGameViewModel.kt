@@ -62,25 +62,25 @@ class MultiplayerGameViewModel(
 
     private fun startCountingGameDuration() = viewModelScope.launch {
         do {
-            timeElapsed += 100
-            delay(100)
+            timeElapsed += MS_TENTH_DELAY
+            delay(MS_TENTH_DELAY.toLong())
         } while (!_gameFinished.value!!)
     }
 
     private fun startTimer() {
         viewModelScope.launch {
             do {
-                timeLeft -= 1000
+                timeLeft -= MS_DELAY
                 _timeLeftFormatted.value = formatTime(timeLeft)
-                delay(1000)
+                delay(MS_DELAY.toLong())
             } while (timeLeft > 0)
             _gameFinished.postValue(true)
         }
     }
 
     private fun formatTime(timeLeftMs: Long): String {
-        val minutes = timeLeftMs / 60000
-        val seconds = (timeLeftMs / 1000) - (minutes * 60)
+        val minutes = timeLeftMs / MS_IN_MINUTE
+        val seconds = (timeLeftMs / MS_IN_SECOND) - (minutes * SECONDS_IN_MINUTE)
         return String.format("%02d:%02d", minutes, seconds)
     }
 
@@ -89,6 +89,11 @@ class MultiplayerGameViewModel(
     }
 
     companion object {
+        const val MS_TENTH_DELAY = 100
+        const val MS_DELAY = 1000
+        const val MS_IN_MINUTE = 60000
+        const val MS_IN_SECOND = 1000
+        const val SECONDS_IN_MINUTE = 60
         const val GAME_DURATION_MS = 120000L
         const val EXTRA_TIME_FOR_RIGHT_ANSWER = 2000L
         const val LOST_TIME_FOR_WRONG_ANSWER = 5000L

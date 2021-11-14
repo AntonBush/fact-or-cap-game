@@ -15,6 +15,6 @@ class MultiplayerGameViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MultiplayerGameViewModel::class.java))
             return MultiplayerGameViewModel(gameRepository, factRepository, userRepository) as T
-        throw RuntimeException("Unknown view model class $modelClass")
+        throw IllegalArgumentException("Unknown view model class $modelClass")
     }
 }
