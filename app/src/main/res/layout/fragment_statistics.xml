@@ -219,6 +219,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/last_games_attributes"
             app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"
             />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
