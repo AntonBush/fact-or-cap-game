@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
@@ -16,5 +17,15 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_fragment_container, MenuFragment())
             .commit()
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+        }
+        //uncomment to close your app on back button pressed
+//        else {
+//            super.onBackPressed()
+//        }
     }
 }

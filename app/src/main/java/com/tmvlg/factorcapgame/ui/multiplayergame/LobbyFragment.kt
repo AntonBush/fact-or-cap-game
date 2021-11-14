@@ -47,7 +47,6 @@ class LobbyFragment : Fragment() {
         binding.startButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MultiplayerGameFragment())
-                .addToBackStack(null)
                 .commit()
         }
 

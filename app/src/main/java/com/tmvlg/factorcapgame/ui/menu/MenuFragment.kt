@@ -55,6 +55,7 @@ class MenuFragment : Fragment() {
         binding.statButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, StatisticsFragment())
+                .addToBackStack(null)
                 .commit()
         }
         // Leader button listener
@@ -90,12 +91,14 @@ class MenuFragment : Fragment() {
         binding.createRoomButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LobbyFragment())
+                .addToBackStack(null)
                 .commit()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment())
+                .addToBackStack(null)
                 .commit()
         }
         return binding.root
