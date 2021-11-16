@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import java.lang.RuntimeException
 
 class MultiplayerGameViewModelFactory(
     private val gameRepository: GameRepository,
