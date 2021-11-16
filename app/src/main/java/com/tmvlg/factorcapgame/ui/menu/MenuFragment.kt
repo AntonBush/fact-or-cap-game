@@ -195,7 +195,7 @@ class MenuFragment : Fragment() {
     }
 
     // Enable or disable buttons
-    private fun enableButtons(enablebool: Boolean){
+    private fun enableButtons(enablebool: Boolean) {
         binding.singleGameButton.isEnabled = enablebool
         binding.statButton.isEnabled = enablebool
         binding.changeLanguageButton.isEnabled = enablebool
