@@ -38,19 +38,19 @@ class SingleGameFinishedFragment : Fragment() {
         _binding = null
     }
 
-    //all the bindings here
+    // all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (savedInstanceState != null) {
             loadState(savedInstanceState)
         }
 
-        //updates your score when it loaded from previous fragment
+        // updates your score when it loaded from previous fragment
         score.observe(viewLifecycleOwner) { score ->
             binding.tvScorePoints.text = ("$score Points")
         }
 
-        //shows high score label if it's a new record
+        // shows high score label if it's a new record
         isHighScore.observe(viewLifecycleOwner) { isHighScore ->
             binding.tvHighscore.visibility = if (isHighScore) {
                 View.VISIBLE
@@ -59,14 +59,14 @@ class SingleGameFinishedFragment : Fragment() {
             }
         }
 
-        //return to menu
+        // return to menu
         binding.menuButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
 
-        //restart a game
+        // restart a game
         binding.restartButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
@@ -79,7 +79,7 @@ class SingleGameFinishedFragment : Fragment() {
         saveState(outState)
     }
 
-    //saves data to bundle
+    // saves data to bundle
     private fun saveState(outState: Bundle) {
         val sc = score.value
         if (sc != null) {
@@ -91,7 +91,7 @@ class SingleGameFinishedFragment : Fragment() {
         }
     }
 
-    //loads data from bundle
+    // loads data from bundle
     private fun loadState(bundle: Bundle) {
         score.postValue(bundle.getInt(KEY_SCORE))
         isHighScore.postValue(bundle.getBoolean(KEY_IS_HIGH_SCORE))
@@ -102,7 +102,7 @@ class SingleGameFinishedFragment : Fragment() {
         const val KEY_SCORE = "score"
         const val KEY_IS_HIGH_SCORE = "is_high_score"
 
-        //calls in SingleGameFragment.kt to create this fragment with arguments
+        // calls in SingleGameFragment.kt to create this fragment with arguments
         fun newInstance(score: Int, isHighScore: Boolean): SingleGameFinishedFragment {
             return SingleGameFinishedFragment().apply {
                 arguments = Bundle().apply {

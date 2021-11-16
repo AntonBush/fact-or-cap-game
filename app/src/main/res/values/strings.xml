@@ -1,4 +1,5 @@
 <resources>
+    <string name="hello_string">Hello, %s"</string>
     <string name="app_name">Fact or Cap game</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="go_back_previous_tab">go_back_previous_tab</string>
@@ -20,7 +21,6 @@
     <string name="create_username_hint_string">Username can only contain 4–20 letters and numbers</string>
     <string name="type_here_string">Type here</string>
     <string name="game_name">Fact or Cap</string>
-    <string name="username_menu_string">User1</string>
     <string name="your_games_header">Your games</string>
     <string name="score_attribute_text">Score</string>
     <string name="date_attribute_text">Date</string>

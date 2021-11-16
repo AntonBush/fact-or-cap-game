@@ -7,7 +7,7 @@ import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import java.lang.RuntimeException
 
-class MultiplayerGameViewModelFactory (
+class MultiplayerGameViewModelFactory(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository
@@ -15,8 +15,6 @@ class MultiplayerGameViewModelFactory (
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MultiplayerGameViewModel::class.java))
             return MultiplayerGameViewModel(gameRepository, factRepository, userRepository) as T
-        throw RuntimeException("Unknown view model class $modelClass")
+        throw IllegalArgumentException("Unknown view model class $modelClass")
     }
-
-
 }

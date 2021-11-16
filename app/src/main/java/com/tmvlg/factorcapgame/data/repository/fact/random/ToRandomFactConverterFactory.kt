@@ -1,14 +1,12 @@
 package com.tmvlg.factorcapgame.data.repository.fact.random
 
-import okhttp3.MediaType
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
 
 /*
-<div id='z'>Crocodile babies don't have sex chromosomes; the temperature at which
-    the egg develops determines gender.
+<div id='z'>Fact.
                     <br/>
                     <br/>
 */
@@ -38,7 +36,7 @@ class ToRandomFactConverterFactory : Converter.Factory() {
         } else null
     }
 
-    companion object {
-        private val MEDIA_TYPE: MediaType = MediaType.parse("text/plain")!!
-    }
+//    companion object {
+//        private val MEDIA_TYPE: MediaType = MediaType.parse("text/plain")!!
+//    }
 }

@@ -52,7 +52,7 @@ class FactRepository(
          * @return new FactRepository
          */
         fun newInstance(): FactRepository {
-            return FactRepository(listOf(GenfunFactApi, RandomFactApi)) //api list
+            return FactRepository(listOf(GenfunFactApi, RandomFactApi)) // api list
         }
 
         /**

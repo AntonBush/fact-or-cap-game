@@ -1,15 +1,13 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFinishedFragment
 
 class MultiplayerGameFinished : Fragment() {
 
@@ -18,9 +16,9 @@ class MultiplayerGameFinished : Fragment() {
     private val binding: FragmentMultiplayerGameFinishedBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMultiplayerGameFinishedBinding.inflate(inflater, container, false)
@@ -49,7 +47,7 @@ class MultiplayerGameFinished : Fragment() {
     companion object {
         const val KEY_SCORE = "score"
 
-        //calls from MultiplayerGameFragment.kt to create this fragment and pass arguments
+        // calls from MultiplayerGameFragment.kt to create this fragment and pass arguments
         fun newInstance(score: Int): MultiplayerGameFinished {
             return MultiplayerGameFinished().apply {
                 arguments = Bundle().apply {
@@ -58,5 +56,4 @@ class MultiplayerGameFinished : Fragment() {
             }
         }
     }
-
 }
