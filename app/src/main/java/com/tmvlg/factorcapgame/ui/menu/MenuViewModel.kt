@@ -29,6 +29,7 @@ class MenuViewModel : ViewModel() {
             // Google Sign In failed, update UI appropriately
             Log.d(GOOGLETAG, "Google sign in failed")
             Toast.makeText(context, "Authentication via Google failed", Toast.LENGTH_SHORT).show()
+            menufragment.updateUI(null)
         }
     }
     // Function auth in Firebase with Google token

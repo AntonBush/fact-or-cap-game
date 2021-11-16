@@ -73,11 +73,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.1'
-    // UI
-    implementation 'com.google.android.material:material:1.4.0'
     // Testing
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
-    // ??
+    // Fragments
     implementation "androidx.fragment:fragment-ktx:1.3.6"
     // FireBase
     implementation platform('com.google.firebase:firebase-bom:29.0.0')

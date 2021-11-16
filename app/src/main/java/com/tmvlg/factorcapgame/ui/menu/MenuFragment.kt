@@ -120,20 +120,23 @@ class MenuFragment : Fragment() {
 
     // Google start auth function
     private fun startSignInIntent() {
+        enableButtons(false)
         // Init google sign in intent
         val signInIntent = viewModel.googleSignInClient.signInIntent
         // Same as startActivityForResult
         launcher.launch(signInIntent)
     }
+
     // Same as onActivityResult (Listener)
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // Calling viewmodel function to get data
+            // Calling viewModel function to get data
             viewModel.googleAuth(result, (activity as Activity), requireContext())
         }
     }
     // Sign out function
     private fun googleSignOut() {
+        enableButtons(false)
         // Sign out from Google
         viewModel.googleSignInClient.signOut()
         // Sign out from Firebase
@@ -150,6 +153,7 @@ class MenuFragment : Fragment() {
         Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
         // Update xml dep on sign in status
         checkUser(username.dropLast(EMAIL_LETTERS_COUNT))
+        enableButtons(true)
     }
     // Function to update xml dep on sign in status
     private fun checkUser(username: String) {
@@ -188,6 +192,17 @@ class MenuFragment : Fragment() {
         binding.createRoomButton.startAnimation(upperAnim)
         binding.joinRoomButton.visibility = visibility
         binding.joinRoomButton.startAnimation(lowerAnim)
+    }
+
+    // Enable or disable buttons
+    private fun enableButtons(enablebool: Boolean){
+        binding.singleGameButton.isEnabled = enablebool
+        binding.statButton.isEnabled = enablebool
+        binding.changeLanguageButton.isEnabled = enablebool
+        binding.createRoomButton.isEnabled = enablebool
+        binding.joinRoomButton.isEnabled = enablebool
+        binding.leaderboardButton.isEnabled = enablebool
+        binding.multiplayerGameButton.isEnabled = enablebool
     }
     companion object {
         const val XOR_VISIBLE_VALUE_1 = 8

@@ -3,6 +3,8 @@ package com.tmvlg.factorcapgame.data.repository.game
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.sql.Date
+import java.util.*
 
 @Entity(tableName = "game_table")
 data class Game(

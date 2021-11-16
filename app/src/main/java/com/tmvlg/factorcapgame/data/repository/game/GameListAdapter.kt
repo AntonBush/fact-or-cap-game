@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.R
+import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,14 +23,11 @@ class GameListAdapter :
         val score: TextView = view.findViewById(R.id.score)
         val duration: TextView = view.findViewById(R.id.duration)
         val date : TextView = view.findViewById(R.id.date)
-
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
 
         val viewHolder = GameViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.game_statistics_list_item, parent, false))
-
         return viewHolder
     }
 

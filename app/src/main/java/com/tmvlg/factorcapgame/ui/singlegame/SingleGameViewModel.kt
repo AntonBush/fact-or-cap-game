@@ -79,7 +79,7 @@ class SingleGameViewModel(
     }
 
     // saves current game to DB. Shows in game history
-    fun saveGame() = viewModelScope.launch {
+    private fun saveGame() = viewModelScope.launch {
         val score = (_rightAnswersCount.value ?: 0).toLong()
         val game = Game(score, timeElapsed)
         gameRepository.insert(game)
