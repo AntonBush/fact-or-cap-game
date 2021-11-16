@@ -1,11 +1,10 @@
 package com.tmvlg.factorcapgame.ui.statisitics
 import androidx.lifecycle.*
-import com.tmvlg.factorcapgame.data.repository.game.Game
-import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
+import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
-class StatisticsViewModel(userRepository: UserRepository, gameRepository: GameRepositoryImpl) : ViewModel() {
+class StatisticsViewModel(userRepository: UserRepository, gameRepository: GameRepository) : ViewModel() {
 
     val allGames = gameRepository.allGames
 

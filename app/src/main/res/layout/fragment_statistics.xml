@@ -168,48 +168,49 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-    <TextView
-            android:id="@+id/your_games_score_attribute"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/score_attribute_text"
-            android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
-            android:textSize="30sp"
-            android:layout_weight="1"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/your_games_header"
-            app:layout_constraintEnd_toStartOf="@id/your_games_duration_attribute"/>
+
+        <TextView
+                android:id="@+id/your_games_score_attribute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/score_attribute_text"
+                android:fontFamily="@font/norwester"
+                android:textColor="@color/font_color"
+                android:textSize="30sp"
+                android:layout_weight="1"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/your_games_header"
+                app:layout_constraintEnd_toStartOf="@id/your_games_duration_attribute" />
 
 
-    <TextView
-            android:id="@+id/your_games_duration_attribute"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/your_games_duration_attribute_text"
-            app:layout_constraintTop_toBottomOf="@id/your_games_header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
-            android:textSize="30sp"
-            android:layout_weight="1"
-            android:gravity="center"
-            />
+        <TextView
+                app:layout_constraintTop_toBottomOf="@id/your_games_header"
+                android:id="@+id/your_games_date_attribute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/date_attribute_text"
+                android:fontFamily="@font/norwester"
+                android:textColor="@color/font_color"
+                android:textSize="30sp"
+                android:layout_weight="1.6"
+                android:gravity="center"
+                app:layout_constraintStart_toEndOf="@id/your_games_duration_attribute"
+                app:layout_constraintBaseline_toBaselineOf="@id/your_games_score_attribute" />
 
-    <TextView
-            app:layout_constraintTop_toBottomOf="@id/your_games_header"
-            android:id="@+id/your_games_date_attribute"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/date_attribute_text"
-            android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
-            android:textSize="30sp"
-            android:layout_weight="1"
-            android:gravity="center"
-            app:layout_constraintStart_toEndOf="@id/your_games_duration_attribute"
-            app:layout_constraintBaseline_toBaselineOf="@id/your_games_score_attribute" />
+        <TextView
+                android:id="@+id/your_games_duration_attribute"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/your_games_duration_attribute_text"
+                app:layout_constraintTop_toBottomOf="@id/your_games_header"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:fontFamily="@font/norwester"
+                android:textColor="@color/font_color"
+                android:textSize="30sp"
+                android:layout_weight="1"
+                android:gravity="center" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

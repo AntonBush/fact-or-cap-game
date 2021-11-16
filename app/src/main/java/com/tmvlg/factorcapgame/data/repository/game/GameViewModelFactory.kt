@@ -2,10 +2,9 @@ package com.tmvlg.factorcapgame.data.repository.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
 import java.lang.RuntimeException
 
-class GameViewModelFactory(private val gameRepository: GameRepositoryImpl) : ViewModelProvider.Factory {
+class GameViewModelFactory(private val gameRepository: GameRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GameViewModel::class.java))
             return GameViewModel(gameRepository) as T

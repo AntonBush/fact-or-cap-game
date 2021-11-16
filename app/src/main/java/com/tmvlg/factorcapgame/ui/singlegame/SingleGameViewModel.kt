@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.singlegame
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
@@ -9,14 +8,14 @@ import android.util.Log
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
-import com.tmvlg.factorcapgame.data.repository.game.GameRepositoryImpl
+import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 
 class SingleGameViewModel(
-    private val gameRepository: GameRepositoryImpl,
+    private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
