@@ -15,7 +15,6 @@ import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 class StatisticsFragment : Fragment() {
 
     private lateinit var viewModel: StatisticsViewModel
-
     private var _binding: FragmentStatisticsBinding? = null
     private val binding: FragmentStatisticsBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
