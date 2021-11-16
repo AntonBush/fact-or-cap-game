@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.data.repository.game.GameListAdapter
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class StatisticsFragment : Fragment() {

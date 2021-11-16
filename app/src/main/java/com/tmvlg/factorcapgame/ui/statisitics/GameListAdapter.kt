@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.data.repository.game
+package com.tmvlg.factorcapgame.ui.statisitics
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.R
-import java.lang.Math.abs
+import com.tmvlg.factorcapgame.data.repository.game.Game
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
