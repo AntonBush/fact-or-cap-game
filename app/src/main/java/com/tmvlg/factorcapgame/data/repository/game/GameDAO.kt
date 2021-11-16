@@ -1,5 +1,6 @@
 package com.tmvlg.factorcapgame.data.repository.game
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -8,11 +9,13 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GameDAO {
+  
     /**
-     * @return the flow of all games sorted by date in ascending order
+     * @return the live data of all games sorted by date in descending order
      */
-    @Query("SELECT * FROM game_table ORDER BY date ASC")
-    fun getDatedGames(): Flow<List<Game>>
+    @Query("SELECT * FROM game_table ORDER BY date DESC")
+    fun getAllGames(): LiveData<List<Game>>
+    
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(game: Game)
@@ -22,7 +25,7 @@ interface GameDAO {
      */
     @Query(
         "DELETE FROM game_table WHERE date NOT IN" +
-            "(SELECT date from game_table ORDER BY date DESC LIMIT $GAMES_IN_TABLE);"
+        "(SELECT date from game_table ORDER BY date DESC LIMIT $gamesInTable);"
     )
     suspend fun deleteUnnecessary()
 
@@ -30,6 +33,9 @@ interface GameDAO {
         /**
          * Count of games that table should contain
          */
-        const val GAMES_IN_TABLE = 10
+        const val gamesInTable = 5
     }
 }
+
+
+

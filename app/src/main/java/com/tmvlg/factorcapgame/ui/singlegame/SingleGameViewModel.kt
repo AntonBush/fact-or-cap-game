@@ -1,5 +1,4 @@
 package com.tmvlg.factorcapgame.ui.singlegame
-
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
