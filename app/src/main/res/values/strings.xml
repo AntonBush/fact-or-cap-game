@@ -31,5 +31,14 @@
     <string name="play_again">Play Again</string>
     <string name="your_games_duration_attribute">Duration</string>
     <string name="your_games_duration_attribute_text">Duration</string>
+    <string name="join">Join</string>
+    <string name="join_lobby">Join Lobby</string>
+    <string name="invite">Invite</string>
+    <string name="start">Start</string>
+    <string name="to_lobby">To Lobby</string>
+    <string name="game_results">Game results</string>
+    <string name="invite_a_friend">Invite a Friend</string>
+    <string name="confirm">Confirm</string>
+    <string name="please_check_your_internet_settings_and_return_to_menu">Please check your internet settings and return to Menu</string>
 </resources>
 

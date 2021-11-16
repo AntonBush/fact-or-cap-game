@@ -15,7 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -23,6 +22,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
+import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
 
@@ -30,8 +32,7 @@ class MenuFragment : Fragment() {
 
     private lateinit var viewModel: MenuViewModel
 
-    private lateinit var auth: FirebaseAuth // Var for Firebase auth
-    private lateinit var googleSignInClient: GoogleSignInClient // Var for Google auth
+
 
     private var _binding: FragmentMenuBinding? = null
     private val binding: FragmentMenuBinding
@@ -43,15 +44,6 @@ class MenuFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
-        auth = Firebase.auth
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build() // Setting up google sign in parameters
-        googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso)
-
-        updateUI(auth.currentUser) // Update UI if user is signed in or not
 
         // Start single game button listener
         binding.singleGameButton.setOnClickListener() {
@@ -77,9 +69,9 @@ class MenuFragment : Fragment() {
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
             // Check if user is signed in in firebase
-            if (auth.currentUser != null) {
+            if (viewModel.auth.currentUser != null) {
                 Log.d(GOOGLETAG, "User already signed in")
-                updateUI(auth.currentUser)
+                updateUI(viewModel.auth.currentUser)
             } else {
                 Log.d(GOOGLETAG, "Signing in")
                 startSignInIntent() // Calling sign in intent; Start auth via Google
@@ -96,11 +88,15 @@ class MenuFragment : Fragment() {
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, LobbyFragment())
+                .commit()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, FindLobbyFragment())
+                .commit()
         }
         return binding.root
     }
@@ -108,60 +104,44 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
+        viewModel.menufragment = this // Setting viewmodel variables
+        viewModel.auth = Firebase.auth // Setting viewmodel variables
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build() // Setting up google sign in parameters
+        viewModel.googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso) // Setting viewmodel variables
+        updateUI(viewModel.auth.currentUser) // Update UI if user is signed in or not
     }
+
     // Google start auth function
     private fun startSignInIntent() {
-        val signInIntent = googleSignInClient.signInIntent // Init google sign in intent
+        val signInIntent = viewModel.googleSignInClient.signInIntent // Init google sign in intent
         launcher.launch(signInIntent) // Same as startActivityForResult
     }
     // Same as onActivityResult (Listener)
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)!! // Get signed in account
-                Log.d(GOOGLETAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!) // Call auth with Firebase
-            } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                Log.d(GOOGLETAG, "Google sign in failed")
-                Toast.makeText(this.context, "Authentication via Google failed", Toast.LENGTH_SHORT).show()
-            }
+            viewModel.googleAuth(result,(activity as Activity),requireContext()) // Calling viewmodel function to get data
         }
-    }
-    // Function auth in Firebase with Google token
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null) // Get user data from firebase
-        auth.signInWithCredential(credential) // Sign in with firebase user data
-            .addOnCompleteListener(this.activity as Activity) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(GOOGLETAG, "signInWithCredential:success")
-                    updateUI(auth.currentUser) // UpdateUI with user
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(GOOGLETAG, "signInWithCredential:failure", task.exception)
-                    Toast.makeText(this.context, "Authentication via Firebase failed", Toast.LENGTH_SHORT).show()
-                    updateUI(null) // UpdateUI with no user
-                }
-            }
-
     }
     // Sign out function
     private fun googleSignOut(){
-        googleSignInClient.signOut() // Sign out from Google
-        auth.signOut() // Sign out from Firebase
-        updateUI(auth.currentUser) // UpdateUI
+        viewModel.googleSignInClient.signOut() // Sign out from Google
+        viewModel.auth.signOut() // Sign out from Firebase
+        updateUI(viewModel.auth.currentUser) // UpdateUI
     }
     // Function to Update Username and sign in status on fragment
-    private fun updateUI(user: FirebaseUser?) {
+    fun updateUI(user: FirebaseUser?) {
         val username: String = user?.email ?: "" // Get user email from firebase
-        Log.d(GOOGLETAG, username +" - " + auth.currentUser?.email.toString())
+        (activity as MainActivity).username = username // Update username in MainActivity
+        Log.d(GOOGLETAG, username +" - " + viewModel.auth.currentUser?.email.toString())
+
         checkUser(username.dropLast(10)) // Update xml dep on sign in status
     }
     // Function to update xml dep on sign in status
-    private fun checkUser(username:String){
+    private fun checkUser(username: String) {
         if (username.isEmpty()) {
             binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
             binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE

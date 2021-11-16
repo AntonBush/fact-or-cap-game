@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 class StatisticsViewModel(userRepository: UserRepository, gameRepository: GameRepository) : ViewModel() {
 
     val allGames = gameRepository.allGames
-
+  
     private val _totalGames = MutableLiveData<Int>()
     val totalGames = _totalGames.map { it }
 
@@ -26,11 +26,11 @@ class StatisticsViewModel(userRepository: UserRepository, gameRepository: GameRe
     init {
         viewModelScope.launch {
             val statistics = userRepository.getStats()
-            _totalGames.postValue(statistics.total_games)
-            _highestScore.postValue(statistics.highest_score)
-            _lastScore.postValue(statistics.last_score)
-            _averageScore.postValue(statistics.average_score)
-            _allScores.postValue(statistics.all_scores)
+            _totalGames.postValue(statistics.totalGames)
+            _highestScore.postValue(statistics.highestScore)
+            _lastScore.postValue(statistics.lastScore)
+            _averageScore.postValue(statistics.averageScore)
+            _allScores.postValue(statistics.allScores)
         }
     }
 }
