@@ -1,3 +1,5 @@
+package com.tmvlg.factorcapgame.ui.statisitics
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map

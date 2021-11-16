@@ -1,5 +1,5 @@
 package com.tmvlg.factorcapgame.ui.statisitics
-import StatisticsViewModel
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

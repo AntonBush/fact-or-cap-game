@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.statisitics
 
-import StatisticsViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
