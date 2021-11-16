@@ -26,8 +26,10 @@ class GameListAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameViewHolder {
 
-        val viewHolder = GameViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.game_statistics_list_item, parent, false))
+        val viewHolder = GameViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.game_statistics_list_item, parent, false)
+        )
         return viewHolder
     }
 
