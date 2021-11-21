@@ -94,7 +94,7 @@ class MultiplayerGameViewModel(
         const val MS_IN_MINUTE = 60000
         const val MS_IN_SECOND = 1000
         const val SECONDS_IN_MINUTE = 60
-        const val GAME_DURATION_MS = 120000L
+        const val GAME_DURATION_MS = 10000L
         const val EXTRA_TIME_FOR_RIGHT_ANSWER = 2000L
         const val LOST_TIME_FOR_WRONG_ANSWER = 5000L
     }

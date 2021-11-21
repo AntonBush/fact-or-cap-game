@@ -105,11 +105,14 @@ class MultiplayerGameFragment : Fragment() {
     // calls when game is finished. Goes to finish fragment with score results
     private fun endGame() {
         val score = viewModel.rightAnswersCount.value ?: 0
+        // TODO("Получить lobbyId")
+        val lobbyId = "123456"
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.main_fragment_container,
                 MultiplayerGameFinished.newInstance(
                     score,
+                    lobbyId
                 )
             )
             .commit()

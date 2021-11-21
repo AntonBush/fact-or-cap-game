@@ -4,6 +4,7 @@ import android.app.Application
 import com.tmvlg.factorcapgame.data.FactOrCapDatabase
 import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
+import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.CoroutineScope
@@ -20,4 +21,6 @@ class FactOrCapApplication : Application() {
     val preferenceProvider by lazy { PreferenceProvider(this) }
 
     val userRepository by lazy { UserRepository(preferenceProvider) }
+
+    val firebaseRepository by lazy { FirebaseLobbyRepository() }
 }

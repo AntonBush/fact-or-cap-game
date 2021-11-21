@@ -51,16 +51,16 @@
             android:textColor="@color/font_color"
             android:layout_gravity="center_vertical"
             android:maxLines="1"
-            app:layout_constraintBottom_toTopOf="@+id/members_rv"
-            app:layout_constraintStart_toStartOf="@+id/members_rv" />
+            app:layout_constraintBottom_toTopOf="@+id/scoreboard_rv"
+            app:layout_constraintStart_toStartOf="@+id/scoreboard_rv" />
 
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/members_rv"
+            android:id="@+id/scoreboard_rv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            tools:listitem="@layout/game_finished_member"
+            tools:listitem="@layout/player_scoreboard"
             tools:itemCount="4"
             android:layout_marginTop="60dp"
             app:layout_constraintEnd_toEndOf="parent"
