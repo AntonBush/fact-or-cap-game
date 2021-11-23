@@ -17,8 +17,14 @@ class PlayersScoreboardAdapter : ListAdapter<Player, PlayerViewHolder>(PlayersDi
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
         val item = getItem(position)
         with (holder) {
-            binding.memberUsername.text = item.playerName
-            binding.memberResult.text = item.score.toString()
+            if (item.isWinner)
+                binding.memberUsername.text = "winner - ${item.playerName}"
+            else
+                binding.memberUsername.text = item.playerName
+            if (item.waiting)
+                binding.memberResult.text = "${item.score} points"
+            else
+                binding.memberResult.text = "waiting.."
         }
     }
 }

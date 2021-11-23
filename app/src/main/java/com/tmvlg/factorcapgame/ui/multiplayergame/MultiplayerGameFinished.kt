@@ -84,14 +84,21 @@ class MultiplayerGameFinished : Fragment() {
     private fun observeViewModel() {
         viewModel.lobbyPlayers.observe(viewLifecycleOwner) {
             Log.d("1", "players in fragment: $it")
-            scoreboardAdapter.submitList(it)
             val _score = score.value ?: throw RuntimeException("null score")
             val _lobbyId = lobbyId.value ?: throw RuntimeException("null lobbyId")
-            viewModel.sendScore(_score, _lobbyId)
-            if (viewModel.isAllFinished()) {
-                Log.d("1", "isAllFinished: ${viewModel.isAllFinished()}")
-                binding.tvGameResult.text = "You win!"
+            if (it.isNotEmpty()) {
+                viewModel.sendScore(_score, _lobbyId)
+                if (viewModel.isAllFinished()) {
+                    binding.tvWaiting.text = "Game results"
+                    val winner = viewModel.getWinner(_lobbyId)
+                    if (winner == viewModel.getUsername()) {
+                        binding.tvGameResult.text = "You win!"
+                    } else {
+                        binding.tvGameResult.text = "You lose!"
+                    }
+                }
             }
+            scoreboardAdapter.submitList(it)
         }
         lobbyId.observe(viewLifecycleOwner) {
             viewModel.lobbies(it)
@@ -126,6 +133,12 @@ class MultiplayerGameFinished : Fragment() {
         Log.d("1", "score: ${score.value}")
         Log.d("1", "lobbyId: ${lobbyId.value}")
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val _lobbyId = lobbyId.value ?: throw RuntimeException("can't fetch lobbyId")
+        viewModel.finish(_lobbyId)
     }
 
     companion object {

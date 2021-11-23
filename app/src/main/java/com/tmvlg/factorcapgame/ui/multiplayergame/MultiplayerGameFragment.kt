@@ -1,10 +1,15 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
+import android.animation.ValueAnimator
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
@@ -94,6 +99,38 @@ class MultiplayerGameFragment : Fragment() {
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
+            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            animator.addUpdateListener { anim ->
+                binding.tvTimer.setTextColor(
+                    ColorUtils.blendARGB(
+                        resources.getColor(R.color.online_indicator_color),
+                        resources.getColor(R.color.font_color),
+                        anim.animatedFraction
+                    )
+                )
+            }
+            animator.setDuration(200).start()
+
+        }
+
+        viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
+            Log.d("1", "answer coorect = : $isCorrect")
+            var startColor = if (isCorrect)
+                resources.getColor(R.color.primary_red) else
+                resources.getColor(R.color.online_indicator_color)
+            Log.d("1", "answer color: $startColor")
+            var endColor: Int = resources.getColor(R.color.font_color)
+            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            animator.addUpdateListener { anim ->
+                binding.tvTimer.setTextColor(
+                    ColorUtils.blendARGB(
+                        startColor,
+                        endColor,
+                        anim.animatedFraction
+                    )
+                )
+            }
+            animator.setDuration(2000).start()
         }
 
         // binds how much time left

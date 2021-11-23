@@ -1,7 +1,6 @@
 package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.util.Log
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DataSnapshot
@@ -10,42 +9,61 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 import java.lang.RuntimeException
 
 class FirebaseLobbyRepository {
 
     private val database = Firebase.database
     private val lobbiesRef = database.getReference("Lobbies")
+    private lateinit var valueEventListener: ValueEventListener
 
-    private var players: List<Player> = emptyList()
+    private var players = mutableListOf<Player>()
     private val playersLD = MutableLiveData<List<Player>>()
 
-    suspend fun listenLobbyPlayers(lobbyId: String) {
-        lobbiesRef.child(lobbyId).addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val lobby: Lobby =
-                    snapshot.getValue<Lobby>() ?: throw RuntimeException("no such lobby")
-                players = lobby.players
-                updateList()
+    private fun addPlayer(player: Player, playerId: String) {
+        player.userId = playerId
+        players.add(player)
+    }
 
-                Log.d("1", "lobby players: ${lobby.players}")
-                Log.d("1", "non-lobby players: ${players}")
-                Log.d("1", "ld-lobby players: ${playersLD.value}")
+    private fun clearList() {
+        players.clear()
+        updateList()
+    }
+
+    suspend fun listenLobbyPlayers(lobbyId: String) {
+        valueEventListener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                clearList()
+                for (child in snapshot.children) {
+                    if (child.key == "players") {
+                        for (firebasePlayer in child.children) {
+                            val playerId = firebasePlayer.key
+                                ?: throw RuntimeException("can't find playerId")
+                            val player: Player = firebasePlayer.getValue<Player>()
+                                ?: throw RuntimeException("can't find player")
+                            Log.d("1", "onDataChange: ${player.playerName} is finished ${player.waiting}")
+                            addPlayer(player, playerId)
+                        }
+                    }
+                }
+                updateList()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
-        })
+        }
+        lobbiesRef.child(lobbyId).addValueEventListener(valueEventListener)
     }
 
+    fun stopListeningPlayers(lobbyId: String) {
+        lobbiesRef.child(lobbyId).removeEventListener(valueEventListener)
+        updateList()
+    }
     private fun updateList() {
         playersLD.value = players.toList()
-        Log.d("1", "ld2-lobby players: ${playersLD.value}")
-
+        Log.d("1", "updateList: ${playersLD.value}")
     }
 
 //    fun getLobbyPlayers(lobbyId: String): LiveData<List<Player>> {
@@ -69,18 +87,26 @@ class FirebaseLobbyRepository {
                 lobbiesRef.child(lobbyId)
                     .child("players")
                     .child(it.userId)
-                    .child("isFinished")
+                    .child("waiting")
                     .setValue(true)
             }
         }
     }
 
-    fun calculateWinner(lobbyId: String): Player {
+    fun calculateWinner(): Player {
         var highScore = 0 to players[0]
         var timeElapsed = 10000000L to players[0]
+        Log.d("1", "calculateWinner: players = $players")
         players.forEach {
-            if (it.score >= highScore.first) {
+            Log.d("1", "calculateWinner: start for ${it.playerName}")
+            if (it.score > highScore.first) {
+                Log.d("1", "calculateWinner: ${it.playerName} = ${it.score}")
+                highScore = it.score to it
+                timeElapsed = it.timeElapsed to it
+            }
+            else if (it.score == highScore.first) {
                 if (it.timeElapsed < timeElapsed.first) {
+                    Log.d("1", "calculateWinner: ${it.playerName} = ${it.score}")
                     highScore = it.score to it
                     timeElapsed = it.timeElapsed to it
                 }
