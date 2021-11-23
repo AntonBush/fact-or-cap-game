@@ -59,14 +59,33 @@ class FirebaseLobbyRepository {
     }
 
     fun updatePlayerScore(score: Int, lobbyId: String, username: String) {
-        for (player in players) {
-            if (player.playerName == username) {
+        players.forEach {
+            if (it.playerName == username) {
                 lobbiesRef.child(lobbyId)
                     .child("players")
-                    .child(player.userId)
+                    .child(it.userId)
                     .child("score")
                     .setValue(score)
+                lobbiesRef.child(lobbyId)
+                    .child("players")
+                    .child(it.userId)
+                    .child("isFinished")
+                    .setValue(true)
             }
         }
+    }
+
+    fun calculateWinner(lobbyId: String): Player {
+        var highScore = 0 to players[0]
+        var timeElapsed = 10000000L to players[0]
+        players.forEach {
+            if (it.score >= highScore.first) {
+                if (it.timeElapsed < timeElapsed.first) {
+                    highScore = it.score to it
+                    timeElapsed = it.timeElapsed to it
+                }
+            }
+        }
+        return highScore.second
     }
 }

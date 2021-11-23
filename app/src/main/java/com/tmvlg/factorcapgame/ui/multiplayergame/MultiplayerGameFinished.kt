@@ -16,6 +16,8 @@ import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBindin
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFinishedFragment
+import java.lang.IllegalArgumentException
+import java.lang.RuntimeException
 
 class MultiplayerGameFinished : Fragment() {
 
@@ -33,6 +35,10 @@ class MultiplayerGameFinished : Fragment() {
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     private lateinit var scoreboardAdapter: PlayersScoreboardAdapter
+
+    val score = MutableLiveData<Int>()
+
+    val lobbyId = MutableLiveData<String>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,12 +85,18 @@ class MultiplayerGameFinished : Fragment() {
         viewModel.lobbyPlayers.observe(viewLifecycleOwner) {
             Log.d("1", "players in fragment: $it")
             scoreboardAdapter.submitList(it)
-            viewModel.sendScore(viewModel.score.value!!)
+            val _score = score.value ?: throw RuntimeException("null score")
+            val _lobbyId = lobbyId.value ?: throw RuntimeException("null lobbyId")
+            viewModel.sendScore(_score, _lobbyId)
+            if (viewModel.isAllFinished()) {
+                Log.d("1", "isAllFinished: ${viewModel.isAllFinished()}")
+                binding.tvGameResult.text = "You win!"
+            }
         }
-        viewModel.lobbyId.observe(viewLifecycleOwner) {
+        lobbyId.observe(viewLifecycleOwner) {
             viewModel.lobbies(it)
         }
-        viewModel.score.observe(viewLifecycleOwner) {
+        score.observe(viewLifecycleOwner) {
 
         }
     }
@@ -96,11 +108,11 @@ class MultiplayerGameFinished : Fragment() {
 
     // saves data to bundle
     private fun saveState(outState: Bundle) {
-        val sc = viewModel.score.value
+        val sc = score.value
         if (sc != null) {
             outState.putInt(KEY_SCORE, sc)
         }
-        val lid = viewModel.lobbyId.value
+        val lid = lobbyId.value
         if (lid != null) {
             outState.putString(KEY_LOBBY_ID, lid)
         }
@@ -109,10 +121,10 @@ class MultiplayerGameFinished : Fragment() {
     // loads data from bundle
     private fun loadState(bundle: Bundle) {
         Log.d("1", "loadState: loading")
-        viewModel.score.value = bundle.getInt(KEY_SCORE)
-        viewModel.lobbyId.value = bundle.getString(KEY_LOBBY_ID)
-        Log.d("1", "score: ${viewModel.score.value}")
-        Log.d("1", "lobbyId: ${viewModel.lobbyId.value}")
+        score.value = bundle.getInt(KEY_SCORE)
+        lobbyId.value = bundle.getString(KEY_LOBBY_ID)
+        Log.d("1", "score: ${score.value}")
+        Log.d("1", "lobbyId: ${lobbyId.value}")
 
     }
 

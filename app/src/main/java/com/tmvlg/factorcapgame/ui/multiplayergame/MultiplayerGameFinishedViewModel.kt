@@ -14,10 +14,6 @@ class MultiplayerGameFinishedViewModel(
     private val userRepository: UserRepository
 ): ViewModel() {
 
-    val score = MutableLiveData<Int>()
-
-    val lobbyId = MutableLiveData<String>()
-
     private var _lobbyPlayers = firebaseLobbyRepository.subscribeOnPlayersLD()
     val lobbyPlayers = _lobbyPlayers.map { it }
 
@@ -26,9 +22,21 @@ class MultiplayerGameFinishedViewModel(
         Log.d("1", "players = ${_lobbyPlayers.value}")
     }
 
-    fun sendScore(score: Int) {
+    fun sendScore(score: Int, lobbyId: String) {
         val username = userRepository.getUsername()
-        firebaseLobbyRepository.updatePlayerScore(score, lobbyId.value!!, username)
+        firebaseLobbyRepository.updatePlayerScore(score, lobbyId, username)
+    }
+
+    fun isAllFinished(): Boolean {
+        lobbyPlayers.value?.forEach {
+            if (!it.isFinished)
+                return false
+        }
+        return true
+    }
+
+    fun getWinner(lobbyId: String): Player {
+        return firebaseLobbyRepository.calculateWinner(lobbyId)
     }
 
 }
