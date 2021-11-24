@@ -33,6 +33,19 @@
             android:maxLines="1"
             android:ellipsize="end"/>
 
+    <ImageView
+            android:id="@+id/corona"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_corona"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/profile_picture_placeholder"
+            android:scaleType="fitCenter"
+            android:layout_marginRight="10dp"
+            android:visibility="gone">
+
+    </ImageView>
+
     <TextView
             android:id="@+id/member_result"
             android:layout_width="wrap_content"

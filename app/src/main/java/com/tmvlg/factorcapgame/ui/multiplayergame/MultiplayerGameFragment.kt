@@ -122,13 +122,17 @@ class MultiplayerGameFragment : Fragment() {
             var endColor: Int = resources.getColor(R.color.font_color)
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
-                binding.tvTimer.setTextColor(
-                    ColorUtils.blendARGB(
-                        startColor,
-                        endColor,
-                        anim.animatedFraction
+                try {
+                    binding.tvTimer.setTextColor(
+                        ColorUtils.blendARGB(
+                            startColor,
+                            endColor,
+                            anim.animatedFraction
+                        )
                     )
-                )
+                } catch (e: java.lang.IllegalStateException) {
+                    return@addUpdateListener
+                }
             }
             animator.setDuration(2000).start()
         }

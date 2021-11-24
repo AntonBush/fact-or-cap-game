@@ -2,6 +2,7 @@ package com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard
 
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
@@ -17,10 +18,9 @@ class PlayersScoreboardAdapter : ListAdapter<Player, PlayerViewHolder>(PlayersDi
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
         val item = getItem(position)
         with (holder) {
+            binding.memberUsername.text = item.playerName
             if (item.isWinner)
-                binding.memberUsername.text = "winner - ${item.playerName}"
-            else
-                binding.memberUsername.text = item.playerName
+                binding.corona.visibility = View.VISIBLE
             if (item.waiting)
                 binding.memberResult.text = "${item.score} points"
             else
