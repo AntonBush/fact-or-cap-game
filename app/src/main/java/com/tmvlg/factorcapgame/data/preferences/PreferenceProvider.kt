@@ -61,6 +61,14 @@ class PreferenceProvider(context: Context) {
         )
     }
 
+    fun saveUsername(username: String) {
+        preference.edit().putString(KEY_USERNAME, username).apply()
+    }
+
+    fun getUsername(): String {
+        return preference.getString(KEY_USERNAME, "") ?: ""
+    }
+
     companion object {
         const val APP_USER_PREFERENCES = "userprefs"
         const val KEY_TOTAL_GAMES = "keyTotalGames"
@@ -68,5 +76,6 @@ class PreferenceProvider(context: Context) {
         const val KEY_LAST_SCORE = "keyLastScore"
         const val KEY_AVERAGE_SCORE = "keyAverageScore"
         const val KEY_ALL_SCORES = "keyAllScores"
+        const val KEY_USERNAME = "keyUsername"
     }
 }

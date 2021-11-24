@@ -10,23 +10,34 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
+import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
 
 class MenuFragment : Fragment() {
 
-    private lateinit var viewModel: MenuViewModel
+    private val viewModel: MenuViewModel by viewModels {
+        // inits viewmodel
+        val app = activity?.application as FactOrCapApplication
+        return@viewModels MenuViewModelFactory(
+            app.userRepository
+        )
+    }
     private var _binding: FragmentMenuBinding? = null
     private val binding: FragmentMenuBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
@@ -81,7 +92,23 @@ class MenuFragment : Fragment() {
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
             // Calling toggle mpb function
-            toggleMultiplayerButton()
+            if (viewModel.auth.currentUser != null) {
+                toggleMultiplayerButton()
+            } else {
+                MaterialAlertDialogBuilder(requireContext(),
+                R.style.ThemeOverlay_App_MaterialAlertDialog)
+                    .setTitle("Auth required")
+                    .setMessage("You are not authorized yet." +
+                            " You should authorize via Google to play multiplayer." +
+                            " Do you want to proceed?")
+                    .setNegativeButton("Cancel") { dialog, which ->
+                        dialog.cancel()
+                    }
+                    .setPositiveButton("Sign in with Google") {dialog, which ->
+                        startSignInIntent()
+                    }
+                    .show()
+            }
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
@@ -102,7 +129,6 @@ class MenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[MenuViewModel::class.java]
         // Setting viewmodel variables
         viewModel.menufragment = this
         viewModel.auth = Firebase.auth
@@ -133,6 +159,9 @@ class MenuFragment : Fragment() {
             // Calling viewModel function to get data
             viewModel.googleAuth(result, (activity as Activity), requireContext())
         }
+        else {
+            enableButtons(true)
+        }
     }
     // Sign out function
     private fun googleSignOut() {
@@ -152,7 +181,9 @@ class MenuFragment : Fragment() {
         (activity as MainActivity).username = username
         Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
         // Update xml dep on sign in status
-        checkUser(username.dropLast(EMAIL_LETTERS_COUNT))
+        val username_formatted = username.dropLast(EMAIL_LETTERS_COUNT)
+        viewModel.saveUser(username_formatted)
+        checkUser(username_formatted)
         enableButtons(true)
     }
     // Function to update xml dep on sign in status

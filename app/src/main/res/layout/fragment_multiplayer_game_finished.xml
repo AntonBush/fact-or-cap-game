@@ -9,63 +9,53 @@
 
     <TextView
             android:id="@+id/tv_game_result"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="You win!"
+            android:text="Waiting"
             android:textSize="50sp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
             android:fontFamily="@font/norwester"
             android:textColor="@color/font_color"
             android:layout_marginTop="50dp"
-            android:maxLines="1"
             app:autoSizeTextType="uniform"
+            android:maxLines="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-    </TextView>
-
-    <TextView
-            android:id="@+id/tv_score_points"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="35 points"
-            android:textSize="40sp"
-            android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
-            android:layout_marginTop="15dp"
-            android:maxLines="1"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintTop_toBottomOf="@+id/tv_game_result"
-            app:layout_constraintEnd_toEndOf="@+id/tv_game_result"
-            app:layout_constraintStart_toStartOf="@+id/tv_game_result">
+            app:layout_constraintTop_toTopOf="parent"
+            android:textAlignment="center">
 
     </TextView>
 
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/game_results"
+            android:text="waiting for results"
             android:layout_weight="3"
+            android:layout_margin="20dp"
             android:textSize="25sp"
             android:fontFamily="@font/norwester"
             android:textColor="@color/font_color"
             android:layout_gravity="center_vertical"
             android:maxLines="1"
-            app:layout_constraintBottom_toTopOf="@+id/members_rv"
-            app:layout_constraintStart_toStartOf="@+id/members_rv" />
+            app:layout_constraintStart_toStartOf="@+id/scoreboard_rv"
+            app:layout_constraintEnd_toEndOf="@+id/scoreboard_rv"
+            app:layout_constraintTop_toBottomOf="@+id/tv_game_result"
+            android:id="@+id/tv_waiting" />
 
 
     <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/members_rv"
+            android:id="@+id/scoreboard_rv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
-            tools:listitem="@layout/game_finished_member"
+            tools:listitem="@layout/player_scoreboard"
             tools:itemCount="4"
-            android:layout_marginTop="60dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_score_points" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_waiting" />
+
 
     <Button
             android:id="@+id/menu_button"

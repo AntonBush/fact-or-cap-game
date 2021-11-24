@@ -32,6 +32,9 @@ class MultiplayerGameViewModel(
     private val _fact = MutableLiveData<Fact>()
     val fact = _fact.map { it }
 
+    private val _isAnswerCorrect = MutableLiveData<Boolean>()
+    val isAnswerCorrect = _isAnswerCorrect.map { it }
+
     private var timeElapsed: Long = 0
     private var timeLeft: Long = GAME_DURATION_MS
 
@@ -39,9 +42,12 @@ class MultiplayerGameViewModel(
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
             timeLeft += EXTRA_TIME_FOR_RIGHT_ANSWER
+            _isAnswerCorrect.value = false
         } else {
             timeLeft -= LOST_TIME_FOR_WRONG_ANSWER
+            _isAnswerCorrect.value = true
         }
+//        _timeLeftFormatted.value = formatTime(timeLeft)
         getFact()
     }
 
