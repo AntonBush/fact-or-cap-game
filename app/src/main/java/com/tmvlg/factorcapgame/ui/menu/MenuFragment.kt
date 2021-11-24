@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -91,7 +92,23 @@ class MenuFragment : Fragment() {
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
             // Calling toggle mpb function
-            toggleMultiplayerButton()
+            if (viewModel.auth.currentUser != null) {
+                toggleMultiplayerButton()
+            } else {
+                MaterialAlertDialogBuilder(requireContext(),
+                R.style.ThemeOverlay_App_MaterialAlertDialog)
+                    .setTitle("Auth required")
+                    .setMessage("You are not authorized yet." +
+                            " You should authorize via Google to play multiplayer." +
+                            " Do you want to proceed?")
+                    .setNegativeButton("Cancel") { dialog, which ->
+                        dialog.cancel()
+                    }
+                    .setPositiveButton("Sign in with Google") {dialog, which ->
+                        startSignInIntent()
+                    }
+                    .show()
+            }
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
@@ -141,6 +158,9 @@ class MenuFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             // Calling viewModel function to get data
             viewModel.googleAuth(result, (activity as Activity), requireContext())
+        }
+        else {
+            enableButtons(true)
         }
     }
     // Sign out function
