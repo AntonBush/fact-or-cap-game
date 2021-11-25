@@ -4,11 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import com.tmvlg.factorcapgame.ui.leaderboard.PlayerScore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -16,7 +20,8 @@ import java.io.IOException
 class SingleGameViewModel(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val username: String
 ) : ViewModel() {
     // exception that throws when can't fetch a fact
     private val _exception = MutableLiveData<IOException?>(null)
@@ -61,11 +66,46 @@ class SingleGameViewModel(
         stats.allScores += score
         stats.totalGames += 1
         stats.averageScore = stats.allScores / stats.totalGames
+
         if (score > stats.highestScore) {
             stats.highestScore = score
             _isHighScore.postValue(true)
+            // У нас статистика ведется по устройству а аккаунт можно менять :(
+            //postToFirestore(score)
         }
+        checkAccountHighScore(score)
         userRepository.saveGame(stats)
+    }
+
+    private fun checkAccountHighScore(score: Int) {
+        val db = Firebase.firestore
+        var accountscore: Long = -1
+        db.collection("leaderboard")
+            .whereEqualTo("username", username)
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    accountscore = document.data.getValue("score") as Long
+                }
+                if (score > accountscore) postToFirestore(score)
+            }
+    }
+
+    private fun postToFirestore(score: Int) {
+        val db = Firebase.firestore
+        val item = hashMapOf(
+            "username" to username,
+            "score" to score
+        )
+        // Add a new document with a generated ID
+        db.collection("leaderboard").document(username)
+            .set(item, SetOptions.merge())
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added ")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
     }
 
     // fetches new fact from repository
@@ -103,5 +143,6 @@ class SingleGameViewModel(
 
     companion object {
         private const val DELAY_MILLIS = 100L
+        private const val TAG = "FirestoreActivity"
     }
 }

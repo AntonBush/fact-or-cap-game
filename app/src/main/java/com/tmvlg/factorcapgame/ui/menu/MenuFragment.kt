@@ -19,6 +19,7 @@ import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
+import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
@@ -53,7 +54,11 @@ class MenuFragment : Fragment() {
         }
         // Leader button listener
         binding.leaderboardButton.setOnClickListener() {
-            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, LeaderboardFragment())
+                .addToBackStack(null)
+                .commit()
+//            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
@@ -149,7 +154,7 @@ class MenuFragment : Fragment() {
         // Get user email from firebase
         val username: String = user?.email ?: ""
         // Update username in MainActivity
-        (activity as MainActivity).username = username
+        (activity as MainActivity).username = username.dropLast(EMAIL_LETTERS_COUNT)
         Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
         // Update xml dep on sign in status
         checkUser(username.dropLast(EMAIL_LETTERS_COUNT))
