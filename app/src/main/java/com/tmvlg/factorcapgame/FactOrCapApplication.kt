@@ -11,9 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
 class FactOrCapApplication : Application() {
-    val applicationScope = CoroutineScope(SupervisorJob())
-
-    val database by lazy { FactOrCapDatabase.getDatabase(this, applicationScope) }
+    val database by lazy { FactOrCapDatabase.getDatabase(this) }
     val gameRepository by lazy { GameRepository(database.gameDao()) }
 
     val factRepository by lazy { FactRepository.newInstance() }

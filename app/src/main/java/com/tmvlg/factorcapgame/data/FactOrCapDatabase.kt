@@ -17,8 +17,7 @@ abstract class FactOrCapDatabase : RoomDatabase() {
         private var INSTANCE: FactOrCapDatabase? = null
 
         fun getDatabase(
-            context: Context,
-            scope: CoroutineScope
+            context: Context
         ): FactOrCapDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(

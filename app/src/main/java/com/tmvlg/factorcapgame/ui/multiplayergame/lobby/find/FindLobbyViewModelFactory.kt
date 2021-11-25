@@ -9,7 +9,7 @@ class FindLobbyViewModelFactory (
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val userRepository: UserRepository,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(FindLobbyViewModel::class.java))
             return FindLobbyViewModel(firebaseLobbyRepository, userRepository) as T
         throw IllegalArgumentException("Unknown view model class $modelClass")
