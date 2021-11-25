@@ -66,20 +66,20 @@ class FindLobbyFragment : Fragment() {
 //        if (savedInstanceState != null) {
 //            loadState(savedInstanceState)
 //        }
-        observeViewModel()
         lobbiesListAdapter = LobbiesListAdapter()
         binding.findLobbyRecyclerview.adapter = lobbiesListAdapter
         binding.findLobbyRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+        observeViewModel()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         viewModel.stopListenLobbies()
+        super.onDestroy()
     }
 
 //    override fun onSaveInstanceState(outState: Bundle) {
