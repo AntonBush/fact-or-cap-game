@@ -11,7 +11,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,10 +21,8 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
-import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.FindLobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
 

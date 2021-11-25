@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
 
 class LobbyFragment : Fragment() {
 

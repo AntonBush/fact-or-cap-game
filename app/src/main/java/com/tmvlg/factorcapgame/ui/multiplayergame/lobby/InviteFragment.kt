@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.os.Bundle
 import android.view.LayoutInflater

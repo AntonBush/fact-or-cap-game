@@ -14,6 +14,7 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFinishedFragment
 import java.lang.IllegalArgumentException
