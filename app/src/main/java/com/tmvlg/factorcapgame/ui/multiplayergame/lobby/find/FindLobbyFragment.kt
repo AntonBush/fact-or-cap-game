@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import android.os.Bundle
 import android.util.Log
@@ -7,18 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
-import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinished
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
-import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
-import java.lang.RuntimeException
 
 class FindLobbyFragment : Fragment() {
 

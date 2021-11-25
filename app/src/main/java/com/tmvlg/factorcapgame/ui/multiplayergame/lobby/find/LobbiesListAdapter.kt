@@ -1,13 +1,10 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayerViewHolder
 
 class LobbiesListAdapter : ListAdapter<Lobby, LobbyViewHolder>(LobbiesDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LobbyViewHolder {

@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.databinding.LobbyBinding

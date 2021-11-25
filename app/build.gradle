@@ -82,4 +82,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
+
+    // MultiViewAdapter
+    implementation 'dev.ahamed.mva2:adapter:2.0.0'
+    // MultiViewAdapter extensions
+    implementation 'dev.ahamed.mva2:ext-databinding:2.0.0'  // DataBinding
+    implementation 'dev.ahamed.mva2:ext-decorator:2.0.0'    // Decorators
+    implementation 'dev.ahamed.mva2:ext-diffutil-rx:2.0.0'  // RxDiffUtil
 }
