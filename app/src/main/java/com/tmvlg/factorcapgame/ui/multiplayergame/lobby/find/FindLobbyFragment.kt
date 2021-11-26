@@ -121,8 +121,8 @@ class FindLobbyFragment : Fragment() {
             Log.d(tag, "lobbies in fragment: $lobbies")
             lobbyListSection.set(lobbies)
         }
-        viewModel.connectedLobbyIdAndPlayerId.observe(viewLifecycleOwner) { lobby ->
-            if (lobby == null) {
+        viewModel.connectedLobbyIdAndPlayerId.observe(viewLifecycleOwner) { lobbyIdAndPlayerId ->
+            if (lobbyIdAndPlayerId == null) {
                 Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
                 return@observe
             }
@@ -130,7 +130,11 @@ class FindLobbyFragment : Fragment() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.main_fragment_container,
-                    LobbyFragment.newInstance(lobby, Player.Type.PLAYER)
+                    LobbyFragment.newInstance(
+                        lobbyIdAndPlayerId.first,
+                        lobbyIdAndPlayerId.second,
+                        Player.Type.PLAYER
+                    )
                 )
                 .commit()
         }

@@ -28,7 +28,8 @@ class MenuFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MenuViewModelFactory(
-            app.userRepository
+            app.userRepository,
+            app.firebaseRepository
         )
     }
 
@@ -115,13 +116,8 @@ class MenuFragment : Fragment() {
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
-            // TODO creating room in firebase
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(
-                    R.id.main_fragment_container,
-                    LobbyFragment.newInstance()
-                )
-                .commit()
+            isEnabled = false
+            viewModel.createLobby()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
@@ -165,7 +161,23 @@ class MenuFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                isEnabled = true
             }
+        }
+        viewModel.createdLobbyIdAndPlayerId.observe(viewLifecycleOwner) { lobbyIdAndPlayerId ->
+            if (lobbyIdAndPlayerId == null) {
+                return@observe
+            }
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.main_fragment_container,
+                    LobbyFragment.newInstance(
+                        lobbyIdAndPlayerId.first,
+                        lobbyIdAndPlayerId.second,
+                        Player.Type.HOST)
+                )
+                .commit()
         }
     }
 

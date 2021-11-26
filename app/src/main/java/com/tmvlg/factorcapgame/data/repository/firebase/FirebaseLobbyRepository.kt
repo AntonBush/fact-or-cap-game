@@ -11,6 +11,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.lang.RuntimeException
 
@@ -178,11 +182,17 @@ class FirebaseLobbyRepository {
     }
 
     @WorkerThread
-    fun addPlayerToLobby(username: String, lobbyId: String): String {
+    suspend fun addPlayerToLobby(username: String, lobbyId: String): String = withContext(Dispatchers.IO) {
         var playerKey: String? = null
 
         val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
-        val lobbyPlayers = lobbyPlayersRef.get().result.children
+        val lobbyPlayersTask = lobbyPlayersRef.get()
+
+        while (!lobbyPlayersTask.isComplete) {
+            delay(1)
+        }
+
+        val lobbyPlayers = lobbyPlayersTask.result.children
         lobbyPlayers.forEach { firebasePlayer ->
             val player = firebasePlayer.getValue<Player>()
                 ?: throw IOException("can't find player")
@@ -192,7 +202,7 @@ class FirebaseLobbyRepository {
         }
 
         val k = playerKey
-        return if (k != null) {
+        return@withContext if (k != null) {
             k
         } else {
             val newPlayerKey = lobbyPlayersRef.push().key

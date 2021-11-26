@@ -22,6 +22,7 @@ class LobbyFragment : Fragment() {
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     private lateinit var lobbyId: String
+    private lateinit var playerId: String
     private lateinit var playerType: Player.Type
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,25 +76,31 @@ class LobbyFragment : Fragment() {
     // saves data to bundle
     private fun saveState(outState: Bundle) {
         outState.putString(KEY_LOBBY_ID, lobbyId)
+        outState.putString(KEY_PLAYER_ID, playerId)
         outState.putInt(KEY_PLAYER_TYPE, playerType.ordinal)
     }
 
     // loads data from bundle
     private fun loadState(bundle: Bundle) {
         Log.d("1", "loadState: loading")
-        lobbyId = bundle.getString(KEY_LOBBY_ID) ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        lobbyId = bundle.getString(KEY_LOBBY_ID)
+            ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        playerId = bundle.getString(KEY_PLAYER_ID)
+            ?: throw IllegalArgumentException("Bundle must contain playerId")
         Log.d("1", "lobby: $lobbyId")
         playerType = Player.Type.values()[bundle.getInt(KEY_PLAYER_TYPE)]
     }
 
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
+        const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
         const val KEY_PLAYER_TYPE = "KEY_PLAYER_TYPE"
 
-        fun newInstance(lobbyId: String, playerType: Player.Type): LobbyFragment {
+        fun newInstance(lobbyId: String, playerId: String, playerType: Player.Type): LobbyFragment {
             return LobbyFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_LOBBY_ID, lobbyId)
+                    putString(KEY_PLAYER_ID, playerId)
                     putInt(KEY_PLAYER_TYPE, playerType.ordinal)
                 }
             }
