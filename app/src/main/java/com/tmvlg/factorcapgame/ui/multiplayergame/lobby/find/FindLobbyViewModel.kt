@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
@@ -10,10 +9,11 @@ import kotlinx.coroutines.launch
 class FindLobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val userRepository: UserRepository
-): ViewModel() {
+) : ViewModel() {
     val lobbies = firebaseLobbyRepository.lobbies.map { it }
 
-    val connectedLobby = MutableLiveData<Lobby?>(null)
+    val connectedLobbyIdAndPlayerId =
+        MutableLiveData<Pair<String, String>?>(null)
 
     fun listenLobbies() = viewModelScope.launch {
         firebaseLobbyRepository.listenLobbies()
@@ -23,13 +23,11 @@ class FindLobbyViewModel(
         firebaseLobbyRepository.stopListenLobbies()
     }
 
-    fun connectLobby(selectedLobbies: List<Lobby>) = viewModelScope.launch {
-        if (selectedLobbies.isEmpty()) {
-            return@launch
-        }
-
-        // TODO("Connection to lobby")
-
-        connectedLobby.postValue(selectedLobbies.first())
+    fun connectLobby(selectedLobby: Lobby) = viewModelScope.launch {
+        val playerId = firebaseLobbyRepository.addPlayerToLobby(
+            userRepository.getUsername()!!,
+            selectedLobby.id
+        )
+        connectedLobbyIdAndPlayerId.postValue(selectedLobby.id to playerId)
     }
 }

@@ -7,5 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class Lobby(
     var players: List<Player> = emptyList(),
     var host: String = "",
-    var roomName: String = ""
+    var roomName: String = "",
+    val id: String = "0"
 ) : Parcelable

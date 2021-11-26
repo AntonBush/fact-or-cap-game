@@ -119,7 +119,7 @@ class MenuFragment : Fragment() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.main_fragment_container,
-                    LobbyFragment.newInstance(Lobby(), Player.Type.HOST)
+                    LobbyFragment.newInstance()
                 )
                 .commit()
         }

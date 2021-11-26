@@ -8,12 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinished
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
+import java.lang.IllegalArgumentException
 
 class LobbyFragment : Fragment() {
 
@@ -22,8 +21,8 @@ class LobbyFragment : Fragment() {
     private val binding: FragmentLobbyBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private val lobby = MutableLiveData<Lobby>()
-    private val playerType = MutableLiveData<Player.Type>()
+    private lateinit var lobbyId: String
+    private lateinit var playerType: Player.Type
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +51,7 @@ class LobbyFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
-        val pt = playerType.value ?: throw IllegalStateException("playerType is null")
-        if (pt == Player.Type.HOST) {
+        if (playerType == Player.Type.HOST) {
             binding.startButton.setOnClickListener {
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.main_fragment_container, MultiplayerGameFragment())
@@ -76,32 +74,26 @@ class LobbyFragment : Fragment() {
 
     // saves data to bundle
     private fun saveState(outState: Bundle) {
-        val l = lobby.value
-        if (l != null) {
-            outState.putParcelable(KEY_LOBBY, l)
-        }
-        val pt = playerType.value
-        if (pt != null) {
-            outState.putInt(KEY_PLAYER_TYPE, pt.ordinal)
-        }
+        outState.putString(KEY_LOBBY_ID, lobbyId)
+        outState.putInt(KEY_PLAYER_TYPE, playerType.ordinal)
     }
 
     // loads data from bundle
     private fun loadState(bundle: Bundle) {
         Log.d("1", "loadState: loading")
-        lobby.value = bundle.getParcelable(KEY_LOBBY)
-        Log.d("1", "lobby: ${lobby.value}")
-        playerType.value = Player.Type.values()[bundle.getInt(KEY_PLAYER_TYPE)]
+        lobbyId = bundle.getString(KEY_LOBBY_ID) ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        Log.d("1", "lobby: $lobbyId")
+        playerType = Player.Type.values()[bundle.getInt(KEY_PLAYER_TYPE)]
     }
 
     companion object {
-        const val KEY_LOBBY = "KEY_LOBBY"
+        const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
         const val KEY_PLAYER_TYPE = "KEY_PLAYER_TYPE"
 
-        fun newInstance(lobby: Lobby, playerType: Player.Type): LobbyFragment {
+        fun newInstance(lobbyId: String, playerType: Player.Type): LobbyFragment {
             return LobbyFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(KEY_LOBBY, lobby)
+                    putString(KEY_LOBBY_ID, lobbyId)
                     putInt(KEY_PLAYER_TYPE, playerType.ordinal)
                 }
             }

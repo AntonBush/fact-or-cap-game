@@ -1,7 +1,5 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
-import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,9 +18,7 @@ import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.outdated.LobbiesListAdapter
 import mva3.adapter.ListSection
-import mva3.adapter.MultiViewAdapter
 import mva3.adapter.util.Mode
 
 class FindLobbyFragment : Fragment() {
@@ -100,17 +95,7 @@ class FindLobbyFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.connectLobby(lobbyListSection.selectedItems)
-
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(
-                    R.id.main_fragment_container,
-                    LobbyFragment.newInstance(
-                        lobbyListSection.selectedItems.first(),
-                        Player.Type.PLAYER
-                    )
-                )
-                .commit()
+            viewModel.connectLobby(lobbyListSection.selectedItems.first())
         }
 //        if (savedInstanceState != null) {
 //            loadState(savedInstanceState)
@@ -136,7 +121,7 @@ class FindLobbyFragment : Fragment() {
             Log.d(tag, "lobbies in fragment: $lobbies")
             lobbyListSection.set(lobbies)
         }
-        viewModel.connectedLobby.observe(viewLifecycleOwner) { lobby ->
+        viewModel.connectedLobbyIdAndPlayerId.observe(viewLifecycleOwner) { lobby ->
             if (lobby == null) {
                 Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
                 return@observe

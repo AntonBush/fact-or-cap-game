@@ -24,7 +24,7 @@ class FirebaseLobbyRepository {
     private val playersLD = MutableLiveData<List<Player>>()
 
     private fun addPlayer(player: Player, playerId: String) {
-        player.userId = playerId
+        player.id = playerId
         players.add(player)
     }
 
@@ -90,12 +90,12 @@ class FirebaseLobbyRepository {
             if (it.playerName == username) {
                 lobbiesRef.child(lobbyId)
                     .child("players")
-                    .child(it.userId)
+                    .child(it.id)
                     .child("score")
                     .setValue(score)
                 lobbiesRef.child(lobbyId)
                     .child("players")
-                    .child(it.userId)
+                    .child(it.id)
                     .child("waiting")
                     .setValue(true)
             }
@@ -144,7 +144,7 @@ class FirebaseLobbyRepository {
                     for (firebasePlayer in lobby.child("players").children) {
                         val player: Player = firebasePlayer.getValue<Player>()
                             ?: throw IOException("can't find player")
-                        player.userId = firebasePlayer.key
+                        player.id = firebasePlayer.key
                             ?: throw IOException("can't find playerId")
                         Log.d(
                             "1",
@@ -156,7 +156,8 @@ class FirebaseLobbyRepository {
                         Lobby(
                             newLobbyPlayerList,
                             newLobbyHost,
-                            newLobbyRoomName
+                            newLobbyRoomName,
+                            lobby.key!!
                         )
                     )
                 }
@@ -173,6 +174,38 @@ class FirebaseLobbyRepository {
         if (lobbiesEventListener != null) {
             lobbiesRef.removeEventListener(valueEventListener)
             _lobbies.postValue(emptyList())
+        }
+    }
+
+    @WorkerThread
+    fun addPlayerToLobby(username: String, lobbyId: String): String {
+        var playerKey: String? = null
+
+        val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
+        val lobbyPlayers = lobbyPlayersRef.get().result.children
+        lobbyPlayers.forEach { firebasePlayer ->
+            val player = firebasePlayer.getValue<Player>()
+                ?: throw IOException("can't find player")
+            if (playerKey == null && player.playerName == username) {
+                playerKey = firebasePlayer.key
+            }
+        }
+
+        val k = playerKey
+        return if (k != null) {
+            k
+        } else {
+            val newPlayerKey = lobbyPlayersRef.push().key
+                ?: throw IOException("can't add new player to lobby")
+
+            val newPlayer = Player(
+                playerName = username,
+                id = newPlayerKey
+            )
+
+            lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer)
+
+            newPlayerKey
         }
     }
 }
