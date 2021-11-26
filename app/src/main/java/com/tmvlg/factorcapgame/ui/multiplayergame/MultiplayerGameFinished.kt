@@ -8,15 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFinishedFragment
-import java.lang.IllegalArgumentException
 import java.lang.RuntimeException
 
 class MultiplayerGameFinished : Fragment() {
@@ -101,7 +98,7 @@ class MultiplayerGameFinished : Fragment() {
             scoreboardAdapter.submitList(it)
         }
         lobbyId.observe(viewLifecycleOwner) {
-            viewModel.lobbies(it)
+            viewModel.connectToLobby(it)
         }
         score.observe(viewLifecycleOwner) {
 

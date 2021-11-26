@@ -6,5 +6,6 @@ data class Player (
     var timeElapsed: Long = 0,
     var waiting: Boolean = false,
     var userId:String = "0",
-    var isWinner: Boolean = false
+    var isWinner: Boolean = false,
+    var loaded: Boolean = false
 )
