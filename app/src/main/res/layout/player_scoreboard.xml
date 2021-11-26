@@ -19,6 +19,17 @@
             android:scaleType="fitCenter"
             android:layout_marginRight="10dp"/>
 
+    <ImageView
+        android:id="@+id/corona"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_corona"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/profile_picture_placeholder"
+        android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
+        android:visibility="gone"/>
+
 
     <TextView
             android:id="@+id/member_username"
@@ -30,7 +41,9 @@
             android:fontFamily="@font/norwester"
             android:textColor="@color/font_color"
             android:layout_gravity="center_vertical"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
 
     <TextView
             android:id="@+id/member_result"

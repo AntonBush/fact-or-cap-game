@@ -60,6 +60,36 @@ class StatisticsFragment : Fragment() {
                 adapter.updateList(it)
             }
         }
+
+        binding.statisticsToggleButton.setOnClickListener {
+            if (binding.grid.visibility == View.VISIBLE) {
+                binding.grid.visibility = View.GONE
+                binding.gamesStatisticsList.visibility = View.VISIBLE
+                binding.statisticsToggleButton.rotation = 0f
+                binding.gamesToggleButton.rotation = 90f
+
+            } else {
+                binding.grid.visibility = View.VISIBLE
+                binding.gamesStatisticsList.visibility = View.GONE
+                binding.statisticsToggleButton.rotation = 90f
+                binding.gamesToggleButton.rotation = 0f
+            }
+        }
+
+        binding.gamesToggleButton.setOnClickListener {
+            if (binding.gamesStatisticsList.visibility == View.VISIBLE) {
+                binding.grid.visibility = View.VISIBLE
+                binding.gamesStatisticsList.visibility = View.GONE
+                binding.gamesToggleButton.rotation = 0f
+                binding.statisticsToggleButton.rotation = 90f
+            } else {
+                binding.gamesStatisticsList.visibility = View.VISIBLE
+                binding.grid.visibility = View.GONE
+                binding.gamesToggleButton.rotation = 90f
+                binding.statisticsToggleButton.rotation = 0f
+
+            }
+        }
     }
 
     override fun onDestroyView() {

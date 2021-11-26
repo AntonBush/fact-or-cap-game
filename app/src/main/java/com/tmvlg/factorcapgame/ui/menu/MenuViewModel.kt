@@ -11,8 +11,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
-class MenuViewModel : ViewModel() {
+class MenuViewModel(
+    private val userRepository: UserRepository
+) : ViewModel() {
     lateinit var auth: FirebaseAuth // Var for Firebase auth
     lateinit var googleSignInClient: GoogleSignInClient // Var for Google auth
     lateinit var menufragment: MenuFragment
@@ -49,6 +52,11 @@ class MenuViewModel : ViewModel() {
                 }
             }
     }
+
+    fun saveUser(username: String) {
+        userRepository.saveUsername(username)
+    }
+
     companion object {
         private const val GOOGLETAG = "GoogleActivityViewModel"
     }

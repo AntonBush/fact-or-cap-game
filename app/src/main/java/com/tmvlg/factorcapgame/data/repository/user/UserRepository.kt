@@ -17,4 +17,12 @@ class UserRepository(
     fun getStats(): Statistics {
         return preferenceProvider.getStatistics()
     }
+
+    fun saveUsername(username: String) {
+        preferenceProvider.saveUsername(username)
+    }
+
+    fun getUsername(): String {
+        return preferenceProvider.getUsername()
+    }
 }
