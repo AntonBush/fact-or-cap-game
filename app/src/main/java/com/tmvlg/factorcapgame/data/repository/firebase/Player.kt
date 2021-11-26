@@ -16,10 +16,6 @@ data class Player(
     var isWinner: Boolean = false,
     var loaded: Boolean = false
 ) : Parcelable {
-    enum class Type {
-        PLAYER, HOST
-    }
-
     @Exclude
     fun toMap(): Map<String, Any?> {
         return mapOf(

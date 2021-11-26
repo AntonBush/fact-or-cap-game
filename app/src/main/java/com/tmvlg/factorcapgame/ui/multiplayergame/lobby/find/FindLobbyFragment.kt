@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
-import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
@@ -121,8 +120,8 @@ class FindLobbyFragment : Fragment() {
             Log.d(tag, "lobbies in fragment: $lobbies")
             lobbyListSection.set(lobbies)
         }
-        viewModel.connectedLobbyIdAndPlayerId.observe(viewLifecycleOwner) { lobbyIdAndPlayerId ->
-            if (lobbyIdAndPlayerId == null) {
+        viewModel.connectedLobbyId.observe(viewLifecycleOwner) { lobbyId ->
+            if (lobbyId == null) {
                 Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
                 return@observe
             }
@@ -130,11 +129,7 @@ class FindLobbyFragment : Fragment() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.main_fragment_container,
-                    LobbyFragment.newInstance(
-                        lobbyIdAndPlayerId.first,
-                        lobbyIdAndPlayerId.second,
-                        Player.Type.PLAYER
-                    )
+                    LobbyFragment.newInstance(lobbyId)
                 )
                 .commit()
         }

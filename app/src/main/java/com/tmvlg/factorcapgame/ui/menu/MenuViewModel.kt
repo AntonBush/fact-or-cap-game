@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 class MenuViewModel(
     private val userRepository: UserRepository,
     private val firebaseLobbyRepository: FirebaseLobbyRepository
-    ) : ViewModel() {
+) : ViewModel() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private val firebaseAuth = Firebase.auth
 
@@ -40,8 +40,7 @@ class MenuViewModel(
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage = _errorMessage.map { it }
 
-    val createdLobbyIdAndPlayerId =
-        MutableLiveData<Pair<String, String>?>(null)
+    val createdLobbyId = MutableLiveData<String?>(null)
 
     fun initializeAuth(activity: Activity) = viewModelScope.launch {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

@@ -12,8 +12,8 @@ class FindLobbyViewModel(
 ) : ViewModel() {
     val lobbies = firebaseLobbyRepository.lobbies.map { it }
 
-    val connectedLobbyIdAndPlayerId =
-        MutableLiveData<Pair<String, String>?>(null)
+    val connectedLobbyId =
+        MutableLiveData<String?>(null)
 
     fun listenLobbies() = viewModelScope.launch {
         firebaseLobbyRepository.listenLobbies()
@@ -24,10 +24,10 @@ class FindLobbyViewModel(
     }
 
     fun connectLobby(selectedLobby: Lobby) = viewModelScope.launch {
-        val playerId = firebaseLobbyRepository.addPlayerToLobby(
+        firebaseLobbyRepository.addPlayerToLobby(
             userRepository.getUsername()!!,
             selectedLobby.id
         )
-        connectedLobbyIdAndPlayerId.postValue(selectedLobby.id to playerId)
+        connectedLobbyId.postValue(selectedLobby.id)
     }
 }

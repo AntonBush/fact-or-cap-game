@@ -128,6 +128,10 @@ class FirebaseLobbyRepository {
         return highScore.second
     }
 
+    // ----------------------------- NEW PHILOSOPHY -------------------------
+
+    // ----------------------------- LIST ROOMS --------------------------------
+
     private val _lobbies = MutableLiveData<List<Lobby>>(emptyList())
     val lobbies = _lobbies.map { it }
 
@@ -181,9 +185,14 @@ class FirebaseLobbyRepository {
         }
     }
 
+    // ------------------------------ JOIN ROOM -------------------------------
+
     @WorkerThread
-    suspend fun addPlayerToLobby(username: String, lobbyId: String): String = withContext(Dispatchers.IO) {
-        var playerKey: String? = null
+    suspend fun addPlayerToLobby(
+        username: String,
+        lobbyId: String
+    ) = withContext(Dispatchers.IO) {
+        var isPlayerInRoom = false
 
         val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
         val lobbyPlayersTask = lobbyPlayersRef.get()
@@ -196,15 +205,12 @@ class FirebaseLobbyRepository {
         lobbyPlayers.forEach { firebasePlayer ->
             val player = firebasePlayer.getValue<Player>()
                 ?: throw IOException("can't find player")
-            if (playerKey == null && player.playerName == username) {
-                playerKey = firebasePlayer.key
+            if (!isPlayerInRoom && player.playerName == username) {
+                isPlayerInRoom = true
             }
         }
 
-        val k = playerKey
-        return@withContext if (k != null) {
-            k
-        } else {
+        if (!isPlayerInRoom) {
             val newPlayerKey = lobbyPlayersRef.push().key
                 ?: throw IOException("can't add new player to lobby")
 
@@ -214,8 +220,48 @@ class FirebaseLobbyRepository {
             )
 
             lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer)
+        }
+    }
 
-            newPlayerKey
+    // -------------------------------- LOOK ROOM -----------------------------------
+
+    private val _lobby = MutableLiveData<Lobby?>(null)
+    val lobby = _lobby.map { it }
+
+    private var lobbyId: String = ""
+    private var lobbyEventListener: ValueEventListener? = null
+
+    @WorkerThread
+    fun listenLobby(lobbyId: String) {
+        stopListenLobby()
+        val newLobbiesEventListener = object : ValueEventListener {
+            override fun onDataChange(lobby: DataSnapshot) {
+                val newLobby = Lobby()
+                newLobby.id = lobby.key!!
+                newLobby.host = lobby.child("host").getValue<String>()!!
+                newLobby.isStarted = lobby.child("isStarted").getValue<Boolean>()!!
+                newLobby.roomName = lobby.child("roomName").getValue<String>()!!
+                newLobby.players = lobby.child("players").children.map { firebasePlayer ->
+                    val player: Player = firebasePlayer.getValue<Player>()
+                        ?: throw IOException("can't find player")
+                    player.id = firebasePlayer.key
+                        ?: throw IOException("can't find playerId")
+                    return@map player
+                }
+                _lobby.postValue(newLobby)
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        lobbiesRef.child(lobbyId).addValueEventListener(newLobbiesEventListener)
+        this.lobbyId = lobbyId
+    }
+
+    @WorkerThread
+    fun stopListenLobby() {
+        if (lobbyEventListener != null) {
+            lobbiesRef.child(lobbyId).removeEventListener(valueEventListener)
+            _lobby.postValue(null)
         }
     }
 }

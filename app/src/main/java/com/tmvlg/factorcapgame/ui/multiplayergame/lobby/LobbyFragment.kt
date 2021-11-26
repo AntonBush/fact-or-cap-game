@@ -5,29 +5,45 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyViewModel
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyViewModelFactory
 import java.lang.IllegalArgumentException
 
 class LobbyFragment : Fragment() {
 
-    private var _binding: FragmentLobbyBinding? = null
+    private val viewModel: LobbyViewModel by viewModels {
+        // inits viewmodel
+        val app = activity?.application as FactOrCapApplication
+        return@viewModels LobbyViewModelFactory(
+            app.firebaseRepository,
+            app.userRepository
+        )
+    }
 
+    private var _binding: FragmentLobbyBinding? = null
     private val binding: FragmentLobbyBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
+    lateinit var listAdapter: LobbyUserListAdapter
+
     private lateinit var lobbyId: String
-    private lateinit var playerId: String
-    private lateinit var playerType: Player.Type
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadState(requireArguments())
+        viewModel.listenLobby(lobbyId)
     }
 
     override fun onCreateView(
@@ -47,25 +63,26 @@ class LobbyFragment : Fragment() {
                 .commit()
         }
         binding.inviteButton.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, InviteFragment())
-                .addToBackStack(null)
-                .commit()
+            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
+//            requireActivity().supportFragmentManager.beginTransaction()
+//                .add(R.id.main_fragment_container, InviteFragment())
+//                .addToBackStack(null)
+//                .commit()
         }
-        if (playerType == Player.Type.HOST) {
-            binding.startButton.setOnClickListener {
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_fragment_container, MultiplayerGameFragment())
-                    .commit()
-            }
-        } else {
-            binding.startButton.visibility = View.GONE
-        }
+        listAdapter = LobbyUserListAdapter()
+        binding.rvLobbyUsers.adapter = listAdapter
+        binding.rvLobbyUsers.layoutManager = LinearLayoutManager(requireContext())
+        observeViewModel()
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        viewModel.stopListenLobby()
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -76,8 +93,6 @@ class LobbyFragment : Fragment() {
     // saves data to bundle
     private fun saveState(outState: Bundle) {
         outState.putString(KEY_LOBBY_ID, lobbyId)
-        outState.putString(KEY_PLAYER_ID, playerId)
-        outState.putInt(KEY_PLAYER_TYPE, playerType.ordinal)
     }
 
     // loads data from bundle
@@ -85,23 +100,49 @@ class LobbyFragment : Fragment() {
         Log.d("1", "loadState: loading")
         lobbyId = bundle.getString(KEY_LOBBY_ID)
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
-        playerId = bundle.getString(KEY_PLAYER_ID)
-            ?: throw IllegalArgumentException("Bundle must contain playerId")
-        Log.d("1", "lobby: $lobbyId")
-        playerType = Player.Type.values()[bundle.getInt(KEY_PLAYER_TYPE)]
+    }
+
+    fun observeViewModel() {
+        viewModel.lobby.observe(viewLifecycleOwner) { lobby ->
+            if (lobby == null) {
+                return@observe
+            }
+
+            binding.tvLobby.text = lobby.roomName
+            listAdapter.submitList(lobby.players)
+            // TODO
+        }
+        viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
+            if (isHost) {
+                binding.startButton.visibility = View.VISIBLE
+                binding.startButton.setOnClickListener {
+                    viewModel.startGame()
+                    // TODO
+                    Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                binding.startButton.visibility = View.GONE
+                binding.startButton.setOnClickListener(null)
+            }
+        }
+        viewModel.isGameStarted.observe(viewLifecycleOwner) { isGameStarted ->
+            if (isGameStarted) {
+                Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
+//                requireActivity().supportFragmentManager.beginTransaction()
+//                    .replace(R.id.main_fragment_container, MultiplayerGameFragment())
+//                    .commit()
+            }
+        }
     }
 
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
-        const val KEY_PLAYER_ID = "KEY_PLAYER_ID"
-        const val KEY_PLAYER_TYPE = "KEY_PLAYER_TYPE"
 
-        fun newInstance(lobbyId: String, playerId: String, playerType: Player.Type): LobbyFragment {
+        fun newInstance(lobbyId: String): LobbyFragment {
             return LobbyFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_LOBBY_ID, lobbyId)
-                    putString(KEY_PLAYER_ID, playerId)
-                    putInt(KEY_PLAYER_TYPE, playerType.ordinal)
                 }
             }
         }

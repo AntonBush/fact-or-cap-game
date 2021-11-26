@@ -1,21 +1,17 @@
 package com.tmvlg.factorcapgame.ui.menu
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
-import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
@@ -164,18 +160,15 @@ class MenuFragment : Fragment() {
                 isEnabled = true
             }
         }
-        viewModel.createdLobbyIdAndPlayerId.observe(viewLifecycleOwner) { lobbyIdAndPlayerId ->
-            if (lobbyIdAndPlayerId == null) {
+        viewModel.createdLobbyId.observe(viewLifecycleOwner) { lobbyId ->
+            if (lobbyId == null) {
                 return@observe
             }
 
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.main_fragment_container,
-                    LobbyFragment.newInstance(
-                        lobbyIdAndPlayerId.first,
-                        lobbyIdAndPlayerId.second,
-                        Player.Type.HOST)
+                    LobbyFragment.newInstance(lobbyId)
                 )
                 .commit()
         }
