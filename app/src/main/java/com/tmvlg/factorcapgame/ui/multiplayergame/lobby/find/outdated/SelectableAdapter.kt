@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.outdated
 
 import android.util.SparseBooleanArray
 import android.view.View

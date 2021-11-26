@@ -2,26 +2,54 @@ package com.tmvlg.factorcapgame.ui.menu
 
 import android.app.Activity
 import android.content.Context
+import android.service.controls.Control
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import kotlinx.coroutines.launch
 
 class MenuViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+
 ) : ViewModel() {
-    lateinit var auth: FirebaseAuth // Var for Firebase auth
-    lateinit var googleSignInClient: GoogleSignInClient // Var for Google auth
-    lateinit var menufragment: MenuFragment
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var firebaseAuth: FirebaseAuth
+
+    private val user = MutableLiveData<FirebaseUser?>()
+    val username = user.map { it?.email?.dropLast(EMAIL_LETTERS_COUNT) }
+    val isUserSignedIn = user.map { it != null }
+
+    fun initializeAuth(activity: Activity) = viewModelScope.launch {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(activity.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(activity, gso)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+    }
+
+    fun signIn() = viewModelScope.launch {
+
+    }
+
+    fun signOut() = viewModelScope.launch {
+
+    }
 
     // Function to auth with google account
-    fun googleAuth(result: ActivityResult, activity: Activity, context: Context) {
+    fun googleAuth(result: ActivityResult, activity: Activity, context: Context) = viewModelScope.launch {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
         try {
             // Google Sign In was successful, authenticate with Firebase
@@ -36,7 +64,7 @@ class MenuViewModel(
         }
     }
     // Function auth in Firebase with Google token
-    private fun firebaseAuthWithGoogle(idToken: String, activity: Activity, context: Context) {
+    private fun firebaseAuthWithGoogle(idToken: String, activity: Activity, context: Context) = viewModelScope.launch {
         val credential = GoogleAuthProvider.getCredential(idToken, null) // Get user data from firebase
         auth.signInWithCredential(credential) // Sign in with firebase user data
             .addOnCompleteListener(activity) { task ->
@@ -53,11 +81,12 @@ class MenuViewModel(
             }
     }
 
-    fun saveUser(username: String) {
+    fun saveUser(username: String?) = viewModelScope.launch {
         userRepository.saveUsername(username)
     }
 
     companion object {
-        private const val GOOGLETAG = "GoogleActivityViewModel"
+        const val EMAIL_LETTERS_COUNT = "@gmail.com".length
+        private const val TAG = "MenuViewModel"
     }
 }

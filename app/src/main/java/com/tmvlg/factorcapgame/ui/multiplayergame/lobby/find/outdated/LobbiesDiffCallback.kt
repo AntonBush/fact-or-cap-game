@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.outdated
 
 import androidx.recyclerview.widget.DiffUtil
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
