@@ -14,7 +14,7 @@ class MultiplayerGameFinishedViewModel(
     private var _lobbyPlayers = firebaseLobbyRepository.subscribeOnPlayersLD()
     val lobbyPlayers = _lobbyPlayers.map { it }
 
-    fun lobbies(lobbyId: String) = viewModelScope.launch {
+    fun connectToLobby(lobbyId: String) = viewModelScope.launch {
         firebaseLobbyRepository.listenLobbyPlayers(lobbyId)
     }
 

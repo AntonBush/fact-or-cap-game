@@ -44,8 +44,11 @@ class LobbyFragment : Fragment() {
                 .commit()
         }
         binding.startButton.setOnClickListener {
+            // TODO("Получить lobby id")
+            val lobbyId = "123456"
+
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MultiplayerGameFragment())
+                .replace(R.id.main_fragment_container, MultiplayerGameFragment.newInstance(lobbyId))
                 .commit()
         }
     }
