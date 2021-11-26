@@ -40,5 +40,6 @@
     <string name="invite_a_friend">Invite a Friend</string>
     <string name="confirm">Confirm</string>
     <string name="please_check_your_internet_settings_and_return_to_menu">Please check your internet settings and return to Menu</string>
-</resources>
+    <string name="leaderboard_string">Leaderboard</string>
 
+</resources>
