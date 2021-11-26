@@ -25,12 +25,10 @@ import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
 class MenuViewModel(
-    private val userRepository: UserRepository,
-
+    private val userRepository: UserRepository
     ) : ViewModel() {
     private lateinit var googleSignInClient: GoogleSignInClient
-    private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var launcher: ActivityResultLauncher<Intent>
+    private val firebaseAuth = Firebase.auth
 
     private val _user = MutableLiveData<FirebaseUser?>(null)
     val user = _user.map { it }
@@ -40,34 +38,28 @@ class MenuViewModel(
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage = _errorMessage.map { it }
 
-    fun initializeAuth(activity: ComponentActivity, context: Context) = viewModelScope.launch {
-        FirebaseApp.initializeApp(context)
-
+    fun initializeAuth(activity: Activity) = viewModelScope.launch {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(activity.getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(activity, gso)
-
-        firebaseAuth = Firebase.auth
-
-        launcher = activity.registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // Calling viewModel function to get data
-                googleSignIn(result, activity)
-            } else {
-                _errorMessage.postValue("Intent failure")
-                _user.postValue(null)
-            }
-        }
     }
 
-    fun signIn() = viewModelScope.launch {
+    fun startSignInIntent(launcher: ActivityResultLauncher<Intent>) = viewModelScope.launch {
         _errorMessage.postValue(null)
         // Same as startActivityForResult
         launcher.launch(googleSignInClient.signInIntent)
+    }
+
+    fun signIn(result: ActivityResult, activity: Activity) = viewModelScope.launch {
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Calling viewModel function to get data
+            googleSignIn(result, activity)
+        } else {
+            _errorMessage.postValue("Intent failure")
+            _user.postValue(null)
+        }
     }
 
     fun signOut() = viewModelScope.launch {
@@ -78,7 +70,7 @@ class MenuViewModel(
 
     private fun googleSignIn(
         result: ActivityResult,
-        activity: ComponentActivity
+        activity: Activity
     ) = viewModelScope.launch {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
         task.addOnCompleteListener(activity) { resultTask ->
@@ -105,7 +97,7 @@ class MenuViewModel(
 
     private fun firebaseSignIn(
         idToken: String,
-        activity: ComponentActivity
+        activity: Activity
     ) = viewModelScope.launch {
         val credential = GoogleAuthProvider
             .getCredential(idToken, null) // Get user data from firebase

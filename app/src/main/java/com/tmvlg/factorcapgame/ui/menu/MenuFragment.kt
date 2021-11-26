@@ -1,7 +1,5 @@
 package com.tmvlg.factorcapgame.ui.menu
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,7 +21,6 @@ import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
-import kotlinx.coroutines.runBlocking
 
 class MenuFragment : Fragment() {
 
@@ -46,7 +43,7 @@ class MenuFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.initializeAuth(requireActivity(), requireContext())
+        viewModel.initializeAuth(requireActivity())
     }
 
     override fun onCreateView(
@@ -89,7 +86,6 @@ class MenuFragment : Fragment() {
         binding.singleGameButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
-                .addToBackStack(null)
                 .commit()
         }
         // Multiplayer game button listener
@@ -125,21 +121,18 @@ class MenuFragment : Fragment() {
                     R.id.main_fragment_container,
                     LobbyFragment.newInstance(Lobby(), Player.Type.HOST)
                 )
-                .addToBackStack(null)
                 .commit()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
-                .addToBackStack(null)
                 .commit()
         }
         // Statistics button listener
         binding.statButton.setOnClickListener() {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, StatisticsFragment())
-                .addToBackStack(null)
                 .commit()
         }
         // Leader button listener
@@ -178,8 +171,12 @@ class MenuFragment : Fragment() {
 
     private fun signIn() {
         isEnabled = false
-        viewModel.signIn()
+        viewModel.startSignInIntent(launcher)
     }
+
+    private val launcher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> viewModel.signIn(result, requireActivity()) }
 
     private fun signOut() {
         isEnabled = false
