@@ -80,16 +80,25 @@ class MenuViewModel(
         activity: ComponentActivity
     ) = viewModelScope.launch {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
-        task.addOnCompleteListener(activity) { resultTask ->
-            val idToken = resultTask.result.id
-            if (resultTask.isSuccessful && idToken != null) {
-                Log.i(TAG, "googleSignIn success: <${idToken}>")
-                firebaseSignIn(idToken, activity)
-            } else {
-                Log.w(TAG, "googleSignIn failure")
-                _errorMessage.postValue("Authentication via Google failed")
-                _user.postValue(null)
-            }
+//        task.addOnCompleteListener(activity) { resultTask ->
+//            val idToken = resultTask.result.id
+//            if (resultTask.isSuccessful && idToken != null) {
+//                Log.i(TAG, "googleSignIn success: <${idToken}>")
+//                firebaseSignIn(idToken, activity)
+//            } else {
+//                Log.w(TAG, "googleSignIn failure")
+//                _errorMessage.postValue("Authentication via Google failed")
+//                _user.postValue(null)
+//            }
+//        }
+        try {
+            val idToken = task.getResult(ApiException::class.java).id
+            Log.i(TAG, "googleSignIn success: <${idToken}>")
+            firebaseSignIn(idToken!!, activity)
+        } catch (e: ApiException) {
+            Log.w(TAG, "googleSignIn failure")
+            _errorMessage.postValue("Authentication via Google failed")
+            _user.postValue(null)
         }
     }
 
