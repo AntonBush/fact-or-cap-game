@@ -19,7 +19,7 @@ class MultiplayerGameFinishedViewModel(
     }
 
     fun getUsername(): String {
-        return userRepository.getUsername()
+        return userRepository.getUsername() ?: ""
     }
 
     fun sendScore(score: Int, lobbyId: String) {

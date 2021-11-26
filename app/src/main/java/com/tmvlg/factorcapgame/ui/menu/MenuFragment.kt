@@ -1,21 +1,14 @@
 package com.tmvlg.factorcapgame.ui.menu
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
@@ -47,7 +40,7 @@ class MenuFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.initializeAuth(requireActivity())
+        viewModel.initializeAuth(requireActivity(), requireContext())
     }
 
     override fun onCreateView(
@@ -79,12 +72,12 @@ class MenuFragment : Fragment() {
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
             // Calling sign in function
-            viewModel.signIn()
+            signIn()
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
             // Calling sign out function
-            viewModel.signOut()
+            signOut()
         }
         // Start single game button listener
         binding.singleGameButton.setOnClickListener() {
@@ -154,6 +147,7 @@ class MenuFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        viewModel.user.observe(viewLifecycleOwner) { isEnabled = true }
         viewModel.username.observe(viewLifecycleOwner) { username ->
             binding.signInLayoutAuthorized.usernameTextview.text = getString(
                 R.string.hello_string,
@@ -169,33 +163,22 @@ class MenuFragment : Fragment() {
                 binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
             }
         }
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    // Google start auth function
     private fun signIn() {
         isEnabled = false
         viewModel.signIn()
-        // TODO ????????????????????????????????????????????????????????????????
-        // Init google sign in intent
-        val signInIntent = viewModel.googleSignInClient.signInIntent
-        // Same as startActivityForResult
-        launcher.launch(signInIntent)
-        // TODO ????????????????????????????????????????????????????????????????
-        // Update UI
-        updateAuthUI()
-        isEnabled = true
     }
 
-    // Same as onActivityResult (Listener)
-    private val launcher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // Calling viewModel function to get data
-                viewModel.googleAuth(result, requireActivity(), requireContext())
-            } else {
-                enableButtons(true)
-            }
-        }
+    private fun signOut() {
+        isEnabled = false
+        viewModel.signOut()
+    }
 
     // Animation
     private fun toggleMultiplayerButton() {
