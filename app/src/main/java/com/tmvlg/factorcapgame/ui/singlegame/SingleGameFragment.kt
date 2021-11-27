@@ -22,8 +22,7 @@ class SingleGameFragment : Fragment() {
         return@viewModels SingleGameViewModelFactory(
             app.gameRepository,
             app.factRepository,
-            app.userRepository,
-            (activity as MainActivity).username
+            app.userRepository
         )
     }
 

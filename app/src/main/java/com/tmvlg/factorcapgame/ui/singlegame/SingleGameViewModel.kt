@@ -20,9 +20,14 @@ import java.io.IOException
 class SingleGameViewModel(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
-    private val userRepository: UserRepository,
-    private val username: String
+    private val userRepository: UserRepository
 ) : ViewModel() {
+    private lateinit var username: String
+    init {
+        viewModelScope.launch {
+            username =  userRepository.getUsername()!!
+        }
+    }
     // exception that throws when can't fetch a fact
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }

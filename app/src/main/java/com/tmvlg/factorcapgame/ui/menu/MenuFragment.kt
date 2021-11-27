@@ -162,6 +162,7 @@ class MenuFragment : Fragment() {
                 )
                 .setView(b.root)
                 .setNegativeButton("Cancel") { dialog, which ->
+                    isEnabled = true
                     dialog.cancel()
                 }
                 .setPositiveButton("Create room") { dialog, which ->

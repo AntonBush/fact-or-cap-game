@@ -106,7 +106,7 @@ class MultiplayerGameViewModel(
     }
 
     fun setUserReady(lobbyId: String) {
-        val username = userRepository.getUsername()
+        val username = userRepository.getUsername()!!
         firebaseLobbyRepository.setPlayerLoaded(lobbyId, username)
     }
 

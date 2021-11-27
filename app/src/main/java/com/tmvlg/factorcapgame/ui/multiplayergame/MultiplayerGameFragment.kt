@@ -84,8 +84,10 @@ class MultiplayerGameFragment : Fragment() {
     // loads data from bundle
     private fun loadState(bundle: Bundle) {
         Log.d("1", "loadState: loading")
-        lobbyId = bundle.getString(KEY_LOBBY_ID)
-            ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        lobbyId.postValue(
+            bundle.getString(KEY_LOBBY_ID)
+                ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        )
     }
 
     private fun setupListeners() {
@@ -148,7 +150,7 @@ class MultiplayerGameFragment : Fragment() {
                             AppCompatResources.getColorStateList(
                                 requireContext(),
                                 R.color.font_color
-                            ).defaultColor,              anim.animatedFraction
+                            ).defaultColor, anim.animatedFraction
                         )
                     )
                 }
@@ -208,7 +210,8 @@ class MultiplayerGameFragment : Fragment() {
     // calls when game is finished. Goes to finish fragment with score results
     private fun endGame() {
         val score = viewModel.rightAnswersCount.value ?: 0
-        val lobbyIdValue: String = lobbyId.value ?: throw IllegalStateException("can't fetch lobby id")
+        val lobbyIdValue: String =
+            lobbyId.value ?: throw IllegalStateException("can't fetch lobby id")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.main_fragment_container,

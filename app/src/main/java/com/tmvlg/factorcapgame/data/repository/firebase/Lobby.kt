@@ -33,11 +33,8 @@ data class Lobby(
                 started = map["started"] as Boolean?
                     ?: throw IllegalFieldException("started")
                 players = try {
-                    val playersMap = map["players"] as Any?
+                    val playersMap = map["players"]
                         ?: throw IllegalArgumentException()
-                    Log.d("Lobby.newInstance", "${playersMap::class.simpleName}")
-                    Log.d("Lobby.newInstance", "${(playersMap as HashMap<String, Any?>).size}")
-                    Log.d("Lobby.newInstance", "$playersMap")
                     (playersMap as Map<String, Map<String, Any?>>).map { playerEntry ->
                         Player.newInstance(playerEntry.key, playerEntry.value)
                     }

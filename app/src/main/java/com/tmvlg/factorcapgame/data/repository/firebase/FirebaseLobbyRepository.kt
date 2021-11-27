@@ -117,7 +117,7 @@ class FirebaseLobbyRepository {
             if (it.playerName == username) {
                 lobbiesRef.child(lobbyId)
                     .child("players")
-                    .child(it.userId)
+                    .child(it.id)
                     .child("loaded")
                     .setValue(true)
             }
