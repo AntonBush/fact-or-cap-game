@@ -45,6 +45,9 @@ class MenuViewModel(
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(activity, gso)
+        googleSignInClient.silentSignIn().addOnSuccessListener { account ->
+            firebaseSignIn(account.idToken!!, activity)
+        }
     }
 
     fun startSignInIntent(launcher: ActivityResultLauncher<Intent>) = viewModelScope.launch {
@@ -53,13 +56,25 @@ class MenuViewModel(
         launcher.launch(googleSignInClient.signInIntent)
     }
 
-    fun signIn(result: ActivityResult, activity: Activity) = viewModelScope.launch {
-        if (result.resultCode == Activity.RESULT_OK) {
-            // Calling viewModel function to get data
-            googleSignIn(result, activity)
-        } else {
+    fun signInFromIntent(result: ActivityResult, activity: Activity) = viewModelScope.launch {
+        if (result.resultCode != Activity.RESULT_OK) {
             _errorMessage.postValue("Intent failure")
             _user.postValue(null)
+            return@launch
+        }
+        // Calling viewModel function to get data
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
+        task.addOnCompleteListener(activity) { resultTask ->
+            if (!resultTask.isSuccessful) {
+                Log.w(TAG, "googleSignIn failure")
+                _errorMessage.postValue("Authentication via Google failed")
+                _user.postValue(null)
+                return@addOnCompleteListener
+            }
+
+            val idToken = resultTask.result.idToken!!
+            Log.i(TAG, "googleSignIn success: <$idToken>")
+            firebaseSignIn(idToken, activity)
         }
     }
 
@@ -87,24 +102,6 @@ class MenuViewModel(
         userRepository.saveUsername(
             firebaseAuth.currentUser?.email?.dropLast(EMAIL_LETTERS_COUNT)
         )
-    }
-
-    private fun googleSignIn(
-        result: ActivityResult,
-        activity: Activity
-    ) = viewModelScope.launch {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
-        task.addOnCompleteListener(activity) { resultTask ->
-            val idToken = resultTask.result.idToken
-            if (resultTask.isSuccessful && idToken != null) {
-                Log.i(TAG, "googleSignIn success: <$idToken>")
-                firebaseSignIn(idToken, activity)
-            } else {
-                Log.w(TAG, "googleSignIn failure")
-                _errorMessage.postValue("Authentication via Google failed")
-                _user.postValue(null)
-            }
-        }
     }
 
     private fun firebaseSignIn(

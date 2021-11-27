@@ -241,7 +241,7 @@ class MenuFragment : Fragment() {
 
     private val launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result -> viewModel.signIn(result, requireActivity()) }
+    ) { result -> viewModel.signInFromIntent(result, requireActivity()) }
 
     private fun signOut() {
         isEnabled = false
