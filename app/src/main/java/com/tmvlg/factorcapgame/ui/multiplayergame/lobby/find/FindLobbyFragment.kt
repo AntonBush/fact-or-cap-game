@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -95,6 +96,9 @@ class FindLobbyFragment : Fragment() {
 
             viewModel.connectLobby(lobbyListSection.selectedItems.first())
         }
+        binding.findLobbyEdittext.addTextChangedListener { text ->
+            filterText()
+        }
 //        if (savedInstanceState != null) {
 //            loadState(savedInstanceState)
 //        }
@@ -117,7 +121,7 @@ class FindLobbyFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.lobbies.observe(viewLifecycleOwner) { lobbies ->
             Log.d(tag, "lobbies in fragment: $lobbies")
-            lobbyListSection.set(lobbies)
+            filterText(lobbies)
         }
         viewModel.connectedLobbyId.observe(viewLifecycleOwner) { lobbyId ->
             if (lobbyId == null) {
@@ -132,6 +136,17 @@ class FindLobbyFragment : Fragment() {
                 )
                 .commit()
         }
+    }
+
+    private fun filterText(lobbyList: List<Lobby>? = null) {
+        val text = binding.findLobbyEdittext.text ?: return
+        val lobbies = lobbyList ?: viewModel.lobbies.value ?: return
+        val regex = text.toString().toRegex(RegexOption.IGNORE_CASE)
+        lobbyListSection.set(
+            lobbies.filter { lobby ->
+                return@filter regex.containsMatchIn(lobby.roomName)
+            }
+        )
     }
 
     companion object {
