@@ -30,14 +30,15 @@ class MenuViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModel() {
     private lateinit var googleSignInClient: GoogleSignInClient
-    private val firebaseAuth = Firebase.auth
+    private val firebaseAuth by lazy { Firebase.auth }
 
     private val _user = MutableLiveData<FirebaseUser?>(null)
     val user = _user.map { it }
     val username = user.map { it?.email?.dropLast(EMAIL_LETTERS_COUNT) }
-    val isUserSignedIn = user.map { it != null }
 
+    val isUserSignedIn = user.map { it != null }
     private val _errorMessage = MutableLiveData<String?>(null)
+
     val errorMessage = _errorMessage.map { it }
 
     val createdLobbyId = MutableLiveData<String?>(null)
@@ -73,8 +74,17 @@ class MenuViewModel(
         _user.postValue(null)
     }
 
-    fun createLobby() = viewModelScope.launch {
-        _errorMessage.postValue("Under development")
+    fun createLobby(roomName: String) = viewModelScope.launch {
+        try {
+            val roomId = firebaseLobbyRepository.createLobby(
+                username.value ?: throw IllegalStateException("User is null"),
+                roomName
+            )
+            _errorMessage.postValue(null)
+            createdLobbyId.postValue(roomId)
+        } catch (e: Exception) {
+            _errorMessage.postValue(e.message)
+        }
     }
 
     private fun saveUser() = viewModelScope.launch {

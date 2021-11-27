@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +10,11 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.databinding.CreateRoomDialogBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
@@ -22,7 +25,7 @@ class MenuFragment : Fragment() {
 
     private val viewModel: MenuViewModel by viewModels {
         // inits viewmodel
-        val app = activity?.application as FactOrCapApplication
+        val app = activity!!.application as FactOrCapApplication
         return@viewModels MenuViewModelFactory(
             app.userRepository,
             app.firebaseRepository
@@ -32,6 +35,7 @@ class MenuFragment : Fragment() {
     private var _binding: FragmentMenuBinding? = null
     private val binding: FragmentMenuBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
+
     private var isEnabled: Boolean
         get() = binding.root.isEnabled
         set(value) {
@@ -40,6 +44,7 @@ class MenuFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate after super.onCreate")
         viewModel.initializeAuth(requireActivity())
     }
 
@@ -48,14 +53,17 @@ class MenuFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "onCreateView")
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated after super.onViewCreated")
         setupListeners()
         observeViewModel()
+        Log.d(TAG, "onViewCreated end")
     }
 
     override fun onDestroyView() {
@@ -66,11 +74,16 @@ class MenuFragment : Fragment() {
     private fun setupListeners() {
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
-            binding.signInLayoutAuthorized.signOutLayout.visibility =
-                binding.signInLayoutAuthorized.signOutLayout.visibility.xor(XOR_VISIBLE_VALUE_1)
+            val signOutLayout = binding.signInLayoutAuthorized.signOutLayout
+            when(signOutLayout.visibility) {
+                View.GONE -> signOutLayout.visibility = View.VISIBLE
+                View.VISIBLE -> signOutLayout.visibility = View.GONE
+                else -> signOutLayout.visibility = View.GONE
+            }
         }
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
+            isEnabled = false
             // Calling sign in function
             signIn()
         }
@@ -81,15 +94,18 @@ class MenuFragment : Fragment() {
         }
         // Start single game button listener
         binding.singleGameButton.setOnClickListener() {
+            isEnabled = false
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
                 .commit()
         }
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
+            isEnabled = false
             // Calling toggle mpb function
             if (viewModel.isUserSignedIn.value == true) {
                 toggleMultiplayerButton()
+                isEnabled = true
             } else {
                 MaterialAlertDialogBuilder(
                     requireContext(),
@@ -102,6 +118,7 @@ class MenuFragment : Fragment() {
                                 " Do you want to proceed?"
                     )
                     .setNegativeButton("Cancel") { dialog, which ->
+                        isEnabled = true
                         dialog.cancel()
                     }
                     .setPositiveButton("Sign in with Google") { dialog, which ->
@@ -113,7 +130,25 @@ class MenuFragment : Fragment() {
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
             isEnabled = false
-            viewModel.createLobby()
+            val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
+            MaterialAlertDialogBuilder(
+                requireContext(),
+                R.style.ThemeOverlay_App_MaterialAlertDialog
+            )
+                .setTitle("Auth required")
+                .setMessage(
+                    "You are going to create new lobby." +
+                            " You should enter the name of new room to play multiplayer." +
+                            " Do you want to proceed?"
+                )
+                .setView(b.root)
+                .setNegativeButton("Cancel") { dialog, which ->
+                    dialog.cancel()
+                }
+                .setPositiveButton("Create room") { dialog, which ->
+                    viewModel.createLobby(b.editRoomName.text.toString())
+                }
+                .show()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
@@ -138,7 +173,7 @@ class MenuFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.user.observe(viewLifecycleOwner) { isEnabled = true }
+//        viewModel.user.observe(viewLifecycleOwner) { isEnabled = true }
         viewModel.username.observe(viewLifecycleOwner) { username ->
             binding.signInLayoutAuthorized.usernameTextview.text = getString(
                 R.string.hello_string,
@@ -148,11 +183,17 @@ class MenuFragment : Fragment() {
         viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
             if (isUserSignedIn) {
                 binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
+
                 binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
+                binding.signInLayoutAuthorized.signOutButton.visibility = View.VISIBLE
             } else {
-                binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
+                binding.signInLayoutAuthorized.signOutLayout.visibility = View.GONE
                 binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
+
+                binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
             }
+
+            isEnabled = true
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
@@ -208,7 +249,6 @@ class MenuFragment : Fragment() {
     }
 
     companion object {
-        const val XOR_VISIBLE_VALUE_1 = 8
         const val XOR_VISIBLE_VALUE_2 = 4
         private const val TAG = "MenuFragment"
     }
