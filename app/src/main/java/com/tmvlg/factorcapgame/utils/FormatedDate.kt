@@ -1,7 +1,7 @@
 package com.tmvlg.factorcapgame.utils
 
-import java.util.*
-
+import java.util.Calendar
+import java.util.Date
 
 fun Date.getTimeAgo(): String {
     val calendar = Calendar.getInstance()

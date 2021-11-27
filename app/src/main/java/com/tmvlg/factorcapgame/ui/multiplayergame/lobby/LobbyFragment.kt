@@ -5,21 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
-import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyViewModelFactory
 import java.lang.IllegalArgumentException
 
 class LobbyFragment : Fragment() {

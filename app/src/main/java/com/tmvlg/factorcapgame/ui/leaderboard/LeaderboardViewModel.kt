@@ -14,8 +14,8 @@ class LeaderboardViewModel(
 ) : ViewModel() {
     val db = Firebase.firestore
     var allScores: MutableList<PlayerScore> = arrayListOf()
-    lateinit var adapter : PlayerListAdapter
-    lateinit var username : String
+    lateinit var adapter: PlayerListAdapter
+    lateinit var username: String
 
     init {
         viewModelScope.launch {
@@ -25,7 +25,7 @@ class LeaderboardViewModel(
 
 //    val docRef = db.collection("leaderboard")
 
-    fun loadDataFromDB(){
+    fun loadDataFromDB() {
         allScores = arrayListOf()
         var i = 1
         var isInList = false
@@ -53,8 +53,8 @@ class LeaderboardViewModel(
             }
     }
 
-    private fun addUserToList(){
-        allScores.add(PlayerScore( "", "...", ""))
+    private fun addUserToList() {
+        allScores.add(PlayerScore("", "...", ""))
         db.collection("leaderboard")
             .whereEqualTo("username", username)
             .get()
@@ -83,7 +83,7 @@ class LeaderboardViewModel(
 //        }
 //    }
 
-    companion object{
+    companion object {
         const val TAG = "FireStoreActivity"
     }
 }

@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameDAO
-import kotlinx.coroutines.CoroutineScope
 
 @Database(entities = arrayOf(Game::class), version = 1, exportSchema = false)
 abstract class FactOrCapDatabase : RoomDatabase() {

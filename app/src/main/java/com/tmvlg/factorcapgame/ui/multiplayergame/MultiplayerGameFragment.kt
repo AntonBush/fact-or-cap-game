@@ -1,8 +1,6 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,7 +15,6 @@ import androidx.lifecycle.MutableLiveData
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import java.lang.IllegalArgumentException
 
 class MultiplayerGameFragment : Fragment() {
@@ -150,7 +147,8 @@ class MultiplayerGameFragment : Fragment() {
                             AppCompatResources.getColorStateList(
                                 requireContext(),
                                 R.color.font_color
-                            ).defaultColor, anim.animatedFraction
+                            ).defaultColor,
+                            anim.animatedFraction
                         )
                     )
                 }
@@ -158,7 +156,6 @@ class MultiplayerGameFragment : Fragment() {
             } catch (e: java.lang.IllegalStateException) {
                 return@observe
             }
-
         }
 
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->

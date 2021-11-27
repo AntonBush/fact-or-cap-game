@@ -1,9 +1,6 @@
 package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
-import android.util.Log
-import com.google.firebase.database.Exclude
-import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
 import java.lang.Exception
 

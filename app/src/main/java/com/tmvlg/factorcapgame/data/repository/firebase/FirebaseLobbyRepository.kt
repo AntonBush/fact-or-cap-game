@@ -71,9 +71,7 @@ class FirebaseLobbyRepository {
             }
 
             override fun onCancelled(error: DatabaseError) {
-
             }
-
         }
         lobbiesRef.child(lobbyId).addValueEventListener(valueEventListener)
     }
@@ -175,8 +173,8 @@ class FirebaseLobbyRepository {
                 // Lobby = String + Map<String, Map<String, Any?>>
                 // LobbyList = Map<String, Map<String, Map<String, Any?>>>
                 val mappedLobbyList = firebaseLobbyList.getValue<
-                        Map<String, Map<String, Any?>>
-                        >()
+                    Map<String, Map<String, Any?>>
+                    >()
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->

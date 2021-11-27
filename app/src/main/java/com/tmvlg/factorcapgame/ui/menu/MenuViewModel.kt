@@ -1,21 +1,17 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -101,7 +97,7 @@ class MenuViewModel(
         task.addOnCompleteListener(activity) { resultTask ->
             val idToken = resultTask.result.idToken
             if (resultTask.isSuccessful && idToken != null) {
-                Log.i(TAG, "googleSignIn success: <${idToken}>")
+                Log.i(TAG, "googleSignIn success: <$idToken>")
                 firebaseSignIn(idToken, activity)
             } else {
                 Log.w(TAG, "googleSignIn failure")

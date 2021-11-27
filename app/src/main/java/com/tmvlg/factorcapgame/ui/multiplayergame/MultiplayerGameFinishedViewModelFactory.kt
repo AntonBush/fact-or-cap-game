@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
-class MultiplayerGameFinishedViewModelFactory (
+class MultiplayerGameFinishedViewModelFactory(
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val userRepository: UserRepository,
 ) : ViewModelProvider.Factory {

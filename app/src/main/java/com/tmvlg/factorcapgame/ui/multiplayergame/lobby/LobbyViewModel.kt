@@ -1,8 +1,10 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 

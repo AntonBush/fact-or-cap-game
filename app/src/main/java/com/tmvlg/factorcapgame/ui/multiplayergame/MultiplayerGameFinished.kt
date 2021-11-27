@@ -60,7 +60,8 @@ class MultiplayerGameFinished : Fragment() {
         binding.restartButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
-                    R.id.main_fragment_container, LobbyFragment.newInstance(
+                    R.id.main_fragment_container,
+                    LobbyFragment.newInstance(
                         lobbyId.value ?: throw IllegalStateException("lobbyId is null")
                     )
                 )
@@ -132,7 +133,6 @@ class MultiplayerGameFinished : Fragment() {
         lobbyId.value = bundle.getString(KEY_LOBBY_ID)
         Log.d("1", "score: ${score.value}")
         Log.d("1", "lobbyId: ${lobbyId.value}")
-
     }
 
     override fun onDestroy() {

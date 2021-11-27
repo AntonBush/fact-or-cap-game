@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
-import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.NoInternetFragment
 
 class SingleGameFragment : Fragment() {

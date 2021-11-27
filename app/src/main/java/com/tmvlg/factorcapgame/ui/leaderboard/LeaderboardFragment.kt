@@ -6,14 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentLeaderboardBinding
-import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.menu.MenuViewModelFactory
 
 class LeaderboardFragment : Fragment() {
 
@@ -53,7 +50,6 @@ class LeaderboardFragment : Fragment() {
         viewModel.adapter = adapter
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
-
     }
 
     override fun onDestroyView() {

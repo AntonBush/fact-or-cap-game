@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
-
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -16,7 +15,7 @@ class LobbyUserListAdapter : ListAdapter<Player, LobbyUserViewHolder>(LobbyUserD
 
     override fun onBindViewHolder(holder: LobbyUserViewHolder, position: Int) {
         val player = getItem(position)
-        with (holder) {
+        with(holder) {
             binding.userName.text = player.playerName
         }
     }
