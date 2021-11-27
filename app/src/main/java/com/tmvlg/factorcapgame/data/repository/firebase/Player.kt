@@ -17,8 +17,8 @@ data class Player(
     var waiting: Boolean = false,
     var isWinner: Boolean = false
 ) : Parcelable {
-    fun toMap(): Map<String, Any?> {
-        return mapOf(
+    fun toMutableMap(): MutableMap<String, Any?> {
+        return mutableMapOf(
             "loaded" to loaded,
             "playerName" to playerName,
             "score" to score,

@@ -41,7 +41,6 @@ data class Lobby(
                     (playersMap as Map<String, Map<String, Any?>>).map { playerEntry ->
                         Player.newInstance(playerEntry.key, playerEntry.value)
                     }
-                    emptyList()
                 } catch (e: Exception) {
                     throw IllegalFieldException("players").apply {
                         addSuppressed(e)

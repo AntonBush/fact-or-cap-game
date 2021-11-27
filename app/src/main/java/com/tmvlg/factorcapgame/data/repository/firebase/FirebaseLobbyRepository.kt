@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.lang.Exception
 import java.lang.RuntimeException
 
 class FirebaseLobbyRepository {
@@ -58,7 +59,6 @@ class FirebaseLobbyRepository {
                                 playerId,
                                 playerBody
                             )
-                                ?: throw RuntimeException("can't find player")
                             Log.d(
                                 "1",
                                 "onDataChange: ${player.playerName} is finished ${player.waiting}"
@@ -157,8 +157,13 @@ class FirebaseLobbyRepository {
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->
-                        Lobby.newInstance(lobbyEntry.key, lobbyEntry.value)
-                    }
+                        return@map try {
+                            Lobby.newInstance(lobbyEntry.key, lobbyEntry.value)
+                        } catch (e: Exception) {
+                            Log.w("Firebase.listenLobbies", e.message.toString())
+                            null
+                        }
+                    }.filterNotNull()
                 )
             }
 
@@ -182,22 +187,22 @@ class FirebaseLobbyRepository {
         username: String,
         lobbyId: String
     ) = withContext(Dispatchers.IO) {
-        var isPlayerInRoom = false
-
         val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
         val lobbyPlayersTask = lobbyPlayersRef.get()
-
         while (!lobbyPlayersTask.isComplete) {
             delay(1)
         }
 
         val lobbyPlayers = lobbyPlayersTask.result.children
-        lobbyPlayers.forEach { firebasePlayer ->
-            val player = firebasePlayer.getValue<Player>()
-                ?: throw IOException("can't find player")
-            if (!isPlayerInRoom && player.playerName == username) {
-                isPlayerInRoom = true
-            }
+
+        val isPlayerInRoom = lobbyPlayers.any { firebasePlayer ->
+            val playerId = firebasePlayer.key
+                ?: throw IOException("can't find playerId")
+            val mappedPlayer = firebasePlayer.getValue<Map<String, Any?>>()
+                ?: throw IOException("can't find playerBody")
+            val player = Player.newInstance(playerId, mappedPlayer)
+
+            return@any player.playerName == username
         }
 
         if (!isPlayerInRoom) {
@@ -207,8 +212,10 @@ class FirebaseLobbyRepository {
 
             val newPlayerKey = lobbyPlayersRef.push().key
                 ?: throw IOException("can't add new player to lobby")
+
             newPlayer.id = newPlayerKey
-            lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer)
+
+            lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMutableMap())
         }
     }
 
@@ -255,26 +262,23 @@ class FirebaseLobbyRepository {
     // --------------------------------- CREATE ---------------------------------------
 
     @WorkerThread
-    fun createLobby(username: String, roomName: String = "Room name"): String {
+    suspend fun createLobby(
+        username: String,
+        roomName: String = "Room name"
+    ): String = withContext(Dispatchers.IO) {
         val _roomName = if (roomName.isEmpty()) {
             "Room name"
         } else {
             roomName
         }
         val newLobby = Lobby(
-            players = listOf(
-                Player(
-                    id = "host",
-                    playerName = username
-                )
-            ),
             host = username,
             roomName = _roomName
         )
         val newLobbyKey = lobbiesRef.push().key ?: throw IOException("can't add new lobby")
-        newLobby.id = newLobbyKey
-        lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby))
-        return newLobbyKey
+        lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMutableMap()))
+        addPlayerToLobby(username, newLobbyKey)
+        return@withContext newLobbyKey
     }
 
     companion object {
