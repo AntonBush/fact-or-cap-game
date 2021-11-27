@@ -13,6 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
@@ -27,7 +28,8 @@ class MultiplayerGameFragment : Fragment() {
         return@viewModels MultiplayerGameViewModelFactory(
             app.gameRepository,
             app.factRepository,
-            app.userRepository
+            app.userRepository,
+            app.firebaseRepository
         )
     }
 
@@ -35,7 +37,7 @@ class MultiplayerGameFragment : Fragment() {
     private val binding: FragmentMultiplayerGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private lateinit var lobbyId: String
+    private val lobbyId = MutableLiveData<String>()
 
     // check for fact is shown, enables agree and disagree buttons if true
     private var isEnabled = false
@@ -73,7 +75,10 @@ class MultiplayerGameFragment : Fragment() {
 
     // saves data to bundle
     private fun saveState(outState: Bundle) {
-        outState.putString(KEY_LOBBY_ID, lobbyId)
+        val lid = lobbyId.value
+        if (lid != null) {
+            outState.putString(KEY_LOBBY_ID, lid)
+        }
     }
 
     // loads data from bundle
@@ -99,6 +104,12 @@ class MultiplayerGameFragment : Fragment() {
                 viewModel.sendAnswer(false)
             }
         }
+
+        lobbyId.observe(viewLifecycleOwner) {
+            viewModel.startGame(it)
+        }
+
+        observeViewModel()
     }
 
     private fun observeViewModel() {
@@ -125,23 +136,35 @@ class MultiplayerGameFragment : Fragment() {
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
-            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-            animator.addUpdateListener { anim ->
-                binding.tvTimer.setTextColor(
-                    ColorUtils.blendARGB(
-                        AppCompatResources.getColorStateList(
-                            requireContext(),
-                            R.color.online_indicator_color
-                        ).defaultColor,
-                        AppCompatResources.getColorStateList(
-                            requireContext(),
-                            R.color.font_color
-                        ).defaultColor,
-                        anim.animatedFraction
+            try {
+                val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+                animator.addUpdateListener { anim ->
+                    binding.tvTimer.setTextColor(
+                        ColorUtils.blendARGB(
+                            AppCompatResources.getColorStateList(
+                                requireContext(),
+                                R.color.online_indicator_color
+                            ).defaultColor,
+                            AppCompatResources.getColorStateList(
+                                requireContext(),
+                                R.color.font_color
+                            ).defaultColor,              anim.animatedFraction
+                        )
                     )
-                )
+                }
+                animator.setDuration(200).start()
+            } catch (e: java.lang.IllegalStateException) {
+                return@observe
             }
-            animator.setDuration(200).start()
+
+        }
+
+        viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
+            if (!isStillLoading) {
+                binding.scoreContainer.visibility = View.VISIBLE
+                binding.agreeButton.visibility = View.VISIBLE
+                binding.disagreeButton.visibility = View.VISIBLE
+            }
         }
 
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
@@ -185,12 +208,13 @@ class MultiplayerGameFragment : Fragment() {
     // calls when game is finished. Goes to finish fragment with score results
     private fun endGame() {
         val score = viewModel.rightAnswersCount.value ?: 0
+        val lobbyIdValue: String = lobbyId.value ?: throw IllegalStateException("can't fetch lobby id")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.main_fragment_container,
                 MultiplayerGameFinished.newInstance(
                     score,
-                    lobbyId
+                    lobbyIdValue
                 )
             )
             .commit()
@@ -199,6 +223,7 @@ class MultiplayerGameFragment : Fragment() {
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
 
+        // calls from MultiplayerGameFragment.kt to create this fragment
         fun newInstance(lobbyId: String): MultiplayerGameFragment {
             return MultiplayerGameFragment().apply {
                 arguments = Bundle().apply {

@@ -102,7 +102,7 @@ class MultiplayerGameFinished : Fragment() {
             scoreboardAdapter.submitList(it)
         }
         lobbyId.observe(viewLifecycleOwner) {
-            viewModel.lobbies(it)
+            viewModel.connectToLobby(it)
         }
         score.observe(viewLifecycleOwner) {
         }

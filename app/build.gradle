@@ -83,7 +83,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-database-ktx'
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
-
+    // Firestore
+    implementation 'com.google.firebase:firebase-firestore-ktx'
     // MultiViewAdapter
     implementation 'dev.ahamed.mva3:adapter:3.0.0'
     // MultiViewAdapter extensions

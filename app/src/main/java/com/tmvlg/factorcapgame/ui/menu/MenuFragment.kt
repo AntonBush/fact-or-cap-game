@@ -12,12 +12,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.CreateRoomDialogBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
+import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
+import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
 
@@ -25,7 +32,7 @@ class MenuFragment : Fragment() {
 
     private val viewModel: MenuViewModel by viewModels {
         // inits viewmodel
-        val app = activity!!.application as FactOrCapApplication
+        val app = activity?.application as FactOrCapApplication
         return@viewModels MenuViewModelFactory(
             app.userRepository,
             app.firebaseRepository
@@ -176,7 +183,10 @@ class MenuFragment : Fragment() {
         }
         // Leader button listener
         binding.leaderboardButton.setOnClickListener() {
-            Toast.makeText(context, "In development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, LeaderboardFragment())
+                .commit()
+//            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         // Change language listener
         binding.changeLanguageButton.setOnClickListener() {

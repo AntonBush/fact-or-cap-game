@@ -111,6 +111,29 @@ class FirebaseLobbyRepository {
         }
     }
 
+    fun setPlayerLoaded(lobbyId: String, username: String) {
+        Log.d("1", "setPlayerLoaded: $lobbyId, $username")
+        players.forEach {
+            if (it.playerName == username) {
+                lobbiesRef.child(lobbyId)
+                    .child("players")
+                    .child(it.userId)
+                    .child("loaded")
+                    .setValue(true)
+            }
+        }
+    }
+
+    fun isAllPlayersLoaded(lobbyId: String): Boolean {
+        Log.d("1", "isAllPlayersLoaded: $players")
+        players.forEach {
+            if (!it.loaded) {
+                return false
+            }
+        }
+        return true
+    }
+
     @WorkerThread
     fun calculateWinner(): Player {
         var highScore = 0 to players[0]
