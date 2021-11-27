@@ -10,7 +10,7 @@ import java.lang.Exception
 data class Player(
     var id: String = "0",
     var loaded: Boolean = false,
-    val playerName: String = "",
+    var playerName: String = "",
     var score: Int = 0,
     var timeElapsed: Long = 0,
     var waiting: Boolean = false,
@@ -28,33 +28,18 @@ data class Player(
 
     companion object {
         fun newInstance(key: String, map: Map<String, Any?>): Player {
-            /*
-
-                var id: String = "0",
-    var loaded: Boolean = false,
-    val playerName: String = "",
-    var score: Int = 0,
-    var timeElapsed: Long = 0,
-    var waiting: Boolean = false,
-    var isWinner: Boolean = false
-
-             */
             return Player().apply {
                 id = key
                 loaded = map["loaded"] as Boolean?
                     ?: throw IllegalFieldException("loaded")
-                started = map["started"] as Boolean?
-                    ?: throw IllegalFieldException("loaded")
-                players = try {
-                    val players_map = map["players"] as Map<*, *>?
-                        ?: throw IllegalArgumentException()
-                    (players_map as Map<String, Map<String, Any?>>).map { playerEntry ->
-                        newInstance(playerEntry.key, playerEntry.value)
-                    }
-                } catch (e: Exception) {
-                    throw IllegalArgumentException("map does not contain field <players> or it is invalid")
-                }
-                roomName = map["roomName"] as String?
+                playerName = map["playerName"] as String?
+                    ?: throw IllegalFieldException("playerName")
+                val longScore = map["score"] as Long?
+                    ?: throw IllegalFieldException("score")
+                score = longScore.toInt()
+                timeElapsed = map["timeElapsed"] as Long?
+                    ?: throw IllegalFieldException("score")
+                waiting = map["waiting"] as Boolean?
                     ?: throw IllegalArgumentException("map does not contain field <roomName>")
             }
         }

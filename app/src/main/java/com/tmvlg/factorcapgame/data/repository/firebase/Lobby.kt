@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
+import android.util.Log
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
@@ -22,26 +23,34 @@ data class Lobby(
             "roomName" to roomName
         )
     }
+
     companion object {
         fun newInstance(key: String, map: Map<String, Any?>): Lobby {
             return Lobby().apply {
                 id = key
                 host = map["host"] as String?
-                    ?: throw IllegalArgumentException("map does not contain field <host>")
+                    ?: throw IllegalFieldException("host")
                 started = map["started"] as Boolean?
-                    ?: throw IllegalArgumentException("map does not contain field <started>")
+                    ?: throw IllegalFieldException("started")
                 players = try {
-                    val players_map = map["players"] as Map<*, *>?
+                    val playersMap = map["players"] as Any?
                         ?: throw IllegalArgumentException()
-                    (players_map as Map<String, Map<String, Any?>>).map { playerEntry ->
-                        Player.newInstance(playerEntry.key, playerEntry.value)
-                    }
+                    Log.d("Lobby.newInstance", "${playersMap::class.simpleName}")
+                    emptyList()
+//                    (players_map as MutableMap<String, MutableMap<String, Any?>>).map { playerEntry ->
+//                        Player.newInstance(playerEntry.key, playerEntry.value)
                 } catch (e: Exception) {
-                    throw IllegalArgumentException("map does not contain field <players> or it is invalid")
+                    throw IllegalFieldException("players").apply {
+                        addSuppressed(e)
+                    }
                 }
                 roomName = map["roomName"] as String?
-                    ?: throw IllegalArgumentException("map does not contain field <roomName>")
+                    ?: throw IllegalFieldException("roomName")
             }
+        }
+
+        private fun IllegalFieldException(field: String): IllegalArgumentException {
+            return IllegalArgumentException("map contain invalid field<$field>")
         }
     }
 }

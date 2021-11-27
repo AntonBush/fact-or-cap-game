@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
@@ -51,7 +52,12 @@ class FirebaseLobbyRepository {
                         for (firebasePlayer in child.children) {
                             val playerId = firebasePlayer.key
                                 ?: throw RuntimeException("can't find playerId")
-                            val player: Player = firebasePlayer.getValue<Player>()
+                            val playerBody = firebasePlayer.getValue<Map<String, Any?>>()
+                                ?: throw RuntimeException("can't find playerBody")
+                            val player = Player.newInstance(
+                                playerId,
+                                playerBody
+                            )
                                 ?: throw RuntimeException("can't find player")
                             Log.d(
                                 "1",
@@ -131,8 +137,8 @@ class FirebaseLobbyRepository {
 
     // ----------------------------- LIST ROOMS --------------------------------
 
-    private val _lobbies = MutableLiveData<List<Lobby>>(emptyList())
-    val lobbies = _lobbies.map { it }
+    private val _lobbyList = MutableLiveData<List<Lobby>>(emptyList())
+    val lobbyList = _lobbyList.map { it }
 
     private var lobbiesEventListener: ValueEventListener? = null
 
@@ -140,14 +146,14 @@ class FirebaseLobbyRepository {
     fun listenLobbies() {
         stopListenLobbies()
         val newLobbiesEventListener = object : ValueEventListener {
-            override fun onDataChange(lobbies: DataSnapshot) {
-                val newLobbies = lobbies.getValue<MutableMap<String, Lobby>>()
-                    ?: throw IOException("Can't get list of lobbies")
-                _lobbies.postValue(newLobbies.map {
-                    val lobby = it.value
-                    lobby.id = it.key
-                    return@map lobby
-                })
+            override fun onDataChange(firebaseLobbyList: DataSnapshot) {
+                val mappedLobbyList = firebaseLobbyList.getValue<Map<String, Map<String, Any?>>>()
+                    ?: throw IOException("lobby does not contain value")
+                _lobbyList.postValue(
+                    mappedLobbyList.map { lobbyEntry ->
+                        Lobby.newInstance(lobbyEntry.key, lobbyEntry.value)
+                    }
+                )
             }
 
             override fun onCancelled(error: DatabaseError) {}
@@ -159,7 +165,7 @@ class FirebaseLobbyRepository {
     fun stopListenLobbies() {
         if (lobbiesEventListener != null) {
             lobbiesRef.removeEventListener(valueEventListener)
-            _lobbies.postValue(emptyList())
+            _lobbyList.postValue(emptyList())
         }
     }
 
@@ -205,43 +211,36 @@ class FirebaseLobbyRepository {
     private val _lobby = MutableLiveData<Lobby?>(null)
     val lobby = _lobby.map { it }
 
-    private var lobbyId: String = ""
+    private var lobbyRef: DatabaseReference? = null
     private var lobbyEventListener: ValueEventListener? = null
 
     @WorkerThread
     fun listenLobby(lobbyId: String) {
         stopListenLobby()
-        val newLobbiesEventListener = object : ValueEventListener {
-            override fun onDataChange(lobby: DataSnapshot) {
-                val newLobby = Lobby()
-                newLobby.id = lobby.key
-                    ?: throw IOException("can't find lobby")
-                newLobby.host = lobby.child("host").getValue<String>()
-                    ?: throw IOException("can't find lobby host")
-                newLobby.started = lobby.child("started").getValue<Boolean>()
-                    ?: throw IOException("can't find lobby field")
-                newLobby.roomName = lobby.child("roomName").getValue<String>()
-                    ?: throw IOException("can't find lobby field")
-                newLobby.players = mutableMapOf()lobby.child("players").children.map { firebasePlayer ->
-                    val player: Player = firebasePlayer.getValue<Player>()
-                        ?: throw IOException("can't find player")
-                    player.id = firebasePlayer.key
-                        ?: throw IOException("can't find playerId")
-                    return@map player
-                }
-                _lobby.postValue(newLobby)
+        val newLobbyEventListener = object : ValueEventListener {
+            override fun onDataChange(firebaseLobby: DataSnapshot) {
+                val firebaseLobbyId = firebaseLobby.key
+                    ?: throw IOException("lobby does not contain key")
+                val firebaseLobbyValue = firebaseLobby.getValue<Map<String, Any?>>()
+                    ?: throw IOException("lobby does not contain value")
+                _lobby.postValue(
+                    Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
+                )
             }
 
             override fun onCancelled(error: DatabaseError) {}
         }
-        lobbiesRef.child(lobbyId).addValueEventListener(newLobbiesEventListener)
-        this.lobbyId = lobbyId
+        lobbyEventListener = newLobbyEventListener
+        lobbyRef = lobbiesRef.child(lobbyId).apply {
+            addValueEventListener(newLobbyEventListener)
+        }
     }
 
     @WorkerThread
     fun stopListenLobby() {
         if (lobbyEventListener != null) {
-            lobbiesRef.child(lobbyId).removeEventListener(valueEventListener)
+            val lr = lobbyRef ?: throw IllegalStateException("lobbyRef is null")
+            lr.removeEventListener(valueEventListener)
             _lobby.postValue(null)
         }
     }

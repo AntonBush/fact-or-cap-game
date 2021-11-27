@@ -39,7 +39,16 @@ class MenuFragment : Fragment() {
     private var isEnabled: Boolean
         get() = binding.root.isEnabled
         set(value) {
-            binding.root.isEnabled = value
+            binding.apply {
+                changeLanguageButton.isEnabled = value
+                createRoomButton.isEnabled = value
+                gameButtonsLl.isEnabled = value
+                joinRoomButton.isEnabled = value
+                leaderboardButton.isEnabled = value
+                multiplayerGameButton.isEnabled = value
+                statButton.isEnabled = value
+                singleGameButton.isEnabled = value
+            }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,8 +112,10 @@ class MenuFragment : Fragment() {
         binding.multiplayerGameButton.setOnClickListener() {
             isEnabled = false
             // Calling toggle mpb function
+            Log.d("-----------------------", "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}")
             if (viewModel.isUserSignedIn.value == true) {
                 toggleMultiplayerButton()
+                Log.d("-------------------tog-", "")
                 isEnabled = true
             } else {
                 MaterialAlertDialogBuilder(
@@ -118,6 +129,7 @@ class MenuFragment : Fragment() {
                                 " Do you want to proceed?"
                     )
                     .setNegativeButton("Cancel") { dialog, which ->
+                        Log.d("-------------------can-", "")
                         isEnabled = true
                         dialog.cancel()
                     }
@@ -193,11 +205,14 @@ class MenuFragment : Fragment() {
                 binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
             }
 
+            Log.d("----------------------1", "${isUserSignedIn}")
+            Log.d("-----------------------", "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}")
             isEnabled = true
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                Log.d("-------------------err-", "")
                 isEnabled = true
             }
         }
