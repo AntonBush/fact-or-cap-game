@@ -36,9 +36,12 @@ data class Lobby(
                     val playersMap = map["players"] as Any?
                         ?: throw IllegalArgumentException()
                     Log.d("Lobby.newInstance", "${playersMap::class.simpleName}")
+                    Log.d("Lobby.newInstance", "${(playersMap as HashMap<String, Any?>).size}")
+                    Log.d("Lobby.newInstance", "$playersMap")
+                    (playersMap as Map<String, Map<String, Any?>>).map { playerEntry ->
+                        Player.newInstance(playerEntry.key, playerEntry.value)
+                    }
                     emptyList()
-//                    (players_map as MutableMap<String, MutableMap<String, Any?>>).map { playerEntry ->
-//                        Player.newInstance(playerEntry.key, playerEntry.value)
                 } catch (e: Exception) {
                     throw IllegalFieldException("players").apply {
                         addSuppressed(e)

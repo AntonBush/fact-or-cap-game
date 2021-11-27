@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
+import android.util.Log
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
@@ -29,6 +30,7 @@ data class Player(
     companion object {
         fun newInstance(key: String, map: Map<String, Any?>): Player {
             return Player().apply {
+                Log.d("Player.newInstance", "$map")
                 id = key
                 loaded = map["loaded"] as Boolean?
                     ?: throw IllegalFieldException("loaded")

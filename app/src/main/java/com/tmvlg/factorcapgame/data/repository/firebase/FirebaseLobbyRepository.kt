@@ -147,7 +147,13 @@ class FirebaseLobbyRepository {
         stopListenLobbies()
         val newLobbiesEventListener = object : ValueEventListener {
             override fun onDataChange(firebaseLobbyList: DataSnapshot) {
-                val mappedLobbyList = firebaseLobbyList.getValue<Map<String, Map<String, Any?>>>()
+                // Player = String + Map<String, Any?>
+                // PlayerList = Map<String, Map<String, Any?>>
+                // Lobby = String + Map<String, Map<String, Any?>>
+                // LobbyList = Map<String, Map<String, Map<String, Any?>>>
+                val mappedLobbyList = firebaseLobbyList.getValue<
+                        Map<String, Map<String, Any?>>
+                        >()
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->
@@ -238,9 +244,10 @@ class FirebaseLobbyRepository {
 
     @WorkerThread
     fun stopListenLobby() {
-        if (lobbyEventListener != null) {
+        val localLobbyEventListener = lobbyEventListener
+        if (localLobbyEventListener != null) {
             val lr = lobbyRef ?: throw IllegalStateException("lobbyRef is null")
-            lr.removeEventListener(valueEventListener)
+            lr.removeEventListener(localLobbyEventListener)
             _lobby.postValue(null)
         }
     }

@@ -17,6 +17,7 @@ import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyViewModel
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyViewModelFactory
 import java.lang.IllegalArgumentException
@@ -59,7 +60,7 @@ class LobbyFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
+                .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
         binding.inviteButton.setOnClickListener {
