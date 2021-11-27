@@ -266,5 +266,9 @@ class MenuFragment : Fragment() {
     companion object {
         const val XOR_VISIBLE_VALUE_2 = 4
         private const val TAG = "MenuFragment"
+
+        fun newInstance(): MenuFragment {
+            return MenuFragment()
+        }
     }
 }

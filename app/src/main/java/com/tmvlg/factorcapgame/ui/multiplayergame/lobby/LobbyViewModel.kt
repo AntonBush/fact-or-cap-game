@@ -35,7 +35,7 @@ class LobbyViewModel(
     }
 
     fun startGame() = viewModelScope.launch {
-        // TODO("NOT IMPLEMENTED")
+        _isGameStarted.postValue(true)
     }
 
 //    fun connectLobby(selectedLobby: Lobby) = viewModelScope.launch {

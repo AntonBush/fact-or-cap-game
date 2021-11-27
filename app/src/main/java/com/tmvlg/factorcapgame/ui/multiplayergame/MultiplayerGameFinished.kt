@@ -38,7 +38,6 @@ class MultiplayerGameFinished : Fragment() {
 
     val lobbyId = MutableLiveData<String>()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadState(requireArguments())
@@ -53,11 +52,6 @@ class MultiplayerGameFinished : Fragment() {
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (savedInstanceState != null) {
@@ -65,18 +59,27 @@ class MultiplayerGameFinished : Fragment() {
         }
         binding.restartButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, LobbyFragment())
+                .replace(
+                    R.id.main_fragment_container, LobbyFragment.newInstance(
+                        lobbyId.value ?: throw IllegalStateException("lobbyId is null")
+                    )
+                )
                 .commit()
         }
         binding.menuButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
+                .replace(R.id.main_fragment_container, MenuFragment.newInstance())
                 .commit()
         }
         observeViewModel()
         scoreboardAdapter = PlayersScoreboardAdapter()
         binding.scoreboardRv.adapter = scoreboardAdapter
         binding.scoreboardRv.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun observeViewModel() {
@@ -102,7 +105,6 @@ class MultiplayerGameFinished : Fragment() {
             viewModel.lobbies(it)
         }
         score.observe(viewLifecycleOwner) {
-
         }
     }
 

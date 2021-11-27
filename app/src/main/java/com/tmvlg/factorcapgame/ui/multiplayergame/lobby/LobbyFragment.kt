@@ -129,10 +129,10 @@ class LobbyFragment : Fragment() {
         }
         viewModel.isGameStarted.observe(viewLifecycleOwner) { isGameStarted ->
             if (isGameStarted) {
-                Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
-//                requireActivity().supportFragmentManager.beginTransaction()
-//                    .replace(R.id.main_fragment_container, MultiplayerGameFragment())
-//                    .commit()
+                Toast.makeText(requireContext(), "Experimental feature", Toast.LENGTH_SHORT).show()
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, MultiplayerGameFragment.newInstance(lobbyId))
+                    .commit()
             }
         }
     }
