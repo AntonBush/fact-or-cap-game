@@ -13,7 +13,9 @@ class FindLobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
-    val lobbies = firebaseLobbyRepository.lobbyList.map { it }
+    val lobbies = firebaseLobbyRepository.lobbyList.map { lobbyList ->
+        lobbyList.filter { !it.started }
+    }
 
     val connectedLobbyId =
         MutableLiveData<String?>(null)

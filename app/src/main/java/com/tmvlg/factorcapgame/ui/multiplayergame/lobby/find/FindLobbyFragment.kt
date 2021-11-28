@@ -97,7 +97,7 @@ class FindLobbyFragment : Fragment() {
             viewModel.connectLobby(lobbyListSection.selectedItems.first())
         }
         binding.findLobbyEdittext.addTextChangedListener { text ->
-            filterText()
+            filterText(textString = text?.toString())
         }
 //        if (savedInstanceState != null) {
 //            loadState(savedInstanceState)
@@ -138,10 +138,10 @@ class FindLobbyFragment : Fragment() {
         }
     }
 
-    private fun filterText(lobbyList: List<Lobby>? = null) {
-        val text = binding.findLobbyEdittext.text ?: return
+    private fun filterText(lobbyList: List<Lobby>? = null, textString: String? = null) {
+        val text = textString ?: binding.findLobbyEdittext.text?.toString() ?: return
         val lobbies = lobbyList ?: viewModel.lobbies.value ?: return
-        val regex = text.toString().toRegex(RegexOption.IGNORE_CASE)
+        val regex = text.toRegex(RegexOption.IGNORE_CASE)
         lobbyListSection.set(
             lobbies.filter { lobby ->
                 return@filter regex.containsMatchIn(lobby.roomName)
