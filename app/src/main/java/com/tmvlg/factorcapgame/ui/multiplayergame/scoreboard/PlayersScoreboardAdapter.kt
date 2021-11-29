@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +16,7 @@ class PlayersScoreboardAdapter : ListAdapter<Player, PlayerViewHolder>(PlayersDi
 
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
         val item = getItem(position)
-        with (holder) {
+        with(holder) {
             binding.memberUsername.text = item.playerName
             if (item.isWinner)
                 binding.corona.visibility = View.VISIBLE

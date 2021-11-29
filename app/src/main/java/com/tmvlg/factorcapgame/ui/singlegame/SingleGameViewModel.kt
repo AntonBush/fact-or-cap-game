@@ -12,7 +12,6 @@ import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import com.tmvlg.factorcapgame.ui.leaderboard.PlayerScore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -20,9 +19,14 @@ import java.io.IOException
 class SingleGameViewModel(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
-    private val userRepository: UserRepository,
-    private val username: String
+    private val userRepository: UserRepository
 ) : ViewModel() {
+    private lateinit var username: String
+    init {
+        viewModelScope.launch {
+            username = userRepository.getUsername()!!
+        }
+    }
     // exception that throws when can't fetch a fact
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
@@ -71,7 +75,7 @@ class SingleGameViewModel(
             stats.highestScore = score
             _isHighScore.postValue(true)
             // У нас статистика ведется по устройству а аккаунт можно менять :(
-            //postToFirestore(score)
+            // postToFirestore(score)
         }
         checkAccountHighScore(score)
         userRepository.saveGame(stats)

@@ -67,7 +67,6 @@ class StatisticsFragment : Fragment() {
                 binding.gamesStatisticsList.visibility = View.VISIBLE
                 binding.statisticsToggleButton.rotation = 0f
                 binding.gamesToggleButton.rotation = 90f
-
             } else {
                 binding.grid.visibility = View.VISIBLE
                 binding.gamesStatisticsList.visibility = View.GONE
@@ -87,7 +86,6 @@ class StatisticsFragment : Fragment() {
                 binding.grid.visibility = View.GONE
                 binding.gamesToggleButton.rotation = 90f
                 binding.statisticsToggleButton.rotation = 0f
-
             }
         }
     }

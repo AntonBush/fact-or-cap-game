@@ -1,7 +1,8 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
@@ -9,7 +10,7 @@ import kotlinx.coroutines.launch
 class MultiplayerGameFinishedViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val userRepository: UserRepository
-): ViewModel() {
+) : ViewModel() {
 
     private var _lobbyPlayers = firebaseLobbyRepository.subscribeOnPlayersLD()
     val lobbyPlayers = _lobbyPlayers.map { it }
@@ -19,7 +20,7 @@ class MultiplayerGameFinishedViewModel(
     }
 
     fun getUsername(): String {
-        return userRepository.getUsername()
+        return userRepository.getUsername() ?: ""
     }
 
     fun sendScore(score: Int, lobbyId: String) {
@@ -44,5 +45,4 @@ class MultiplayerGameFinishedViewModel(
     fun finish(lobbyId: String) {
         firebaseLobbyRepository.stopListeningPlayers(lobbyId)
     }
-
 }
