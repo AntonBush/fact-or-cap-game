@@ -97,7 +97,7 @@ class LobbyFragment : Fragment() {
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
 
-    fun observeViewModel() {
+    private fun observeViewModel() {
         viewModel.lobby.observe(viewLifecycleOwner) { lobby ->
             if (lobby == null) {
                 return@observe
@@ -105,16 +105,12 @@ class LobbyFragment : Fragment() {
 
             binding.tvLobby.text = lobby.roomName
             listAdapter.submitList(lobby.players)
-            // TODO
         }
         viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
                     viewModel.startGame()
-                    // TODO
-                    Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT)
-                        .show()
                 }
             } else {
                 binding.startButton.visibility = View.GONE

@@ -302,6 +302,26 @@ class FirebaseLobbyRepository {
         return@withContext newLobbyKey
     }
 
+    @WorkerThread
+    suspend fun startGame(
+        lobbyId: String
+    ) = withContext(Dispatchers.IO) {
+        lobbiesRef.child(lobbyId).child("started").setValue(true)
+        val resetListener = object : ValueEventListener {
+            override fun onDataChange(firebaseLobby: DataSnapshot) {
+                val firebaseLobbyId = firebaseLobby.key
+                    ?: throw IOException("lobby does not contain key")
+                val firebaseLobbyValue = firebaseLobby.getValue<Map<String, Any?>>()
+                    ?: throw IOException("lobby does not contain value")
+                _lobby.postValue(
+                    Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
+                )
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+    }
+
     companion object {
         const val TAG = "FirebaseLobbyRepository"
     }

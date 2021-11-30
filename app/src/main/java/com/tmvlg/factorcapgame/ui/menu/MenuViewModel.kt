@@ -45,14 +45,18 @@ class MenuViewModel(
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(activity, gso)
-        googleSignInClient.silentSignIn().addOnSuccessListener { account ->
-            firebaseSignIn(account.idToken!!, activity)
-        }
+        googleSignInClient.silentSignIn()
+            .addOnSuccessListener { account ->
+                firebaseSignIn(account.idToken!!, activity)
+            }.addOnCompleteListener { task ->
+                Log.d("silentSignIn", "Completed: ${task.isSuccessful}")
+            }
     }
 
     fun startSignInIntent(launcher: ActivityResultLauncher<Intent>) = viewModelScope.launch {
         _errorMessage.postValue(null)
         // Same as startActivityForResult
+        Log.d("startSignInIntent", "-----------------------")
         launcher.launch(googleSignInClient.signInIntent)
     }
 
