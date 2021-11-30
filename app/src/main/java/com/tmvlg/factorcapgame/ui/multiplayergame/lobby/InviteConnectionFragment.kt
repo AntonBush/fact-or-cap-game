@@ -1,46 +1,30 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.os.Bundle
-import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
-import com.tmvlg.factorcapgame.data.network.ApiInterface
-
-import com.tmvlg.factorcapgame.data.network.ApiClient
-
-import com.tmvlg.factorcapgame.data.network.DataModel
-
-import com.tmvlg.factorcapgame.data.network.NotificationModel
-
-import com.tmvlg.factorcapgame.data.network.RootModel
+import com.tmvlg.factorcapgame.databinding.FragmentInviteConnectionBinding
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinished
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.lang.IllegalArgumentException
 
+class InviteConnectionFragment : Fragment() {
 
-class InviteFragment : Fragment() {
+    private var _binding: FragmentInviteConnectionBinding? = null
 
-    private var _binding: FragmentInviteBinding? = null
-
-    private val binding: FragmentInviteBinding
+    private val binding: FragmentInviteConnectionBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private val viewModel: InviteFragmentViewModel by viewModels {
+    private val viewModel: InviteConnectionFragmentViewModel by viewModels {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
-        return@viewModels InviteFragmentViewModelFactory(
+        return@viewModels InviteConnectionFragmentViewModelFactory(
+            app.firebaseRepository,
             app.userRepository
         )
     }
@@ -53,11 +37,10 @@ class InviteFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentInviteBinding.inflate(inflater, container, false)
+        _binding = FragmentInviteConnectionBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -71,21 +54,17 @@ class InviteFragment : Fragment() {
         if (savedInstanceState != null) {
             loadState(savedInstanceState)
         }
-        binding.returnButton.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
-                .commit()
-        }
-        binding.searchButton.setOnClickListener {
-            // TODO("Search for friends to invite")
-        }
-        binding.confirmButton.setOnClickListener {
-            // TODO("Invite selected friend")
+        observeViewModel()
+        viewModel.setup(lobbyId)
+    }
 
-            val userToBeInvited = binding.findUsersEdittext.text.toString()
-
-            viewModel.invite(userToBeInvited, lobbyId)
-
+    private fun observeViewModel() {
+        viewModel.readyToConnect.observe(viewLifecycleOwner) { isReady ->
+            if (isReady) {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
+                    .commit()
+            }
         }
     }
 
@@ -110,13 +89,14 @@ class InviteFragment : Fragment() {
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
 
-        fun newInstance(lobbyId: String): InviteFragment {
-            return InviteFragment().apply {
+        fun newInstance(lobbyId: String): InviteConnectionFragment {
+            return InviteConnectionFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_LOBBY_ID, lobbyId)
                 }
             }
         }
     }
+
 
 }

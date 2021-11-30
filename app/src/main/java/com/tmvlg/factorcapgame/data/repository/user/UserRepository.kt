@@ -27,4 +27,14 @@ class UserRepository(
     fun getUsername(): String? {
         return preferenceProvider.getUsername()
     }
+
+    @WorkerThread
+    fun saveToken(token: String?) {
+        preferenceProvider.setRegistrationToken(token)
+    }
+
+    @WorkerThread
+    fun getToken(): String? {
+        return preferenceProvider.getRegistrationToken()
+    }
 }

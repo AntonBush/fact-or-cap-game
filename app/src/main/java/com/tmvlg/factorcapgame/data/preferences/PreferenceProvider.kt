@@ -69,6 +69,14 @@ class PreferenceProvider(context: Context) {
         return preference.getString(KEY_USERNAME, "")
     }
 
+    fun getRegistrationToken(): String? {
+        return preference.getString(KEY_REGISTRATION_TOKEN, "")
+    }
+
+    fun setRegistrationToken(token: String?) {
+        preference.edit().putString(KEY_REGISTRATION_TOKEN, token).apply()
+    }
+
     companion object {
         const val APP_USER_PREFERENCES = "userprefs"
         const val KEY_TOTAL_GAMES = "keyTotalGames"
@@ -77,5 +85,6 @@ class PreferenceProvider(context: Context) {
         const val KEY_AVERAGE_SCORE = "keyAverageScore"
         const val KEY_ALL_SCORES = "keyAllScores"
         const val KEY_USERNAME = "keyUsername"
+        const val KEY_REGISTRATION_TOKEN = "keyRegistrationToken"
     }
 }

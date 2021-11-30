@@ -58,11 +58,11 @@ class LobbyFragment : Fragment() {
                 .commit()
         }
         binding.inviteButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .add(R.id.main_fragment_container, InviteFragment())
-//                .addToBackStack(null)
-//                .commit()
+//            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, InviteFragment.newInstance(lobbyId))
+                .addToBackStack(null)
+                .commit()
         }
         listAdapter = LobbyUserListAdapter()
         binding.rvLobbyUsers.adapter = listAdapter
