@@ -58,12 +58,16 @@ class FCMService : FirebaseMessagingService() {
         messageTitle: String,
         data: HashMap<String, String>
     ) {
+        if (data.isEmpty()) {
+            return
+        }
+
+        val lobbyId: String = data.get("lobbyId") ?: return
 
         val intent = Intent(this, MainActivity::class.java)
-        if (!data.isEmpty()) {
-            val lobbyId: String = data.get("lobbyId") ?: ""
-            intent.putExtra("lobbyIdForActivity", lobbyId)
-        }
+        Log.d("1", "sendNotification: data is not empty! lobbyId=$lobbyId")
+        intent.putExtra("lobbyId", lobbyId)
+
 
 
 

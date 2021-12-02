@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
@@ -13,15 +14,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val arguments = intent.extras
+        val lobbyId = intent.extras?.getString("lobbyId")
 
-        if (arguments != null) {
-            val lobbyId: String = arguments.getString("lobbyIdForActivity") ?: ""
+        Log.d("1", "onCreate: arguments = $lobbyId")
+
+        if (lobbyId != null && lobbyId != "") {
+//            val lobbyId: String = arguments.getString("lobbyId") ?: ""
+            Log.d("1", "onCreate: lobbyid = $lobbyId")
             Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
-            if (lobbyId == "") {
-                navigateToMenu()
-                return
-            }
             navigateToLobby(lobbyId)
         }
         else {
