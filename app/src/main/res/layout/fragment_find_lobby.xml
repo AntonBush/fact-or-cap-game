@@ -37,13 +37,14 @@
 
     <EditText
             android:id="@+id/find_lobby_edittext"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="58dp"
             android:hint="@string/type_here_string"
             android:textColorHint="@color/offline_indicator_color"
             android:inputType="text"
             android:autofillHints="name"
             android:maxLines="1"
+            android:imeOptions="actionDone"
             android:textSize="25sp"
             android:textColor="@color/font_color"
             android:drawableStart="@drawable/search_toggle_icon"
@@ -52,7 +53,7 @@
             android:paddingEnd="72dp"
             android:background="@drawable/edit_text_background"
             android:layout_below="@id/tv_join_lobby"
-            android:layout_centerHorizontal="true" />
+            android:layout_marginTop="12dp" />
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/find_lobby_recyclerview"
