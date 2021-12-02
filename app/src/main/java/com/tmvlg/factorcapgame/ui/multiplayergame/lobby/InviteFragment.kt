@@ -1,33 +1,28 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
-import com.tmvlg.factorcapgame.data.network.ApiInterface
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.userslist.SearchedUsersAdapter
+import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
 
-import com.tmvlg.factorcapgame.data.network.ApiClient
-
-import com.tmvlg.factorcapgame.data.network.DataModel
-
-import com.tmvlg.factorcapgame.data.network.NotificationModel
-
-import com.tmvlg.factorcapgame.data.network.RootModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinished
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.lang.IllegalArgumentException
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.getSystemService
+import java.lang.Exception
 
 
 class InviteFragment : Fragment() {
@@ -47,6 +42,11 @@ class InviteFragment : Fragment() {
 
     private lateinit var lobbyId: String
 
+    private lateinit var searchedUsersAdapter: SearchedUsersAdapter
+
+    private var selectedPlayerName: String? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadState(requireArguments())
@@ -64,6 +64,7 @@ class InviteFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        viewModel.clearPlayerList()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -76,16 +77,52 @@ class InviteFragment : Fragment() {
                 .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
                 .commit()
         }
-        binding.searchButton.setOnClickListener {
-            // TODO("Search for friends to invite")
-        }
+
         binding.confirmButton.setOnClickListener {
-            // TODO("Invite selected friend")
+            if (selectedPlayerName != null) {
+                val userToBeInvited = selectedPlayerName!!
+                viewModel.invite(userToBeInvited, lobbyId)
+            }
+            else {
+                Toast.makeText(requireContext(), "Select a friend first", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
-            val userToBeInvited = binding.findUsersEdittext.text.toString()
+        }
 
-            viewModel.invite(userToBeInvited, lobbyId)
+        binding.searchButton.setOnClickListener {
+            val query = binding.findUsersEdittext.text
+            viewModel.findPlayers(query.toString())
+            try {
+                val imm = requireActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE)
+                        as InputMethodManager
+                imm.hideSoftInputFromWindow(
+                    requireActivity().currentFocus?.getWindowToken(),
+                    0
+                )
+            } catch (e: Exception) {
+                // TODO: handle exception
+            }
+        }
 
+        searchedUsersAdapter = SearchedUsersAdapter()
+        binding.rvFoundUsers.adapter = searchedUsersAdapter
+        binding.rvFoundUsers.layoutManager = LinearLayoutManager(requireContext())
+
+        searchedUsersAdapter.onSearchedUserClickListener = {
+            Log.d("1", "onViewCreated: $it")
+            selectedPlayerName = it.playerName
+        }
+
+        observeViewModel()
+
+    }
+
+    private fun observeViewModel() {
+        viewModel.searchedPlayers.observe(viewLifecycleOwner) {
+            Log.d("1", "getPlayers: obseved $it")
+            searchedUsersAdapter.submitList(it)
         }
     }
 

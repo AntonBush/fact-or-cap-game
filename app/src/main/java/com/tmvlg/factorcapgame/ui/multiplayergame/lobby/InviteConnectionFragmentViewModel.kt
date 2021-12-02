@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
+import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.lang.IllegalStateException
 
 class InviteConnectionFragmentViewModel(
@@ -17,11 +19,17 @@ class InviteConnectionFragmentViewModel(
     private var _readyToConnect = MutableLiveData<Boolean>()
     val readyToConnect = _readyToConnect.map { it }
 
+    private var _exception = MutableLiveData<IOException>()
+    val exception = _exception.map { it }
 
     private fun connectToLobby(lobbyId: String) = viewModelScope.launch {
-        val username = userRepository.getUsername()
-            ?: throw IllegalStateException("user must be initialized")
-        firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
+        try {
+            val username = userRepository.getUsername()
+                ?: throw IllegalStateException("user must be initialized")
+            firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
+        } catch (e: IOException) {
+            _exception.postValue(e)
+        }
     }
 
     fun setup(lobbyId: String) = viewModelScope.launch {

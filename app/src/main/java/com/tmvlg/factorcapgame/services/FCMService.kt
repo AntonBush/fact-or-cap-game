@@ -1,31 +1,21 @@
-package com.tmvlg.factorcapgame.data.network
+package com.tmvlg.factorcapgame.services
 
-import android.app.Notification
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tmvlg.factorcapgame.R
 import android.app.NotificationManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
-import android.app.NotificationChannel
-
-import android.os.Build
-
-import android.media.RingtoneManager
 
 import android.app.PendingIntent
-import android.content.Context
 
 import android.content.Intent
 
-import com.google.firebase.firestore.auth.User
 import com.tmvlg.factorcapgame.ui.MainActivity
 
 
-class MyFirebaseMessagingService : FirebaseMessagingService() {
+class FCMService : FirebaseMessagingService() {
     override fun onNewToken(s: String) {
         super.onNewToken(s)
         Log.d("1", "token = $s")
@@ -69,7 +59,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val intent = Intent(this, MainActivity::class.java)
         if (!data.isEmpty()) {
             val lobbyId: String = data.get("lobbyId") ?: ""
-            intent.putExtra("lobbyId", lobbyId)
+            intent.putExtra("lobbyIdForActivity", lobbyId)
         }
 
 

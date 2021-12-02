@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
@@ -15,18 +16,24 @@ class MainActivity : AppCompatActivity() {
         val arguments = intent.extras
 
         if (arguments != null) {
-            val lobbyId = arguments.getString("lobbyId")
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, InviteConnectionFragment.newInstance(lobbyId!!))
-                .commit()
+            val lobbyId: String = arguments.getString("lobbyIdForActivity") ?: ""
+            Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
+            if (lobbyId == "") {
+                navigateToMenu()
+                return
+            }
+            navigateToLobby(lobbyId)
         }
         else {
 
             // Set MenuFragment as first
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
-                .commit()
+            navigateToMenu()
         }
+
+//        // Set MenuFragment as first
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.main_fragment_container, MenuFragment())
+//            .commit()
     }
 
     override fun onBackPressed() {
@@ -37,5 +44,17 @@ class MainActivity : AppCompatActivity() {
 //        else {
 //            super.onBackPressed()
 //        }
+    }
+
+    private fun navigateToMenu() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_fragment_container, MenuFragment())
+            .commit()
+    }
+
+    private fun navigateToLobby(lobbyId: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_fragment_container, InviteConnectionFragment.newInstance(lobbyId))
+            .commit()
     }
 }

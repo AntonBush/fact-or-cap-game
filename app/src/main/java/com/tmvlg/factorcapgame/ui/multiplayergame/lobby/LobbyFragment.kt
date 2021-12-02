@@ -47,6 +47,7 @@ class LobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLobbyBinding.inflate(inflater, container, false)
+        Log.d("1", "onCreateView: ${requireActivity().intent.extras}")
         return binding.root
     }
 
@@ -71,13 +72,20 @@ class LobbyFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        _binding = null
         super.onDestroyView()
+        _binding = null
+        Log.d("1", "onDestroyView: ${requireActivity().intent.extras}")
     }
 
     override fun onDestroy() {
-        viewModel.stopListenLobby()
         super.onDestroy()
+        viewModel.stopListenLobby()
+        Log.d("1", "onDestroy: ${requireActivity().intent.extras}")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("1", "onPause: ${requireActivity().intent.extras}")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

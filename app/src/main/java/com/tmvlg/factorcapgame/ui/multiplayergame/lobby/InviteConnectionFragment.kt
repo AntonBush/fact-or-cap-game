@@ -10,6 +10,7 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
 import com.tmvlg.factorcapgame.databinding.FragmentInviteConnectionBinding
+import com.tmvlg.factorcapgame.ui.NoInternetFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinished
 import java.lang.IllegalArgumentException
 
@@ -65,6 +66,11 @@ class InviteConnectionFragment : Fragment() {
                     .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
                     .commit()
             }
+        }
+        viewModel.exception.observe(viewLifecycleOwner) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, NoInternetFragment())
+                .commit()
         }
     }
 

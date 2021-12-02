@@ -46,7 +46,7 @@
 
         <EditText
                 android:id="@+id/find_lobby_edittext"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="58dp"
                 android:hint="@string/type_here_string"
                 android:textColorHint="@color/offline_indicator_color"
