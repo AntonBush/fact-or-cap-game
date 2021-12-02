@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,7 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
 import java.lang.RuntimeException
 
@@ -57,15 +59,21 @@ class MultiplayerGameFinished : Fragment() {
         if (savedInstanceState != null) {
             loadState(savedInstanceState)
         }
-        binding.restartButton.setOnClickListener {
+        binding.findLobbyButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(
-                    R.id.main_fragment_container,
-                    LobbyFragment.newInstance(
-                        lobbyId.value ?: throw IllegalStateException("lobbyId is null")
-                    )
-                )
+                .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
+        }
+        binding.restartButton.setOnClickListener {
+//            requireActivity().supportFragmentManager.beginTransaction()
+//                .replace(
+//                    R.id.main_fragment_container,
+//                    LobbyFragment.newInstance(
+//                        lobbyId.value ?: throw IllegalStateException("lobbyId is null")
+//                    )
+//                )
+//                .commit()
+            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
         }
         binding.menuButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()

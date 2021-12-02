@@ -25,8 +25,7 @@ class LobbyViewModel(
     val lobby = firebaseLobbyRepository.lobby.map { it }
     val isHost = lobby.map { it?.host == username }
 
-    val _isGameStarted = MutableLiveData(false)
-    val isGameStarted = _isGameStarted.map { it }
+    val isGameStarted = lobby.map { it?.started ?: false }
 
     fun listenLobby(lobbyId: String) = viewModelScope.launch {
         firebaseLobbyRepository.listenLobby(lobbyId)
@@ -37,7 +36,10 @@ class LobbyViewModel(
     }
 
     fun startGame() = viewModelScope.launch {
-        _isGameStarted.postValue(true)
+        val lobbyId = lobby.value?.id
+        if (lobbyId != null) {
+            firebaseLobbyRepository.startGame(lobbyId)
+        }
     }
 
 //    fun connectLobby(selectedLobby: Lobby) = viewModelScope.launch {
