@@ -15,8 +15,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
@@ -83,6 +86,8 @@ class MenuViewModel(
     }
 
     fun signOut() = viewModelScope.launch {
+        val username = firebaseAuth.currentUser?.email?.dropLast(EMAIL_LETTERS_COUNT)
+        signOutFromFirestore(username!!)
         firebaseAuth.signOut()
         googleSignInClient.signOut()
         saveUser().join()
@@ -103,9 +108,43 @@ class MenuViewModel(
     }
 
     private fun saveUser() = viewModelScope.launch {
+        val username = firebaseAuth.currentUser?.email?.dropLast(EMAIL_LETTERS_COUNT)
         userRepository.saveUsername(
-            firebaseAuth.currentUser?.email?.dropLast(EMAIL_LETTERS_COUNT)
+            username
         )
+
+        if (username != null)
+            saveUserToFirestore(username)
+
+    }
+
+    private fun saveUserToFirestore(username: String) {
+        val db = Firebase.firestore
+
+
+        val token = userRepository.getToken()
+
+        val user = hashMapOf(
+            "username" to username,
+            "token" to token
+        )
+
+        db.collection("users")
+            .document(username ?: "")
+            .set(user, SetOptions.merge())
+    }
+
+    private fun signOutFromFirestore(username: String) {
+        val db = Firebase.firestore
+
+        val user = hashMapOf(
+            "username" to username,
+            "token" to ""
+        )
+
+        db.collection("users")
+            .document(username ?: "")
+            .set(user, SetOptions.merge())
     }
 
     private fun firebaseSignIn(
