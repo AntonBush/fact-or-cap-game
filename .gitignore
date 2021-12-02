@@ -8,4 +8,5 @@
 /captures
 .externalNativeBuild
 .cxx
+/app/src/main/java/com/tmvlg/factorcapgame/internal/keys.kt
 

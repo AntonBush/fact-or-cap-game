@@ -1,5 +1,6 @@
 package com.tmvlg.factorcapgame.services
 
+import android.app.NotificationChannel
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.tmvlg.factorcapgame.R
@@ -11,6 +12,8 @@ import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import android.app.PendingIntent
 
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 
 import com.tmvlg.factorcapgame.ui.MainActivity
 
@@ -55,12 +58,16 @@ class FCMService : FirebaseMessagingService() {
         messageTitle: String,
         data: HashMap<String, String>
     ) {
+        if (data.isEmpty()) {
+            return
+        }
+
+        val lobbyId: String = data.get("lobbyId") ?: return
 
         val intent = Intent(this, MainActivity::class.java)
-        if (!data.isEmpty()) {
-            val lobbyId: String = data.get("lobbyId") ?: ""
-            intent.putExtra("lobbyIdForActivity", lobbyId)
-        }
+        Log.d("1", "sendNotification: data is not empty! lobbyId=$lobbyId")
+        intent.putExtra("lobbyId", lobbyId)
+
 
 
 
@@ -71,15 +78,42 @@ class FCMService : FirebaseMessagingService() {
             this, 0 /* Request code */, intent,
             PendingIntent.FLAG_ONE_SHOT
         )
+
+
+
         val notificationBuilder: NotificationCompat.Builder =
-            NotificationCompat.Builder(this)
+            NotificationCompat.Builder(this, CHANNEL_INVITATIONS)
                 .setSmallIcon(R.drawable.circle_background)
                 .setContentTitle(messageTitle)
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
         val nManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        nManager.notify(0 /* ID of notification */, notificationBuilder.build())
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create the NotificationChannel
+            val name = "Invitations"
+            val descriptionText = "Notification to accept invite to lobby"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel(CHANNEL_INVITATIONS, name, importance)
+            mChannel.description = descriptionText
+            mChannel.vibrationPattern = VIBRATION_PATTERN
+            mChannel.enableLights(true)
+            mChannel.enableVibration(true)
+            mChannel.lightColor = LIGHT_COLOR_ARGB
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            nManager.createNotificationChannel(mChannel)
+        }
+
+        nManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+    }
+
+    companion object {
+        private const val NOTIFICATION_ID = 4
+        private const val CHANNEL_INVITATIONS = "invitations"
+        private val VIBRATION_PATTERN = longArrayOf(0, 100, 50, 100)
+        private const val LIGHT_COLOR_ARGB = Color.GREEN
     }
 }
 
