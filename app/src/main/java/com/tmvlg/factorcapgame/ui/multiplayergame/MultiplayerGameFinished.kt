@@ -100,7 +100,7 @@ class MultiplayerGameFinished : Fragment() {
                 viewModel.sendScore(_score, _lobbyId)
                 if (viewModel.isAllFinished()) {
                     binding.tvWaiting.text = "Game results"
-                    val winner = viewModel.getWinner(_lobbyId)
+                    val winner = viewModel.getWinner()
                     if (winner == viewModel.getUsername()) {
                         binding.tvGameResult.text = "You win!"
                     } else {

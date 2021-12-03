@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
@@ -97,18 +98,19 @@ class MultiplayerGameViewModel(
         connectToLobby(lobbyId)
         loadFactsList().join()
         setUserReady(lobbyId)
-        waitForAllPlayersLoaded(lobbyId).join()
+        waitForAllPlayersLoaded().join()
         startTimer()
         startCountingGameDuration()
     }
 
     fun setUserReady(lobbyId: String) {
-        val username = userRepository.getUsername()!!
+        val username = FactOrCapAuth.currentUser.value?.name
+            ?: throw IllegalStateException("User is unauthorized")
         firebaseLobbyRepository.setPlayerLoaded(lobbyId, username)
     }
 
-    fun waitForAllPlayersLoaded(lobbyId: String) = viewModelScope.launch {
-        while (!firebaseLobbyRepository.isAllPlayersLoaded(lobbyId)) {
+    fun waitForAllPlayersLoaded() = viewModelScope.launch {
+        while (!firebaseLobbyRepository.isAllPlayersLoaded()) {
             delay(CHECK_TIME_IS_PLAYERS_LOADED)
         }
         Log.d("1", "waitForAllPlayersLoaded: ALL PLAYERS LOADED")

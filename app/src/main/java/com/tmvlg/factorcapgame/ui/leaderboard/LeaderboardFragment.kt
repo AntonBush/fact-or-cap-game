@@ -14,13 +14,7 @@ import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class LeaderboardFragment : Fragment() {
 
-    private val viewModel: LeaderboardViewModel by viewModels {
-        // inits viewmodel
-        val app = activity?.application as FactOrCapApplication
-        return@viewModels LeaderboardViewModelFactory(
-            app.userRepository
-        )
-    }
+    private val viewModel: LeaderboardViewModel by viewModels()
     private var _binding: FragmentLeaderboardBinding? = null
     private val binding: FragmentLeaderboardBinding
 

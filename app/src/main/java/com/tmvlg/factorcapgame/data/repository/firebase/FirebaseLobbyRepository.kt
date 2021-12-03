@@ -53,7 +53,7 @@ class FirebaseLobbyRepository {
                         for (firebasePlayer in child.children) {
                             val playerId = firebasePlayer.key
                                 ?: throw RuntimeException("can't find playerId")
-                            val playerBody = firebasePlayer.getValue<Map<String, Any?>>()
+                            val playerBody = firebasePlayer.getValue<Player.Mapped>()
                                 ?: throw RuntimeException("can't find playerBody")
                             val player = Player.newInstance(
                                 playerId,
@@ -122,7 +122,7 @@ class FirebaseLobbyRepository {
         }
     }
 
-    fun isAllPlayersLoaded(lobbyId: String): Boolean {
+    fun isAllPlayersLoaded(): Boolean {
         Log.d("1", "isAllPlayersLoaded: $players")
         players.forEach {
             if (!it.loaded) {
@@ -173,8 +173,8 @@ class FirebaseLobbyRepository {
                 // Lobby = String + Map<String, Map<String, Any?>>
                 // LobbyList = Map<String, Map<String, Map<String, Any?>>>
                 val mappedLobbyList = firebaseLobbyList.getValue<
-                    Map<String, Map<String, Any?>>
-                    >()
+                        Map<String, Lobby.Mapped>
+                        >()
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->
@@ -209,13 +209,13 @@ class FirebaseLobbyRepository {
         lobbyId: String
     ) = withContext(Dispatchers.IO) {
         val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
-        val lobbyPlayersTask = lobbyPlayersRef.get().addOnSuccessListener {
+        lobbyPlayersRef.get().addOnSuccessListener {
             val lobbyPlayers = it.children
 
             val isPlayerInRoom = lobbyPlayers.any { firebasePlayer ->
                 val playerId = firebasePlayer.key
                     ?: throw IOException("can't find playerId")
-                val mappedPlayer = firebasePlayer.getValue<Map<String, Any?>>()
+                val mappedPlayer = firebasePlayer.getValue<Player.Mapped>()
                     ?: throw IOException("can't find playerBody")
                 val player = Player.newInstance(playerId, mappedPlayer)
 
@@ -232,10 +232,9 @@ class FirebaseLobbyRepository {
 
                 newPlayer.id = newPlayerKey
 
-                lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMutableMap())
+                lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMapped())
             }
         }
-
 
 
     }
@@ -255,7 +254,7 @@ class FirebaseLobbyRepository {
             override fun onDataChange(firebaseLobby: DataSnapshot) {
                 val firebaseLobbyId = firebaseLobby.key
                     ?: throw IOException("lobby does not contain key")
-                val firebaseLobbyValue = firebaseLobby.getValue<Map<String, Any?>>()
+                val firebaseLobbyValue = firebaseLobby.getValue<Lobby.Mapped>()
                     ?: throw IOException("lobby does not contain value")
                 _lobby.postValue(
                     Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
@@ -297,7 +296,7 @@ class FirebaseLobbyRepository {
             roomName = _roomName
         )
         val newLobbyKey = lobbiesRef.push().key ?: throw IOException("can't add new lobby")
-        lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMutableMap()))
+        lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMapped()))
         addPlayerToLobby(username, newLobbyKey)
         return@withContext newLobbyKey
     }
@@ -307,19 +306,6 @@ class FirebaseLobbyRepository {
         lobbyId: String
     ) = withContext(Dispatchers.IO) {
         lobbiesRef.child(lobbyId).child("started").setValue(true)
-        val resetListener = object : ValueEventListener {
-            override fun onDataChange(firebaseLobby: DataSnapshot) {
-                val firebaseLobbyId = firebaseLobby.key
-                    ?: throw IOException("lobby does not contain key")
-                val firebaseLobbyValue = firebaseLobby.getValue<Map<String, Any?>>()
-                    ?: throw IOException("lobby does not contain value")
-                _lobby.postValue(
-                    Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
-                )
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        }
     }
 
     companion object {

@@ -13,8 +13,10 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.databinding.CreateRoomDialogBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
@@ -27,7 +29,6 @@ class MenuFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MenuViewModelFactory(
-            app.userRepository,
             app.firebaseRepository
         )
     }
@@ -36,9 +37,12 @@ class MenuFragment : Fragment() {
     private val binding: FragmentMenuBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
+    private var isMultiplayerButtonToggled: Boolean = false
+
     private var isEnabled: Boolean
         get() = binding.root.isEnabled
         set(value) {
+            Log.d(TAG, "isEnabled $isEnabled -> $value")
             binding.apply {
                 changeLanguageButton.isEnabled = value
                 createRoomButton.isEnabled = value
@@ -54,7 +58,6 @@ class MenuFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate after super.onCreate")
-        viewModel.initializeAuth(requireActivity())
     }
 
     override fun onCreateView(
@@ -75,6 +78,11 @@ class MenuFragment : Fragment() {
         Log.d(TAG, "onViewCreated end")
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.silentSignIn(requireActivity() as MainActivity)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -93,11 +101,13 @@ class MenuFragment : Fragment() {
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
             isEnabled = false
+            Log.d(TAG, "signIn button clicked")
             // Calling sign in function
             signIn()
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
+            Log.d(TAG, "signOut button clicked")
             // Calling sign out function
             signOut()
         }
@@ -131,19 +141,22 @@ class MenuFragment : Fragment() {
                                 " You should authorize via Google to play multiplayer." +
                                 " Do you want to proceed?"
                     )
-                    .setNegativeButton("Cancel") { dialog, which ->
+                    .setNegativeButton("Cancel") { dialog, _ ->
                         Log.d("-------------------can-", "")
-                        isEnabled = true
                         dialog.cancel()
                     }
-                    .setPositiveButton("Sign in with Google") { dialog, which ->
+                    .setPositiveButton("Sign in with Google") { _, _ ->
                         signIn()
+                    }
+                    .setOnCancelListener {
+                        isEnabled = true
                     }
                     .show()
             }
         }
         // Create room button listener
-        binding.createRoomButton.setOnClickListener() {
+        binding.createRoomButton.setOnClickListener()
+        {
             isEnabled = false
             val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
             MaterialAlertDialogBuilder(
@@ -157,36 +170,42 @@ class MenuFragment : Fragment() {
                             " Do you want to proceed?"
                 )
                 .setView(b.root)
-                .setNegativeButton("Cancel") { dialog, which ->
-                    isEnabled = true
+                .setNegativeButton("Cancel") { dialog, _ ->
                     dialog.cancel()
                 }
-                .setPositiveButton("Create room") { dialog, which ->
+                .setPositiveButton("Create room") { _, _ ->
                     viewModel.createLobby(b.editRoomName.text.toString())
+                }
+                .setOnCancelListener {
+                    isEnabled = true
                 }
                 .show()
         }
         // Join room button listener
-        binding.joinRoomButton.setOnClickListener() {
+        binding.joinRoomButton.setOnClickListener()
+        {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
         // Statistics button listener
-        binding.statButton.setOnClickListener() {
+        binding.statButton.setOnClickListener()
+        {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, StatisticsFragment())
                 .commit()
         }
         // Leader button listener
-        binding.leaderboardButton.setOnClickListener() {
+        binding.leaderboardButton.setOnClickListener()
+        {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LeaderboardFragment())
                 .commit()
 //            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
         // Change language listener
-        binding.changeLanguageButton.setOnClickListener() {
+        binding.changeLanguageButton.setOnClickListener()
+        {
             Toast.makeText(context, "In development", Toast.LENGTH_SHORT).show()
         }
     }
@@ -210,6 +229,10 @@ class MenuFragment : Fragment() {
                 binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
 
                 binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
+
+                if (isMultiplayerButtonToggled) {
+                    toggleMultiplayerButton()
+                }
             }
 
             Log.d("----------------------1", "$isUserSignedIn")
@@ -220,6 +243,13 @@ class MenuFragment : Fragment() {
             isEnabled = true
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                Log.d("-------------------err-", "")
+                isEnabled = true
+            }
+        }
+        viewModel.authError.observe(viewLifecycleOwner) { message ->
             if (message != null) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 Log.d("-------------------err-", "")
@@ -242,23 +272,18 @@ class MenuFragment : Fragment() {
 
     private fun signIn() {
         isEnabled = false
-        viewModel.startSignInIntent(launcher)
-    }
-
-    private val launcher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        Log.d("startSignInIntent", "-----------------------")
-        viewModel.signInFromIntent(result, requireActivity())
+        val activity = requireActivity() as MainActivity
+        viewModel.signIn(activity, activity.launcher)
     }
 
     private fun signOut() {
         isEnabled = false
-        viewModel.signOut()
+        viewModel.signOut(requireActivity() as MainActivity)
     }
 
     // Animation
     private fun toggleMultiplayerButton() {
+        isMultiplayerButtonToggled = !isMultiplayerButtonToggled
         val visibility = binding.joinRoomButton.visibility.xor(XOR_VISIBLE_VALUE_2)
         val upperAnim = if (visibility == View.VISIBLE) {
             AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_upper)

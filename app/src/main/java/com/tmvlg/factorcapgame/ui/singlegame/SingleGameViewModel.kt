@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
@@ -24,7 +25,8 @@ class SingleGameViewModel(
     private lateinit var username: String
     init {
         viewModelScope.launch {
-            username = userRepository.getUsername()!!
+            username = FactOrCapAuth.currentUser.value?.name
+                ?: throw IllegalStateException("User is unauthorized")
         }
     }
     // exception that throws when can't fetch a fact
@@ -104,7 +106,7 @@ class SingleGameViewModel(
         // Add a new document with a generated ID
         db.collection("leaderboard").document(username)
             .set(item, SetOptions.merge())
-            .addOnSuccessListener { documentReference ->
+            .addOnSuccessListener {
                 Log.d(TAG, "DocumentSnapshot added ")
             }
             .addOnFailureListener { e ->

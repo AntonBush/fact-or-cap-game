@@ -3,6 +3,7 @@ package com.tmvlg.factorcapgame.ui.multiplayergame
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
@@ -20,7 +21,8 @@ class MultiplayerGameFinishedViewModel(
     }
 
     fun getUsername(): String {
-        return userRepository.getUsername() ?: ""
+        return FactOrCapAuth.currentUser.value?.name
+            ?: throw IllegalStateException("User is unauthorized")
     }
 
     fun sendScore(score: Int, lobbyId: String) {
@@ -36,7 +38,7 @@ class MultiplayerGameFinishedViewModel(
         return true
     }
 
-    fun getWinner(lobbyId: String): String {
+    fun getWinner(): String {
         val winner = firebaseLobbyRepository.calculateWinner()
         winner.isWinner = true
         return winner.playerName

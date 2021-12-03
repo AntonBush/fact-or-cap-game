@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
@@ -18,7 +19,8 @@ class LobbyViewModel(
 
     init {
         viewModelScope.launch {
-            _username = userRepository.getUsername()!!
+            _username = FactOrCapAuth.currentUser.value?.name
+                ?: throw IllegalStateException("User is unauthorized")
         }
     }
 

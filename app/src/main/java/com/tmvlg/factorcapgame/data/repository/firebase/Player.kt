@@ -2,6 +2,7 @@ package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
 import android.util.Log
+import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -14,37 +15,40 @@ data class Player(
     var waiting: Boolean = false,
     var isWinner: Boolean = false
 ) : Parcelable {
-    fun toMutableMap(): MutableMap<String, Any?> {
-        return mutableMapOf(
-            "loaded" to loaded,
-            "playerName" to playerName,
-            "score" to score,
-            "timeElapsed" to timeElapsed,
-            "waiting" to waiting
+    fun toMapped(): Mapped {
+        return Mapped(
+            loaded,
+            playerName,
+            score,
+            timeElapsed,
+            waiting
         )
     }
 
     companion object {
-        fun newInstance(key: String, map: Map<String, Any?>): Player {
+        fun newInstance(key: String, mapped: Mapped): Player {
             return Player().apply {
-                Log.d("Player.newInstance", "$map")
+                Log.d("Player.newInstance", "$key|$mapped")
                 id = key
-                loaded = map["loaded"] as Boolean?
-                    ?: throw IllegalFieldException("loaded")
-                playerName = map["playerName"] as String?
-                    ?: throw IllegalFieldException("playerName")
-                val longScore = map["score"] as Long?
-                    ?: throw IllegalFieldException("score")
-                score = longScore.toInt()
-                timeElapsed = map["timeElapsed"] as Long?
-                    ?: throw IllegalFieldException("score")
-                waiting = map["waiting"] as Boolean?
-                    ?: throw IllegalArgumentException("map does not contain field <roomName>")
+                loaded = mapped.loaded
+                playerName = mapped.playerName
+                score = mapped.score
+                timeElapsed = mapped.timeElapsed
+                waiting = mapped.waiting
             }
         }
 
         private fun IllegalFieldException(field: String): IllegalArgumentException {
-            return IllegalArgumentException("map does not contain field<$field>")
+            return IllegalArgumentException("map does not contain field <$field>")
         }
     }
+
+    @IgnoreExtraProperties
+    data class Mapped(
+        var loaded: Boolean = false,
+        var playerName: String = "",
+        var score: Int = 0,
+        var timeElapsed: Long = 0,
+        var waiting: Boolean = false
+    )
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
@@ -30,7 +31,8 @@ class FindLobbyViewModel(
 
     fun connectLobby(selectedLobby: Lobby) = viewModelScope.launch {
         firebaseLobbyRepository.addPlayerToLobby(
-            userRepository.getUsername()!!,
+            FactOrCapAuth.currentUser.value?.name
+                ?: throw IllegalStateException("User is unauthorized"),
             selectedLobby.id
         )
         connectedLobbyId.postValue(selectedLobby.id)

@@ -10,8 +10,15 @@ class InviteConnectionFragmentViewModelFactory(
     private val userRepository: UserRepository
 ): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InviteConnectionFragmentViewModel::class.java))
-            return InviteConnectionFragmentViewModel(firebaseLobbyRepository, userRepository) as T
-        throw IllegalArgumentException("Unknown view model class $modelClass")
+        return try {
+            modelClass.getConstructor(
+                FirebaseLobbyRepository::class.java,
+                UserRepository::class.java
+            ).newInstance(firebaseLobbyRepository, userRepository)
+        } catch (e: Exception) {
+            val exception = IllegalArgumentException("Unknown view model class $modelClass")
+            exception.addSuppressed(e)
+            throw exception
+        }
     }
 }

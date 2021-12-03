@@ -7,6 +7,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.network.fcm.*
 import com.tmvlg.factorcapgame.data.network.fcm.models.DataModel
 import com.tmvlg.factorcapgame.data.network.fcm.models.NotificationModel
@@ -36,7 +37,7 @@ class InviteFragmentViewModel(
                     val token = document.data?.get("token").toString()
                     Log.d("1", "invite: SUCESS! token = $token")
 
-                    val sender = userRepository.getUsername()
+                    val sender = FactOrCapAuth.currentUser.value?.name
 
                     val rootModel = RootModel(
                         token,

@@ -2,6 +2,7 @@ package com.tmvlg.factorcapgame.data
 
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,26 +25,45 @@ object FactOrCapAuth {
     private const val EMAIL_LETTERS_COUNT = "@gmail.com".length
     private const val TAG = "FactOrCapAuth"
 
+    private var _gso: GoogleSignInOptions? = null
+    private fun getGso(activity: AppCompatActivity): GoogleSignInOptions {
+        val localGso = _gso ?: GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(activity.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        _gso = localGso
+        return localGso
+    }
+
     private val firebaseAuth = Firebase.auth
 
-    private val _currentUser = MutableLiveData<User?>()
+    private val _currentUser = MutableLiveData<User?>(null)
     val currentUser = _currentUser.map { it }
 
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage = _errorMessage.map { it }
 
-    fun signIn(launcher: SignInLauncher, activity: AppCompatActivity) {
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(activity.getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-
-        val localGoogleSignInClient = GoogleSignIn.getClient(activity.applicationContext, gso)
-        localGoogleSignInClient.silentSignIn()
-            .addOnSuccessListener { account -> firebaseSignIn(account, activity) }
-            .addOnCanceledListener {
+    fun signIn(activity: AppCompatActivity, launcher: SignInLauncher? = null) {
+        Log.d(TAG, "signIn: before silent signIn")
+        val localGoogleSignInClient = GoogleSignIn.getClient(
+            activity.applicationContext,
+            getGso(activity)
+        )
+        val signInTask = localGoogleSignInClient.silentSignIn()
+            .addOnSuccessListener { account ->
+                Log.d(TAG, "Successful google silent signIn")
+                firebaseSignIn(account, activity)
+            }
+        if (launcher != null) {
+            signInTask.addOnFailureListener {
+                Log.d(TAG, "Starting google signIn intent...")
                 launcher.launch(localGoogleSignInClient.signInIntent)
             }
+        }
+    }
+
+    fun silentSignIn(activity: AppCompatActivity) {
+        signIn(activity)
     }
 
     fun signOut(activity: AppCompatActivity) {
@@ -58,6 +78,8 @@ object FactOrCapAuth {
 
         GoogleSignIn.getClient(activity.applicationContext, gso)
             .signOut()
+
+        _currentUser.postValue(null)
     }
 
     fun googleSignInFromIntent(intent: Intent?, activity: AppCompatActivity) {
@@ -65,7 +87,7 @@ object FactOrCapAuth {
         val task = GoogleSignIn.getSignedInAccountFromIntent(intent)
         task
             .addOnSuccessListener { account -> firebaseSignIn(account, activity) }
-            .addOnCanceledListener {
+            .addOnFailureListener {
                 _errorMessage.postValue("Authentication via Google failed")
                 _currentUser.postValue(null)
                 signOut(activity)
@@ -89,7 +111,7 @@ object FactOrCapAuth {
                 firestoreSignIn(user)
                 _currentUser.postValue(user)
             }
-            .addOnCanceledListener {
+            .addOnFailureListener {
                 _errorMessage.postValue("Authentication via Firebase failed")
                 _currentUser.postValue(null)
                 signOut(activity)
@@ -136,10 +158,12 @@ object FactOrCapAuth {
                     ActivityResultContracts.StartActivityForResult()
                 ) { result ->
                     if (result.resultCode != Activity.RESULT_OK) {
+                        Log.w(TAG, "Google signIn intent failure")
                         _errorMessage.postValue("Intent failure")
                         _currentUser.postValue(null)
                         return@registerForActivityResult
                     }
+                    Log.d(TAG, "Successful google signIn intent")
                     googleSignInFromIntent(result.data, activity)
                 }
 

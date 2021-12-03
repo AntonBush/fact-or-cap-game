@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
@@ -24,8 +25,8 @@ class InviteConnectionFragmentViewModel(
 
     private fun connectToLobby(lobbyId: String) = viewModelScope.launch {
         try {
-            val username = userRepository.getUsername()
-                ?: throw IllegalStateException("user must be initialized")
+            val username = FactOrCapAuth.currentUser.value?.name
+                ?: throw IllegalStateException("User is unauthorized")
             firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
         } catch (e: IOException) {
             _exception.postValue(e)

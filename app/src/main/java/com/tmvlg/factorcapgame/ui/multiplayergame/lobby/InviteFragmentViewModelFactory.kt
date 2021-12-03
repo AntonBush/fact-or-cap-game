@@ -8,8 +8,14 @@ class InviteFragmentViewModelFactory(
     private val userRepository: UserRepository
 ): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(InviteFragmentViewModel::class.java))
-            return InviteFragmentViewModel(userRepository) as T
-        throw IllegalArgumentException("Unknown view model class $modelClass")
+        return try {
+            modelClass.getConstructor(
+                UserRepository::class.java
+            ).newInstance(userRepository)
+        } catch (e: Exception) {
+            val exception = IllegalArgumentException("Unknown view model class $modelClass")
+            exception.addSuppressed(e)
+            throw exception
+        }
     }
 }

@@ -5,11 +5,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.InviteConnectionFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 
 class MainActivity : AppCompatActivity() {
+    val launcher = FactOrCapAuth.SignInLauncher.newInstance(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
