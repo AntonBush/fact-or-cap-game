@@ -66,7 +66,6 @@ class FindLobbyFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.listenLobbies()
 //        loadState(requireArguments())
     }
 
@@ -82,6 +81,7 @@ class FindLobbyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
+            viewModel.stopListenLobbies()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
@@ -113,12 +113,11 @@ class FindLobbyFragment : Fragment() {
         super.onDestroyView()
     }
 
-    override fun onDestroy() {
-        viewModel.stopListenLobbies()
-        super.onDestroy()
-    }
-
     private fun observeViewModel() {
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!! БЕЗ ЭТОГО РАБОТАТЬ НЕ БУДЕТ !!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        viewModel.firebaseLobbies.observe(viewLifecycleOwner) {}
         viewModel.lobbies.observe(viewLifecycleOwner) { lobbies ->
             Log.d(tag, "lobbies in fragment: $lobbies")
             filterText(lobbies)
@@ -129,6 +128,7 @@ class FindLobbyFragment : Fragment() {
                 return@observe
             }
 
+            viewModel.stopListenLobbies()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.main_fragment_container,
@@ -144,6 +144,7 @@ class FindLobbyFragment : Fragment() {
         val regex = text.toRegex(RegexOption.IGNORE_CASE)
         lobbyListSection.set(
             lobbies.filter { lobby ->
+//                Log.d("TAG", "${lobby.lastTimeHostPing - System.currentTimeMillis()}")
                 return@filter regex.containsMatchIn(lobby.roomName)
             }
         )

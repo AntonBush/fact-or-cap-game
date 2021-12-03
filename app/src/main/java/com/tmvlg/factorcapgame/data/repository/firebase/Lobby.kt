@@ -2,6 +2,7 @@ package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 import java.lang.Exception
 
@@ -11,7 +12,8 @@ data class Lobby(
     var host: String = "",
     var started: Boolean = false,
     var players: List<Player> = emptyList(),
-    var roomName: String = ""
+    var roomName: String = "",
+    var lastTimeHostPing: Long = System.currentTimeMillis()
 ) : Parcelable {
     fun toMapped(): Mapped {
         return Mapped(
@@ -20,7 +22,8 @@ data class Lobby(
             mapOf(
                 * players.map { it.id to it }.toTypedArray()
             ),
-            roomName
+            roomName,
+            lastTimeHostPing
         )
     }
 
@@ -35,6 +38,7 @@ data class Lobby(
                     }
                 }
                 roomName = mapped.roomName
+                lastTimeHostPing = mapped.lastTimeHostPing
             }
         }
 
@@ -45,9 +49,15 @@ data class Lobby(
 
     @IgnoreExtraProperties
     data class Mapped(
+        @PropertyName("host")
         var host: String = "",
+        @PropertyName("started")
         var started: Boolean = false,
+        @PropertyName("players")
         var players: Map<String, Player> = emptyMap(),
-        var roomName: String = ""
+        @PropertyName("roomName")
+        var roomName: String = "",
+        @PropertyName("lastTimeHostPing")
+        var lastTimeHostPing: Long = 0
     )
 }

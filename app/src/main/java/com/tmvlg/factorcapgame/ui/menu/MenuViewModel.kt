@@ -48,8 +48,8 @@ class MenuViewModel(
         FactOrCapAuth.signIn(activity, launcher)
     }
 
-    fun silentSignIn(activity: AppCompatActivity) = viewModelScope.launch {
-        FactOrCapAuth.silentSignIn(activity)
+    fun silentSignIn(activity: AppCompatActivity, errorCallback: (() -> Unit)? = null) = viewModelScope.launch {
+        FactOrCapAuth.silentSignIn(activity, errorCallback)
     }
 
     fun signOut(activity: AppCompatActivity) = viewModelScope.launch {

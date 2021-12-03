@@ -3,6 +3,7 @@ package com.tmvlg.factorcapgame.data.repository.firebase
 import android.os.Parcelable
 import android.util.Log
 import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -13,7 +14,8 @@ data class Player(
     var score: Int = 0,
     var timeElapsed: Long = 0,
     var waiting: Boolean = false,
-    var isWinner: Boolean = false
+    var isWinner: Boolean = false,
+    var lastTimePing: Long = System.currentTimeMillis()
 ) : Parcelable {
     fun toMapped(): Mapped {
         return Mapped(
@@ -21,7 +23,8 @@ data class Player(
             playerName,
             score,
             timeElapsed,
-            waiting
+            waiting,
+            lastTimePing
         )
     }
 
@@ -35,6 +38,7 @@ data class Player(
                 score = mapped.score
                 timeElapsed = mapped.timeElapsed
                 waiting = mapped.waiting
+                lastTimePing = mapped.lastTimePing
             }
         }
 
@@ -43,12 +47,20 @@ data class Player(
         }
     }
 
+
     @IgnoreExtraProperties
     data class Mapped(
+        @PropertyName("loaded")
         var loaded: Boolean = false,
+        @PropertyName("playerName")
         var playerName: String = "",
+        @PropertyName("score")
         var score: Int = 0,
+        @PropertyName("timeElapsed")
         var timeElapsed: Long = 0,
-        var waiting: Boolean = false
+        @PropertyName("waiting")
+        var waiting: Boolean = false,
+        @PropertyName("lastTimePing")
+        var lastTimePing: Long = 0
     )
 }

@@ -39,10 +39,10 @@ class MenuFragment : Fragment() {
 
     private var isMultiplayerButtonToggled: Boolean = false
 
-    private var isEnabled: Boolean
+    private var isEnabled: Boolean = true
         get() = binding.root.isEnabled
         set(value) {
-            Log.d(TAG, "isEnabled $isEnabled -> $value")
+            Log.d(TAG, "isEnabled $field -> $value")
             binding.apply {
                 changeLanguageButton.isEnabled = value
                 createRoomButton.isEnabled = value
@@ -53,6 +53,7 @@ class MenuFragment : Fragment() {
                 statButton.isEnabled = value
                 singleGameButton.isEnabled = value
             }
+            field = value
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +68,10 @@ class MenuFragment : Fragment() {
     ): View {
         Log.d(TAG, "onCreateView")
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
+        if (viewModel.isUserSignedIn.value != true) {
+            isEnabled = false
+            viewModel.silentSignIn(requireActivity() as MainActivity) { isEnabled = true }
+        }
         return binding.root
     }
 
@@ -75,12 +80,19 @@ class MenuFragment : Fragment() {
         Log.d(TAG, "onViewCreated after super.onViewCreated")
         setupListeners()
         observeViewModel()
+        if (viewModel.isUserSignedIn.value != true) {
+            isEnabled = false
+            viewModel.silentSignIn(requireActivity() as MainActivity) { isEnabled = true }
+        }
         Log.d(TAG, "onViewCreated end")
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.silentSignIn(requireActivity() as MainActivity)
+        if (viewModel.isUserSignedIn.value != true) {
+            isEnabled = false
+            viewModel.silentSignIn(requireActivity() as MainActivity) { isEnabled = true }
+        }
     }
 
     override fun onDestroyView() {

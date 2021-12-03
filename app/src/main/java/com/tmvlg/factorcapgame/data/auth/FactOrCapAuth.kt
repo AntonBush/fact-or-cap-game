@@ -11,7 +11,6 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -43,7 +42,7 @@ object FactOrCapAuth {
     private val _errorMessage = MutableLiveData<String?>(null)
     val errorMessage = _errorMessage.map { it }
 
-    fun signIn(activity: AppCompatActivity, launcher: SignInLauncher? = null) {
+    fun signIn(activity: AppCompatActivity, launcher: SignInLauncher? = null, errorCallback: (() -> Unit)? = null) {
         Log.d(TAG, "signIn: before silent signIn")
         val localGoogleSignInClient = GoogleSignIn.getClient(
             activity.applicationContext,
@@ -60,10 +59,17 @@ object FactOrCapAuth {
                 launcher.launch(localGoogleSignInClient.signInIntent)
             }
         }
+        if (errorCallback != null) {
+            signInTask.addOnFailureListener {
+                errorCallback()
+            }.addOnCanceledListener {
+                errorCallback()
+            }
+        }
     }
 
-    fun silentSignIn(activity: AppCompatActivity) {
-        signIn(activity)
+    fun silentSignIn(activity: AppCompatActivity, errorCallback: (() -> Unit)? = null) {
+        signIn(activity, errorCallback = errorCallback)
     }
 
     fun signOut(activity: AppCompatActivity) {
