@@ -24,21 +24,25 @@ class UserRepository(
         return preferenceProvider.getStatistics()
     }
 
+    @Deprecated("You should get user info from account")
     @WorkerThread
     fun saveUsername(username: String?) {
         preferenceProvider.saveUsername(username)
     }
 
+    @Deprecated("You should get user info from account")
     @WorkerThread
     fun getUsername(): String? {
         return preferenceProvider.getUsername()
     }
 
+    @Deprecated("You should get user info from account")
     @WorkerThread
     fun saveToken(token: String?) {
         preferenceProvider.setRegistrationToken(token)
     }
 
+    @Deprecated("You should get user info from account")
     @WorkerThread
     fun getToken(): String? {
         return preferenceProvider.getRegistrationToken()
