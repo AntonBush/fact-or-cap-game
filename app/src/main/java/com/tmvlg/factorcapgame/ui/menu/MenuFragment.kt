@@ -20,6 +20,8 @@ import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
+import android.animation.ValueAnimator.*
+import com.tmvlg.factorcapgame.ui.MainActivity
 
 class MenuFragment : Fragment() {
 
@@ -40,7 +42,7 @@ class MenuFragment : Fragment() {
         get() = binding.root.isEnabled
         set(value) {
             binding.apply {
-                changeLanguageButton.isEnabled = value
+                changeVolumeButton.isEnabled = value
                 createRoomButton.isEnabled = value
                 gameButtonsLl.isEnabled = value
                 joinRoomButton.isEnabled = value
@@ -64,6 +66,11 @@ class MenuFragment : Fragment() {
     ): View {
         Log.d(TAG, "onCreateView")
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
+        if (!(this.activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
+
         return binding.root
     }
 
@@ -83,6 +90,7 @@ class MenuFragment : Fragment() {
     private fun setupListeners() {
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             val signOutLayout = binding.signInLayoutAuthorized.signOutLayout
             when (signOutLayout.visibility) {
                 View.GONE -> signOutLayout.visibility = View.VISIBLE
@@ -92,17 +100,20 @@ class MenuFragment : Fragment() {
         }
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             // Calling sign in function
             signIn()
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             // Calling sign out function
             signOut()
         }
         // Start single game button listener
         binding.singleGameButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
@@ -110,6 +121,7 @@ class MenuFragment : Fragment() {
         }
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             // Calling toggle mpb function
             Log.d(
@@ -144,6 +156,7 @@ class MenuFragment : Fragment() {
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
             MaterialAlertDialogBuilder(
@@ -168,26 +181,37 @@ class MenuFragment : Fragment() {
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
+
+        binding.changeVolumeButton.setOnClickListener(){
+            if ((this.activity as MainActivity).soundEnabled){
+                (this.activity as MainActivity).soundEnabled = false
+                binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
+            }
+            else {
+                (this.activity as MainActivity).soundEnabled = true
+                binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_up)
+            }
+        }
+
         // Statistics button listener
         binding.statButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, StatisticsFragment())
                 .commit()
         }
         // Leader button listener
         binding.leaderboardButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LeaderboardFragment())
                 .commit()
 //            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
-        // Change language listener
-        binding.changeLanguageButton.setOnClickListener() {
-            Toast.makeText(context, "In development", Toast.LENGTH_SHORT).show()
         }
     }
 

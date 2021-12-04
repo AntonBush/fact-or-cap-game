@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
@@ -51,6 +53,9 @@ class MultiplayerGameFinished : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMultiplayerGameFinishedBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         return binding.root
     }
 
@@ -60,22 +65,13 @@ class MultiplayerGameFinished : Fragment() {
             loadState(savedInstanceState)
         }
         binding.findLobbyButton.setOnClickListener {
+          if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
-        binding.restartButton.setOnClickListener {
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .replace(
-//                    R.id.main_fragment_container,
-//                    LobbyFragment.newInstance(
-//                        lobbyId.value ?: throw IllegalStateException("lobbyId is null")
-//                    )
-//                )
-//                .commit()
-            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
-        }
         binding.menuButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment.newInstance())
                 .commit()
