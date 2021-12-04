@@ -20,6 +20,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.auth.User
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 
 object FactOrCapAuth {
     private const val EMAIL_LETTERS_COUNT = "@gmail.com".length
@@ -115,7 +116,13 @@ object FactOrCapAuth {
         // Sign in with firebase user data
         firebaseAuth.signInWithCredential(credential)
             .addOnSuccessListener {
-                firestoreSignIn(user)
+                firestoreSignIn(
+                    User(
+                        username,
+                        PreferenceProvider(activity.applicationContext)
+                            .getRegistrationToken() ?: ""
+                    )
+                )
                 _currentUser.postValue(user)
             }
             .addOnFailureListener {
