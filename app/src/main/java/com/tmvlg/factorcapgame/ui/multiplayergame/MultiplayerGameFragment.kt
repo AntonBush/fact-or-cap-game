@@ -118,20 +118,21 @@ class MultiplayerGameFragment : Fragment() {
         // observes if game finished (timer is 00:00)
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
+                isEnabled = false
                 endGame()
             }
         }
         // bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
-            binding.tvFact.text = it.text
+            _binding?.tvFact?.text = it.text
             isEnabled = true
         }
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
-            binding.tvScore.text = it.toString()
+            _binding?.tvScore?.text = it.toString()
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
-                binding.tvTimer.setTextColor(
+                _binding?.tvTimer?.setTextColor(
                     ColorUtils.blendARGB(
                         getColor(R.color.online_indicator_color, requireContext()),
                         getColor(R.color.font_color, requireContext()),
@@ -143,9 +144,9 @@ class MultiplayerGameFragment : Fragment() {
         }
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
             if (!isStillLoading) {
-                binding.scoreContainer.visibility = View.VISIBLE
-                binding.agreeButton.visibility = View.VISIBLE
-                binding.disagreeButton.visibility = View.VISIBLE
+                _binding?.scoreContainer?.visibility = View.VISIBLE
+                _binding?.agreeButton?.visibility = View.VISIBLE
+                _binding?.disagreeButton?.visibility = View.VISIBLE
             }
         }
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
@@ -157,7 +158,7 @@ class MultiplayerGameFragment : Fragment() {
             val endColor: Int = getColor(R.color.font_color, requireContext())
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
-                binding.tvTimer.setTextColor(
+                _binding?.tvTimer?.setTextColor(
                     ColorUtils.blendARGB(
                         startColor,
                         endColor,
@@ -169,7 +170,7 @@ class MultiplayerGameFragment : Fragment() {
         }
         // binds how much time left
         viewModel.timeLeftFormatted.observe(viewLifecycleOwner) {
-            binding.tvTimer.text = it
+            _binding?.tvTimer?.text = it
         }
     }
 

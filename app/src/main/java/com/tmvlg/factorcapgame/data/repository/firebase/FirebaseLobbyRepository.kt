@@ -36,8 +36,8 @@ class FirebaseLobbyRepository {
                 // Lobby = String + Map<String, Map<String, Any?>>
                 // LobbyList = Map<String, Map<String, Map<String, Any?>>>
                 val mappedLobbyList = firebaseLobbyList.getValue<
-                    Map<String, Lobby.Mapped>
-                    >()
+                        Map<String, Lobby.Mapped>
+                        >()
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->
@@ -69,30 +69,30 @@ class FirebaseLobbyRepository {
         username: String,
         lobbyId: String
     ) = withContext(Dispatchers.IO) {
-        val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
-        lobbyPlayersRef.get().addOnSuccessListener { data ->
-            val lobbyPlayers = data.getValue<Map<String, Player.Mapped>>()
+        val lobbyRef = lobbiesRef.child(lobbyId)
+        val lobbyPlayersRef = lobbyRef.child("players")
+        lobbyRef.get().addOnSuccessListener { lobbyData ->
+            val lobbyPlayers = lobbyData.child("players").getValue<Map<String, Player.Mapped>>()
                 ?.map { Player.newInstance(it.key, it.value) }
                 ?: emptyList()
 
             val isPlayerInRoom = lobbyPlayers.any { it.name == username }
-
-            if (!isPlayerInRoom) {
-                val newPlayer = Player(
-                    name = username
-                )
-
-                val newPlayerKey = lobbyPlayersRef.push().key
-                    ?: throw IOException("can't add new player to lobby")
-
-                newPlayer.id = newPlayerKey
-
-                lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMapped())
+            val isGameStarted = lobbyData.child("started").getValue<Boolean>() == true
+            if (isPlayerInRoom || isGameStarted) {
+                return@addOnSuccessListener
             }
+
+            val newPlayer = Player(
+                name = username
+            )
+            val newPlayerKey = lobbyPlayersRef.push().key
+                ?: throw IOException("can't add new player to lobby")
+            newPlayer.id = newPlayerKey
+            lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMapped())
         }
     }
 
-    // -------------------------------- LOOK ROOM -----------------------------------
+// -------------------------------- LOOK ROOM -----------------------------------
 
     private val _lobby = MutableLiveData<Lobby?>(null)
     val lobby = _lobby.map { it }
@@ -136,7 +136,7 @@ class FirebaseLobbyRepository {
         }
     }
 
-    // --------------------------------- CREATE ---------------------------------------
+// --------------------------------- CREATE ---------------------------------------
 
     @WorkerThread
     suspend fun createLobby(
