@@ -7,6 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.menu.MenuViewModel
+import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.InviteConnectionFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var viewModel: MenuViewModel
@@ -23,26 +30,38 @@ class MainActivity : AppCompatActivity() {
         snapSE = MediaPlayer.create(this, R.raw.click_s_e)
         correctSE = MediaPlayer.create(this, R.raw.correct_answer_s_e)
         wrongSE = MediaPlayer.create(this, R.raw.wrong_answer_s_e)
-        // Set MenuFragment as first
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.main_fragment_container, MenuFragment())
-            .commit()
 
+        val lobbyId = intent.extras?.getString("lobbyId")
+
+        Log.d("1", "onCreate: arguments = $lobbyId")
+
+        if (lobbyId != null && lobbyId != "") {
+            Log.d("1", "onCreate: lobbyid = $lobbyId")
+            Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
+            navigateToLobby(lobbyId)
+        }
+        else {
+
+            // Set MenuFragment as first
+            navigateToMenu()
+        }
     }
 
-//    override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        val x = event?.x
-//        val y = event?.y
-//
-//        return super.onTouchEvent(event)
-//    }
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStack()
         }
-        // uncomment to close your app on back button pressed
-//        else {
-//            super.onBackPressed()
-//        }
+    }
+
+    private fun navigateToMenu() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_fragment_container, MenuFragment())
+            .commit()
+    }
+
+    private fun navigateToLobby(lobbyId: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_fragment_container, InviteConnectionFragment.newInstance(lobbyId))
+            .commit()
     }
 }

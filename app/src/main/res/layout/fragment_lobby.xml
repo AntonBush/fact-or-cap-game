@@ -50,8 +50,7 @@
             tools:itemCount="4"
             app:layout_constraintTop_toBottomOf="@id/tv_lobby"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/invite_button">
+            app:layout_constraintEnd_toEndOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 

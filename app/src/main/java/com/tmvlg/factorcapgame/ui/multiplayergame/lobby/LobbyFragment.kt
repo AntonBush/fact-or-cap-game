@@ -47,6 +47,7 @@ class LobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLobbyBinding.inflate(inflater, container, false)
+        Log.d("1", "onCreateView: ${requireActivity().intent.extras}")
         return binding.root
     }
 
@@ -58,11 +59,11 @@ class LobbyFragment : Fragment() {
                 .commit()
         }
         binding.inviteButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .add(R.id.main_fragment_container, InviteFragment())
-//                .addToBackStack(null)
-//                .commit()
+//            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .add(R.id.main_fragment_container, InviteFragment.newInstance(lobbyId))
+                .addToBackStack(null)
+                .commit()
         }
         listAdapter = LobbyUserListAdapter()
         binding.rvLobbyUsers.adapter = listAdapter
@@ -71,13 +72,20 @@ class LobbyFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        _binding = null
         super.onDestroyView()
+        _binding = null
+        Log.d("1", "onDestroyView: ${requireActivity().intent.extras}")
     }
 
     override fun onDestroy() {
-        viewModel.stopListenLobby()
         super.onDestroy()
+        viewModel.stopListenLobby()
+        Log.d("1", "onDestroy: ${requireActivity().intent.extras}")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("1", "onPause: ${requireActivity().intent.extras}")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -97,7 +105,7 @@ class LobbyFragment : Fragment() {
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
 
-    fun observeViewModel() {
+    private fun observeViewModel() {
         viewModel.lobby.observe(viewLifecycleOwner) { lobby ->
             if (lobby == null) {
                 return@observe
@@ -105,16 +113,12 @@ class LobbyFragment : Fragment() {
 
             binding.tvLobby.text = lobby.roomName
             listAdapter.submitList(lobby.players)
-            // TODO
         }
         viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
                     viewModel.startGame()
-                    // TODO
-                    Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT)
-                        .show()
                 }
             } else {
                 binding.startButton.visibility = View.GONE

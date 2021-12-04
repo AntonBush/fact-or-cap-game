@@ -209,35 +209,35 @@ class FirebaseLobbyRepository {
         lobbyId: String
     ) = withContext(Dispatchers.IO) {
         val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
-        val lobbyPlayersTask = lobbyPlayersRef.get()
-        while (!lobbyPlayersTask.isComplete) {
-            delay(1)
+        val lobbyPlayersTask = lobbyPlayersRef.get().addOnSuccessListener {
+            val lobbyPlayers = it.children
+
+            val isPlayerInRoom = lobbyPlayers.any { firebasePlayer ->
+                val playerId = firebasePlayer.key
+                    ?: throw IOException("can't find playerId")
+                val mappedPlayer = firebasePlayer.getValue<Map<String, Any?>>()
+                    ?: throw IOException("can't find playerBody")
+                val player = Player.newInstance(playerId, mappedPlayer)
+
+                return@any player.playerName == username
+            }
+
+            if (!isPlayerInRoom) {
+                val newPlayer = Player(
+                    playerName = username
+                )
+
+                val newPlayerKey = lobbyPlayersRef.push().key
+                    ?: throw IOException("can't add new player to lobby")
+
+                newPlayer.id = newPlayerKey
+
+                lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMutableMap())
+            }
         }
 
-        val lobbyPlayers = lobbyPlayersTask.result.children
 
-        val isPlayerInRoom = lobbyPlayers.any { firebasePlayer ->
-            val playerId = firebasePlayer.key
-                ?: throw IOException("can't find playerId")
-            val mappedPlayer = firebasePlayer.getValue<Map<String, Any?>>()
-                ?: throw IOException("can't find playerBody")
-            val player = Player.newInstance(playerId, mappedPlayer)
 
-            return@any player.playerName == username
-        }
-
-        if (!isPlayerInRoom) {
-            val newPlayer = Player(
-                playerName = username
-            )
-
-            val newPlayerKey = lobbyPlayersRef.push().key
-                ?: throw IOException("can't add new player to lobby")
-
-            newPlayer.id = newPlayerKey
-
-            lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMutableMap())
-        }
     }
 
     // -------------------------------- LOOK ROOM -----------------------------------
@@ -300,6 +300,26 @@ class FirebaseLobbyRepository {
         lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMutableMap()))
         addPlayerToLobby(username, newLobbyKey)
         return@withContext newLobbyKey
+    }
+
+    @WorkerThread
+    suspend fun startGame(
+        lobbyId: String
+    ) = withContext(Dispatchers.IO) {
+        lobbiesRef.child(lobbyId).child("started").setValue(true)
+        val resetListener = object : ValueEventListener {
+            override fun onDataChange(firebaseLobby: DataSnapshot) {
+                val firebaseLobbyId = firebaseLobby.key
+                    ?: throw IOException("lobby does not contain key")
+                val firebaseLobbyValue = firebaseLobby.getValue<Map<String, Any?>>()
+                    ?: throw IOException("lobby does not contain value")
+                _lobby.postValue(
+                    Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
+                )
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
     }
 
     companion object {

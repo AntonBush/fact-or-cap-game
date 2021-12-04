@@ -124,7 +124,10 @@ class MenuFragment : Fragment() {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             // Calling toggle mpb function
-            Log.d("-----------------------", "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}")
+            Log.d(
+                "-----------------------",
+                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
+            )
             if (viewModel.isUserSignedIn.value == true) {
                 toggleMultiplayerButton()
                 Log.d("-------------------tog-", "")
@@ -137,8 +140,8 @@ class MenuFragment : Fragment() {
                     .setTitle("Auth required")
                     .setMessage(
                         "You are not authorized yet." +
-                            " You should authorize via Google to play multiplayer." +
-                            " Do you want to proceed?"
+                                " You should authorize via Google to play multiplayer." +
+                                " Do you want to proceed?"
                     )
                     .setNegativeButton("Cancel") { dialog, which ->
                         Log.d("-------------------can-", "")
@@ -160,11 +163,11 @@ class MenuFragment : Fragment() {
                 requireContext(),
                 R.style.ThemeOverlay_App_MaterialAlertDialog
             )
-                .setTitle("Auth required")
+                .setTitle("New room name")
                 .setMessage(
                     "You are going to create new lobby." +
-                        " You should enter the name of new room to play multiplayer." +
-                        " Do you want to proceed?"
+                            " You should enter the name of new room to play multiplayer." +
+                            " Do you want to proceed?"
                 )
                 .setView(b.root)
                 .setNegativeButton("Cancel") { dialog, which ->
@@ -234,7 +237,10 @@ class MenuFragment : Fragment() {
             }
 
             Log.d("----------------------1", "$isUserSignedIn")
-            Log.d("-----------------------", "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}")
+            Log.d(
+                "-----------------------",
+                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
+            )
             isEnabled = true
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
@@ -265,7 +271,10 @@ class MenuFragment : Fragment() {
 
     private val launcher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result -> viewModel.signInFromIntent(result, requireActivity()) }
+    ) { result ->
+        Log.d("startSignInIntent", "-----------------------")
+        viewModel.signInFromIntent(result, requireActivity())
+    }
 
     private fun signOut() {
         isEnabled = false
