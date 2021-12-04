@@ -14,12 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
-
-import java.lang.IllegalArgumentException
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
-import java.lang.Exception
-
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
+import java.lang.IllegalArgumentException
 
 class InviteFragment : Fragment() {
 
@@ -41,7 +38,6 @@ class InviteFragment : Fragment() {
     private lateinit var searchedUsersAdapter: SearchedUsersAdapter
 
     private var selectedPlayerName: String? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,12 +74,10 @@ class InviteFragment : Fragment() {
             if (selectedPlayerName != null) {
                 val userToBeInvited = selectedPlayerName!!
                 viewModel.invite(userToBeInvited, lobbyId)
-            }
-            else {
+            } else {
                 Toast.makeText(requireContext(), "Select a friend first", Toast.LENGTH_SHORT)
                     .show()
             }
-
         }
 
         binding.searchButton.setOnClickListener {
@@ -92,13 +86,13 @@ class InviteFragment : Fragment() {
             try {
                 val imm = requireActivity()
                     .getSystemService(Context.INPUT_METHOD_SERVICE)
-                        as InputMethodManager
+                    as InputMethodManager
                 imm.hideSoftInputFromWindow(
-                    requireActivity().currentFocus?.getWindowToken(),
+                    requireActivity().currentFocus?.windowToken,
                     0
                 )
-            } catch (e: Exception) {
-                // TODO: handle exception
+            } catch (e: IllegalStateException) {
+                TODO("Handle exception")
             }
         }
 
@@ -112,7 +106,6 @@ class InviteFragment : Fragment() {
         }
 
         observeViewModel()
-
     }
 
     private fun observeViewModel() {
@@ -121,7 +114,6 @@ class InviteFragment : Fragment() {
             searchedUsersAdapter.submitList(it)
         }
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -139,7 +131,6 @@ class InviteFragment : Fragment() {
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
 
-
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
 
@@ -151,5 +142,4 @@ class InviteFragment : Fragment() {
             }
         }
     }
-
 }

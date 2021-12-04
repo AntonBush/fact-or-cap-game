@@ -3,7 +3,6 @@ package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.LobbyUserBinding

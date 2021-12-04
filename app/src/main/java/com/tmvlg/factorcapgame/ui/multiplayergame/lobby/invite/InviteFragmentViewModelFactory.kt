@@ -6,13 +6,13 @@ import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
 class InviteFragmentViewModelFactory(
     private val userRepository: UserRepository
-): ViewModelProvider.Factory {
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return try {
             modelClass.getConstructor(
                 UserRepository::class.java
             ).newInstance(userRepository)
-        } catch (e: Exception) {
+        } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")
             exception.addSuppressed(e)
             throw exception

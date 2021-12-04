@@ -15,7 +15,7 @@ class LobbyViewModelFactory(
                 FirebaseLobbyRepository::class.java,
                 UserRepository::class.java
             ).newInstance(firebaseLobbyRepository, userRepository)
-        } catch (e: Exception) {
+        } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")
             exception.addSuppressed(e)
             throw exception

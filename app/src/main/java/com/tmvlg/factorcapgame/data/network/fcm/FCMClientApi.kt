@@ -14,5 +14,4 @@ object FCMClientApi {
     val retrofitService: FCMClientApiService by lazy {
         retrofit.create(FCMClientApiService::class.java)
     }
-
 }

@@ -3,7 +3,6 @@ package com.tmvlg.factorcapgame.ui.menu
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
 class MenuViewModelFactory(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
@@ -12,7 +11,7 @@ class MenuViewModelFactory(
         return try {
             modelClass.getConstructor(FirebaseLobbyRepository::class.java)
                 .newInstance(firebaseLobbyRepository)
-        } catch (e: Exception) {
+        } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")
             exception.addSuppressed(e)
             throw exception

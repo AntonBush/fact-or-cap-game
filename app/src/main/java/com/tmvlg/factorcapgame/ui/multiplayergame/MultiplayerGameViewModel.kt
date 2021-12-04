@@ -8,9 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
-import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.game.GameRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseGameRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -18,10 +16,8 @@ import java.util.ArrayDeque
 import kotlin.NoSuchElementException
 
 class MultiplayerGameViewModel(
-    private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
-    private val userRepository: UserRepository,
-    private val firebaseLobbyRepository: FirebaseLobbyRepository
+    private val firebaseGameRepository: FirebaseGameRepository
 ) : ViewModel() {
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
@@ -43,7 +39,7 @@ class MultiplayerGameViewModel(
 
     private var _factsList = ArrayDeque<Fact>()
 
-    private val _factsLoadingState = MutableLiveData<Boolean>(true)
+    private val _factsLoadingState = MutableLiveData(true)
     val factsLoadingState = _factsLoadingState.map { it }
 
     private var timeElapsed: Long = 0
@@ -70,16 +66,12 @@ class MultiplayerGameViewModel(
                 _fact.postValue(_factsList.pop())
                 break
             } catch (e: NoSuchElementException) {
-                waitForFactToBeLoaded().join()
+                delay(CHECK_TIME_IS_FACT_LOADED)
             }
         }
     }
 
-    private fun connectToLobby(lobbyId: String) = viewModelScope.launch {
-        firebaseLobbyRepository.listenLobbyPlayers(lobbyId)
-    }
-
-    fun loadFactsList() = viewModelScope.launch {
+    private fun loadFactsList() = viewModelScope.launch {
         while (_factsList.size < FACTS_TO_BE_LOADED_COUNT) {
             try {
                 _factsList.push(factRepository.getFact())
@@ -90,27 +82,13 @@ class MultiplayerGameViewModel(
         }
     }
 
-    fun waitForFactToBeLoaded() = viewModelScope.launch {
-        delay(CHECK_TIME_IS_FACT_LOADED)
-    }
-
     fun startGame(lobbyId: String) = viewModelScope.launch {
-        connectToLobby(lobbyId)
+        firebaseGameRepository.listenLobbyPlayers(lobbyId)
         loadFactsList().join()
-        setUserReady(lobbyId)
-        waitForAllPlayersLoaded().join()
-        startTimer()
-        startCountingGameDuration()
-    }
-
-    fun setUserReady(lobbyId: String) {
         val username = FactOrCapAuth.currentUser.value?.name
             ?: throw IllegalStateException("User is unauthorized")
-        firebaseLobbyRepository.setPlayerLoaded(lobbyId, username)
-    }
-
-    fun waitForAllPlayersLoaded() = viewModelScope.launch {
-        while (!firebaseLobbyRepository.isAllPlayersLoaded()) {
+        firebaseGameRepository.setPlayerLoaded(lobbyId, username)
+        while (!firebaseGameRepository.isAllPlayersLoaded()) {
             delay(CHECK_TIME_IS_PLAYERS_LOADED)
         }
         Log.d("1", "waitForAllPlayersLoaded: ALL PLAYERS LOADED")
@@ -118,6 +96,8 @@ class MultiplayerGameViewModel(
             getFact()
             _factsLoadingState.postValue(false)
         }
+        startTimer()
+        startCountingGameDuration()
     }
 
     private fun startCountingGameDuration() = viewModelScope.launch {
@@ -127,15 +107,13 @@ class MultiplayerGameViewModel(
         } while (!_gameFinished.value!!)
     }
 
-    private fun startTimer() {
-        viewModelScope.launch {
-            do {
-                timeLeft -= MS_DELAY
-                _timeLeftFormatted.value = formatTime(timeLeft)
-                delay(MS_DELAY.toLong())
-            } while (timeLeft > 0)
-            _gameFinished.postValue(true)
-        }
+    private fun startTimer() = viewModelScope.launch {
+        do {
+            timeLeft -= MS_DELAY
+            _timeLeftFormatted.value = formatTime(timeLeft)
+            delay(MS_DELAY.toLong())
+        } while (timeLeft > 0)
+        _gameFinished.postValue(true)
     }
 
     private fun formatTime(timeLeftMs: Long): String {

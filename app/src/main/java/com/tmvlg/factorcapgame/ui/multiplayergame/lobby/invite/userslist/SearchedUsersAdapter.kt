@@ -28,17 +28,14 @@ class SearchedUsersAdapter :
     override fun onBindViewHolder(holder: SearchedUsersViewHolder, position: Int) {
         val item = getItem(position)
 
-
         with(holder) {
 
             val borderResId = if (position == currentSelection)
-                    R.drawable.green_border
-                else
-                    0
-
+                R.drawable.green_border
+            else
+                0
 
             binding.userLayout.setBackgroundResource(borderResId)
-
 
             binding.usernameTextview.text = item.name
 

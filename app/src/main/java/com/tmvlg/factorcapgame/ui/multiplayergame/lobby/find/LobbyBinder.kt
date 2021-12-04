@@ -48,7 +48,7 @@ class LobbyBinder(
     }
 }
 
-fun LobbyListAdapter(
+fun newLobbyListAdapter(
     onLobbySelectedListener: LobbyBinder.OnLobbySelectedListener? = null
 ): MultiViewAdapter {
     return MultiViewAdapter().apply {

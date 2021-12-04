@@ -26,8 +26,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
             FactOrCapAuth.signIn(this, launcher)
             navigateToLobby(lobbyId)
-        }
-        else {
+        } else {
 
             // Set MenuFragment as first
             navigateToMenu()

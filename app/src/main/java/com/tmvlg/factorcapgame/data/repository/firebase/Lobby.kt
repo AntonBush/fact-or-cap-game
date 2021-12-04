@@ -2,7 +2,6 @@ package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
 import com.google.firebase.database.IgnoreExtraProperties
-import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -18,9 +17,7 @@ data class Lobby(
         return Mapped(
             hostName,
             started,
-            mapOf(
-                * players.map { it.id to it.toMapped() }.toTypedArray()
-            ),
+            players.map { it.id to it.toMapped() }.toMap(),
             name,
             lastTimeHostPing
         )
@@ -40,10 +37,6 @@ data class Lobby(
                 name = mapped.roomName
                 lastTimeHostPing = mapped.lastTimeHostPing
             }
-        }
-
-        private fun IllegalFieldException(field: String): IllegalArgumentException {
-            return IllegalArgumentException("map contain invalid field <$field>")
         }
     }
 

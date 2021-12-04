@@ -3,7 +3,6 @@ package com.tmvlg.factorcapgame.ui.singlegame
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
-import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
@@ -24,7 +23,7 @@ class SingleGameViewModelFactory(
                 factRepository,
                 userRepository
             )
-        } catch (e: Exception) {
+        } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")
             exception.addSuppressed(e)
             throw exception

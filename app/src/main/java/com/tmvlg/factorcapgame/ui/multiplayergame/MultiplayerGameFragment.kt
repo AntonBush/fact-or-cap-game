@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.animation.ValueAnimator
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,10 +24,8 @@ class MultiplayerGameFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MultiplayerGameViewModelFactory(
-            app.gameRepository,
             app.factRepository,
-            app.userRepository,
-            app.firebaseRepository
+            app.firebaseGameRepository
         )
     }
 
@@ -107,8 +106,6 @@ class MultiplayerGameFragment : Fragment() {
         lobbyId.observe(viewLifecycleOwner) {
             viewModel.startGame(it)
         }
-
-        observeViewModel()
     }
 
     private fun observeViewModel() {
@@ -118,46 +115,32 @@ class MultiplayerGameFragment : Fragment() {
                 Toast.makeText(this.context, e.message, Toast.LENGTH_LONG).show()
             }
         }
-
         // observes if game finished (timer is 00:00)
         viewModel.gameFinished.observe(viewLifecycleOwner) { finished ->
             if (finished) {
                 endGame()
             }
         }
-
         // bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
             binding.tvFact.text = it.text
             isEnabled = true
         }
-
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
-            try {
-                val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-                animator.addUpdateListener { anim ->
-                    binding.tvTimer.setTextColor(
-                        ColorUtils.blendARGB(
-                            AppCompatResources.getColorStateList(
-                                requireContext(),
-                                R.color.online_indicator_color
-                            ).defaultColor,
-                            AppCompatResources.getColorStateList(
-                                requireContext(),
-                                R.color.font_color
-                            ).defaultColor,
-                            anim.animatedFraction
-                        )
+            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            animator.addUpdateListener { anim ->
+                binding.tvTimer.setTextColor(
+                    ColorUtils.blendARGB(
+                        getColor(R.color.online_indicator_color, requireContext()),
+                        getColor(R.color.font_color, requireContext()),
+                        anim.animatedFraction
                     )
-                }
-                animator.setDuration(200).start()
-            } catch (e: java.lang.IllegalStateException) {
-                return@observe
+                )
             }
+            animator.setDuration(RIGHT_ANSWER_ANIMATION_DURATION).start()
         }
-
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
             if (!isStillLoading) {
                 binding.scoreContainer.visibility = View.VISIBLE
@@ -165,39 +148,25 @@ class MultiplayerGameFragment : Fragment() {
                 binding.disagreeButton.visibility = View.VISIBLE
             }
         }
-
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
-            Log.d("1", "answer coorect = : $isCorrect")
             val startColor = if (isCorrect) {
-                AppCompatResources.getColorStateList(requireContext(), R.color.primary_red)
+                getColor(R.color.primary_red, requireContext())
             } else {
-                AppCompatResources.getColorStateList(
-                    requireContext(),
-                    R.color.online_indicator_color
-                )
-            }.defaultColor
-            Log.d("1", "answer color: $startColor")
-            val endColor: Int = AppCompatResources.getColorStateList(
-                requireContext(),
-                R.color.font_color
-            ).defaultColor
+                getColor(R.color.online_indicator_color, requireContext())
+            }
+            val endColor: Int = getColor(R.color.font_color, requireContext())
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
-                try {
-                    binding.tvTimer.setTextColor(
-                        ColorUtils.blendARGB(
-                            startColor,
-                            endColor,
-                            anim.animatedFraction
-                        )
+                binding.tvTimer.setTextColor(
+                    ColorUtils.blendARGB(
+                        startColor,
+                        endColor,
+                        anim.animatedFraction
                     )
-                } catch (e: java.lang.IllegalStateException) {
-                    return@addUpdateListener
-                }
+                )
             }
-            animator.setDuration(2000).start()
+            animator.setDuration(IS_ANSWER_CORRECT_ANIMATION_DURATION).start()
         }
-
         // binds how much time left
         viewModel.timeLeftFormatted.observe(viewLifecycleOwner) {
             binding.tvTimer.text = it
@@ -222,6 +191,15 @@ class MultiplayerGameFragment : Fragment() {
 
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
+        const val RIGHT_ANSWER_ANIMATION_DURATION = 200L
+        const val IS_ANSWER_CORRECT_ANIMATION_DURATION = 2_000L
+
+        private fun getColor(colorId: Int, context: Context): Int {
+            return AppCompatResources.getColorStateList(
+                context,
+                colorId
+            ).defaultColor
+        }
 
         // calls from MultiplayerGameFragment.kt to create this fragment
         fun newInstance(lobbyId: String): MultiplayerGameFragment {

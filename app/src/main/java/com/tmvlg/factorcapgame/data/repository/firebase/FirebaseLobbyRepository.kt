@@ -2,7 +2,6 @@ package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.util.Log
 import androidx.annotation.WorkerThread
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.google.firebase.database.DataSnapshot
@@ -15,145 +14,10 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.lang.Exception
-import java.lang.RuntimeException
 
 class FirebaseLobbyRepository {
-
     private val database = Firebase.database
     private val lobbiesRef = database.getReference("Lobbies")
-    private lateinit var valueEventListener: ValueEventListener
-
-    private var players = mutableListOf<Player>()
-    private val playersLD = MutableLiveData<List<Player>>()
-
-    private fun addPlayer(player: Player, playerId: String) {
-        player.id = playerId
-        players.add(player)
-    }
-
-    private fun clearList() {
-        players.clear()
-        updateList()
-    }
-
-    private fun updateList() {
-        playersLD.postValue(players.toList())
-        Log.d("1", "updateList: ${playersLD.value}")
-    }
-
-    @WorkerThread
-    fun listenLobbyPlayers(lobbyId: String) {
-        valueEventListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                clearList()
-                for (child in snapshot.children) {
-                    if (child.key == "players") {
-                        for (firebasePlayer in child.children) {
-                            val playerId = firebasePlayer.key
-                                ?: throw RuntimeException("can't find playerId")
-                            val playerBody = firebasePlayer.getValue<Player.Mapped>()
-                                ?: throw RuntimeException("can't find playerBody")
-                            val player = Player.newInstance(
-                                playerId,
-                                playerBody
-                            )
-                            Log.d(
-                                "1",
-                                "onDataChange: ${player.name} is finished ${player.waiting}"
-                            )
-                            addPlayer(player, playerId)
-                        }
-                    }
-                }
-                updateList()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        }
-        lobbiesRef.child(lobbyId).addValueEventListener(valueEventListener)
-    }
-
-    @WorkerThread
-    fun stopListeningPlayers(lobbyId: String) {
-        lobbiesRef.child(lobbyId).removeEventListener(valueEventListener)
-        updateList()
-    }
-
-//    fun getLobbyPlayers(lobbyId: String): LiveData<List<Player>> {
-//        listenLobbyPlayers(lobbyId)
-//        Log.d("1", "ld3-lobby players: ${playersLD}")
-//        return playersLD
-//    }
-
-    fun subscribeOnPlayersLD(): LiveData<List<Player>> {
-        return playersLD
-    }
-
-    fun updatePlayerScore(score: Int, lobbyId: String, username: String) {
-        players.forEach {
-            if (it.name == username) {
-                lobbiesRef.child(lobbyId)
-                    .child("players")
-                    .child(it.id)
-                    .child("score")
-                    .setValue(score)
-                lobbiesRef.child(lobbyId)
-                    .child("players")
-                    .child(it.id)
-                    .child("waiting")
-                    .setValue(true)
-            }
-        }
-    }
-
-    fun setPlayerLoaded(lobbyId: String, username: String) {
-        Log.d("1", "setPlayerLoaded: $lobbyId, $username")
-        players.forEach {
-            if (it.name == username) {
-                lobbiesRef.child(lobbyId)
-                    .child("players")
-                    .child(it.id)
-                    .child("loaded")
-                    .setValue(true)
-            }
-        }
-    }
-
-    fun isAllPlayersLoaded(): Boolean {
-        Log.d("1", "isAllPlayersLoaded: $players")
-        players.forEach {
-            if (!it.loaded) {
-                return false
-            }
-        }
-        return true
-    }
-
-    @WorkerThread
-    fun calculateWinner(): Player {
-        var highScore = 0 to players[0]
-        var timeElapsed = 10000000L to players[0]
-        Log.d("1", "calculateWinner: players = $players")
-        players.forEach {
-            Log.d("1", "calculateWinner: start for ${it.name}")
-            if (it.score > highScore.first) {
-                Log.d("1", "calculateWinner: ${it.name} = ${it.score}")
-                highScore = it.score to it
-                timeElapsed = it.timeElapsed to it
-            } else if (it.score == highScore.first) {
-                if (it.timeElapsed < timeElapsed.first) {
-                    Log.d("1", "calculateWinner: ${it.name} = ${it.score}")
-                    highScore = it.score to it
-                    timeElapsed = it.timeElapsed to it
-                }
-            }
-        }
-        return highScore.second
-    }
-
-    // ----------------------------- NEW PHILOSOPHY -------------------------
 
     // ----------------------------- LIST ROOMS --------------------------------
 
@@ -172,30 +36,28 @@ class FirebaseLobbyRepository {
                 // Lobby = String + Map<String, Map<String, Any?>>
                 // LobbyList = Map<String, Map<String, Map<String, Any?>>>
                 val mappedLobbyList = firebaseLobbyList.getValue<
-                        Map<String, Lobby.Mapped>
-                        >()
+                    Map<String, Lobby.Mapped>
+                    >()
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->
-                        return@map try {
-                            Lobby.newInstance(lobbyEntry.key, lobbyEntry.value)
-                        } catch (e: Exception) {
-                            Log.w("Firebase.listenLobbies", e.message.toString())
-                            null
-                        }
-                    }.filterNotNull()
+                        Lobby.newInstance(lobbyEntry.key, lobbyEntry.value)
+                    }
                 )
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("FirebaseLobbyRepository", "${error.message}|${error.details}")
+            }
         }
         lobbiesRef.addValueEventListener(newLobbiesEventListener)
     }
 
     @WorkerThread
     fun stopListenLobbies() {
-        if (lobbiesEventListener != null) {
-            lobbiesRef.removeEventListener(valueEventListener)
+        val localLobbiesEventListener = lobbiesEventListener
+        if (localLobbiesEventListener != null) {
+            lobbiesRef.removeEventListener(localLobbiesEventListener)
             _lobbyList.postValue(emptyList())
         }
     }
@@ -254,7 +116,9 @@ class FirebaseLobbyRepository {
                 )
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                Log.w("FirebaseLobbyRepository", "${error.message}|${error.details}")
+            }
         }
         lobbyEventListener = newLobbyEventListener
         lobbyRef = lobbiesRef.child(lobbyId).apply {
@@ -279,14 +143,14 @@ class FirebaseLobbyRepository {
         username: String,
         roomName: String = "Room name"
     ): String = withContext(Dispatchers.IO) {
-        val _roomName = if (roomName.isEmpty()) {
+        val localRoomName = if (roomName.isEmpty()) {
             "Room name"
         } else {
             roomName
         }
         val newLobby = Lobby(
             hostName = username,
-            name = _roomName
+            name = localRoomName
         )
         val newLobbyKey = lobbiesRef.push().key ?: throw IOException("can't add new lobby")
         lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMapped()))
@@ -323,5 +187,6 @@ class FirebaseLobbyRepository {
 
     companion object {
         const val TAG = "FirebaseLobbyRepository"
+        const val MAX_TIME_ELAPSED = 10_000_000L
     }
 }

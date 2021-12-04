@@ -27,8 +27,7 @@ class FindLobbyFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels FindLobbyViewModelFactory(
-            app.firebaseRepository,
-            app.userRepository
+            app.firebaseLobbyRepository
         )
     }
 
@@ -44,7 +43,7 @@ class FindLobbyFragment : Fragment() {
         }
 
     private val lobbyListSection = ListSection<Lobby>()
-    private val lobbyListAdapter = LobbyListAdapter(
+    private val lobbyListAdapter = newLobbyListAdapter(
         object : LobbyBinder.OnLobbySelectedListener {
             override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
                 with(binding.lobbyItem) {

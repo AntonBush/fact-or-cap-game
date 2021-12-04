@@ -1,10 +1,14 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
+import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
@@ -81,38 +85,43 @@ class LobbyViewModel(
     class PingThread(
         private val firebaseLobbyRepository: FirebaseLobbyRepository,
         private val username: String,
-        private val lobby: LiveData<Lobby?>
+        private val lobbyLiveData: LiveData<Lobby?>
     ) : SoftInterruptThread() {
         override fun run() {
             while (!interrupted) {
-                val lobby = lobby.value
+                val lobby = lobbyLiveData.value
                 val player = lobby?.players?.find { it.name == username }
 
-                Log.d("THREAD LOBBY", "player is ${player?.name ?: "null"}")
-                if (lobby != null && player != null) {
-                    Log.d("THREAD LOBBY", "player is ${player.name}")
-
-                    firebaseLobbyRepository.updatePing(lobby.id, player.id)
-
-                    if (lobby.hostName == player.name) {
-                        Log.d("THREAD LOBBY", "player is host")
-                        firebaseLobbyRepository.updateLobbyPing(lobby.id)
-
-                        val currentMillis = System.currentTimeMillis()
-
-                        lobby.players.forEach { player ->
-                            if (player.name == lobby.hostName) {
-                                return@forEach
-                            }
-
-                            val diff = currentMillis - player.lastTimePing
-                            if (diff > PLAYER_TIMEOUT_MILLIS) {
-                                firebaseLobbyRepository.removePlayer(lobby.id, player.id)
-                            }
-                        }
-                    }
+                if (lobby == null || player == null) {
+                    continue
                 }
+
+                firebaseLobbyRepository.updatePing(lobby.id, player.id)
+
+                doHostStuff(lobby, player)
+
                 sleep(SLEEP_TIME_MILLIS)
+            }
+        }
+
+        private fun doHostStuff(lobby: Lobby, player: Player) {
+            if (lobby.hostName != player.name) {
+                return
+            }
+
+            firebaseLobbyRepository.updateLobbyPing(lobby.id)
+
+            val currentMillis = System.currentTimeMillis()
+
+            lobby.players.forEach { p ->
+                if (p.name == lobby.hostName) {
+                    return@forEach
+                }
+
+                val diff = currentMillis - p.lastTimePing
+                if (diff > PLAYER_TIMEOUT_MILLIS) {
+                    firebaseLobbyRepository.removePlayer(lobby.id, p.id)
+                }
             }
         }
 

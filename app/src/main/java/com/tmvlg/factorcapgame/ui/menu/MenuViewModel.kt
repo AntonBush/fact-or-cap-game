@@ -1,29 +1,12 @@
 package com.tmvlg.factorcapgame.ui.menu
 
-import android.app.Activity
-import android.content.Intent
-import android.util.Log
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
-import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
 class MenuViewModel(
@@ -64,7 +47,7 @@ class MenuViewModel(
             )
             _errorMessage.postValue(null)
             createdLobbyId.postValue(roomId)
-        } catch (e: Exception) {
+        } catch (e: IllegalStateException) {
             _errorMessage.postValue(e.message)
         }
     }

@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -14,10 +13,8 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameFinishedBinding
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
-import java.lang.RuntimeException
 
 class MultiplayerGameFinished : Fragment() {
 
@@ -25,8 +22,7 @@ class MultiplayerGameFinished : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MultiplayerGameFinishedViewModelFactory(
-            app.firebaseRepository,
-            app.userRepository
+            app.firebaseGameRepository
         )
     }
     private var _binding: FragmentMultiplayerGameFinishedBinding? = null
@@ -83,10 +79,10 @@ class MultiplayerGameFinished : Fragment() {
     private fun observeViewModel() {
         viewModel.lobbyPlayers.observe(viewLifecycleOwner) {
             Log.d("1", "players in fragment: $it")
-            val _score = score.value ?: throw RuntimeException("null score")
-            val _lobbyId = lobbyId.value ?: throw RuntimeException("null lobbyId")
+            val localScore = score.value ?: throw IllegalStateException("null score")
+            val localLobbyId = lobbyId.value ?: throw IllegalStateException("null lobbyId")
             if (it.isNotEmpty()) {
-                viewModel.sendScore(_score, _lobbyId)
+                viewModel.sendScore(localScore, localLobbyId)
                 if (viewModel.isAllFinished()) {
                     binding.tvWaiting.text = "Game results"
                     val winner = viewModel.getWinner()
@@ -134,8 +130,8 @@ class MultiplayerGameFinished : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        val _lobbyId = lobbyId.value ?: throw RuntimeException("can't fetch lobbyId")
-        viewModel.finish(_lobbyId)
+        val localLobbyId = lobbyId.value ?: throw IllegalStateException("can't fetch lobbyId")
+        viewModel.finish(localLobbyId)
     }
 
     companion object {

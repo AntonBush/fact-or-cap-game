@@ -3,7 +3,6 @@ package com.tmvlg.factorcapgame.data.repository.firebase
 import android.os.Parcelable
 import android.util.Log
 import com.google.firebase.database.IgnoreExtraProperties
-import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -41,12 +40,7 @@ data class Player(
                 lastTimePing = mapped.lastTimePing
             }
         }
-
-        private fun IllegalFieldException(field: String): IllegalArgumentException {
-            return IllegalArgumentException("map does not contain field <$field>")
-        }
     }
-
 
     @IgnoreExtraProperties
     data class Mapped(

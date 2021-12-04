@@ -5,6 +5,6 @@ import com.tmvlg.factorcapgame.databinding.FoundUserBinding
 
 class SearchedUsersViewHolder(
     val binding: FoundUserBinding
-): RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
     val isSelected = false
 }

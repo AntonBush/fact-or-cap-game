@@ -1,22 +1,18 @@
 package com.tmvlg.factorcapgame.services
 
 import android.app.NotificationChannel
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
-import com.tmvlg.factorcapgame.R
 import android.app.NotificationManager
-import android.util.Log
-import androidx.core.app.NotificationCompat
-import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
-
 import android.app.PendingIntent
-
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-
+import android.util.Log
+import androidx.core.app.NotificationCompat
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.ui.MainActivity
-
 
 class FCMService : FirebaseMessagingService() {
     override fun onNewToken(s: String) {
@@ -25,7 +21,6 @@ class FCMService : FirebaseMessagingService() {
 
         val preferenceProvider = PreferenceProvider(this)
         preferenceProvider.setRegistrationToken(s)
-
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -52,7 +47,6 @@ class FCMService : FirebaseMessagingService() {
         sendNotification(message!!, title!!, copyData)
     }
 
-
     private fun sendNotification(
         messageBody: String,
         messageTitle: String,
@@ -68,18 +62,15 @@ class FCMService : FirebaseMessagingService() {
         Log.d("1", "sendNotification: data is not empty! lobbyId=$lobbyId")
         intent.putExtra("lobbyId", lobbyId)
 
-
-
-
         // after from here are the generally same. tricks above
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
+            this,
+            0 /* Request code */,
+            intent,
             PendingIntent.FLAG_ONE_SHOT
         )
-
-
 
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, CHANNEL_INVITATIONS)
@@ -116,6 +107,3 @@ class FCMService : FirebaseMessagingService() {
         private const val LIGHT_COLOR_ARGB = Color.GREEN
     }
 }
-
-
-

@@ -1,20 +1,18 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import android.util.Log
-import androidx.lifecycle.*
-import com.tmvlg.factorcapgame.data.FactOrCapAuth
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.SoftInterruptThread
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlin.concurrent.thread
 
 class FindLobbyViewModel(
-    private val firebaseLobbyRepository: FirebaseLobbyRepository,
-    private val userRepository: UserRepository
+    private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModel() {
     private val _firebaseLobbies = firebaseLobbyRepository.lobbyList.map { lobbyList ->
         val l = lobbyList.filter {
@@ -30,7 +28,6 @@ class FindLobbyViewModel(
 
     private val _lobbies = MutableLiveData<List<Lobby>>(emptyList())
     val lobbies = _lobbies.map { it }
-
 
 //        firebaseLobbyRepository.lobbyList.map { lobbyList ->
 //        val currentMillis = System.currentTimeMillis()

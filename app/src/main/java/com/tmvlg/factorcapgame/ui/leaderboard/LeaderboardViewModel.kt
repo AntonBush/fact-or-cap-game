@@ -6,9 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 import java.lang.IllegalStateException
 
@@ -35,7 +33,7 @@ class LeaderboardViewModel : ViewModel() {
 
         db.collection("leaderboard")
             .orderBy("score", Query.Direction.DESCENDING)
-            .limit(100)
+            .limit(LOAD_DATA_FROM_DB_LIMIT)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
@@ -87,5 +85,6 @@ class LeaderboardViewModel : ViewModel() {
 
     companion object {
         const val TAG = "FireStoreActivity"
+        const val LOAD_DATA_FROM_DB_LIMIT = 100L
     }
 }

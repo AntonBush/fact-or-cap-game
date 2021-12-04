@@ -4,20 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
-import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseGameRepository
 import kotlinx.coroutines.launch
 
 class MultiplayerGameFinishedViewModel(
-    private val firebaseLobbyRepository: FirebaseLobbyRepository,
-    private val userRepository: UserRepository
+    private val firebaseGameRepository: FirebaseGameRepository
 ) : ViewModel() {
 
-    private var _lobbyPlayers = firebaseLobbyRepository.subscribeOnPlayersLD()
+    private var _lobbyPlayers = firebaseGameRepository.subscribeOnPlayersLD()
     val lobbyPlayers = _lobbyPlayers.map { it }
 
     fun connectToLobby(lobbyId: String) = viewModelScope.launch {
-        firebaseLobbyRepository.listenLobbyPlayers(lobbyId)
+        firebaseGameRepository.listenLobbyPlayers(lobbyId)
     }
 
     fun getUsername(): String {
@@ -27,7 +25,7 @@ class MultiplayerGameFinishedViewModel(
 
     fun sendScore(score: Int, lobbyId: String) {
         val username = getUsername()
-        firebaseLobbyRepository.updatePlayerScore(score, lobbyId, username)
+        firebaseGameRepository.updatePlayerScore(score, lobbyId, username)
     }
 
     fun isAllFinished(): Boolean {
@@ -39,12 +37,12 @@ class MultiplayerGameFinishedViewModel(
     }
 
     fun getWinner(): String {
-        val winner = firebaseLobbyRepository.calculateWinner()
+        val winner = firebaseGameRepository.calculateWinner()
         winner.isWinner = true
         return winner.name
     }
 
     fun finish(lobbyId: String) {
-        firebaseLobbyRepository.stopListeningPlayers(lobbyId)
+        firebaseGameRepository.stopListeningPlayers(lobbyId)
     }
 }
