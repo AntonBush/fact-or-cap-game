@@ -9,6 +9,11 @@ import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseGameRepository
+import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
+import com.tmvlg.factorcapgame.data.repository.game.GameRepository
+import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -18,7 +23,10 @@ import kotlin.NoSuchElementException
 class MultiplayerGameViewModel(
     private val factRepository: FactRepository,
     private val firebaseGameRepository: FirebaseGameRepository
+    private val fragment: MultiplayerGameFragment
 ) : ViewModel() {
+    private var firstFact = true
+
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
 
@@ -48,6 +56,7 @@ class MultiplayerGameViewModel(
     fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
+            fragment.funkyAnimationCorrect()
             timeLeft += EXTRA_TIME_FOR_RIGHT_ANSWER
             _isAnswerCorrect.value = false
         } else {
@@ -63,7 +72,14 @@ class MultiplayerGameViewModel(
         while (true) {
             Log.d("1", "loadFactsList: ${_factsList.size}")
             try {
-                _fact.postValue(_factsList.pop())
+                val fact = _factsList.pop()
+                if (!firstFact) {
+                    fragment.hideText()
+                    delay(800)
+                    fragment.showText()
+                }
+                else firstFact = false
+                _fact.postValue(fact)
                 break
             } catch (e: NoSuchElementException) {
                 delay(CHECK_TIME_IS_FACT_LOADED)

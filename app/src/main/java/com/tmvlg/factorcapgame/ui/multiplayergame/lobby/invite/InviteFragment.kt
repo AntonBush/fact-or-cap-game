@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -14,9 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
-import java.lang.IllegalArgumentException
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragmentViewModel
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragmentViewModelFactory
 
 class InviteFragment : Fragment() {
 
@@ -50,6 +52,14 @@ class InviteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentInviteBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.fragment_change
+            )
+        )
+
         return binding.root
     }
 
@@ -65,12 +75,14 @@ class InviteFragment : Fragment() {
             loadState(savedInstanceState)
         }
         binding.returnButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
                 .commit()
         }
 
         binding.confirmButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             if (selectedPlayerName != null) {
                 val userToBeInvited = selectedPlayerName!!
                 viewModel.invite(userToBeInvited, lobbyId)
@@ -81,6 +93,7 @@ class InviteFragment : Fragment() {
         }
 
         binding.searchButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             val query = binding.findUsersEdittext.text
             viewModel.findPlayers(query.toString())
             try {

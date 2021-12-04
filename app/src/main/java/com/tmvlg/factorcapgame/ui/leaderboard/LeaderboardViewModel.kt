@@ -53,8 +53,7 @@ class LeaderboardViewModel : ViewModel() {
             }
     }
 
-    private fun addUserToList() {
-        allScores.add(PlayerScore("", "...", ""))
+    private fun addUserToList(){
         db.collection("leaderboard")
             .whereEqualTo("username", username)
             .get()
@@ -62,6 +61,7 @@ class LeaderboardViewModel : ViewModel() {
                 for (document in result) {
                     val curusername = document.data.getValue("username").toString()
                     val curscore = document.data.getValue("score").toString()
+                    allScores.add(PlayerScore( "", "...", ""))
                     allScores.add(PlayerScore(">100", curusername, curscore))
                 }
                 adapter.updateList(allScores)

@@ -5,7 +5,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="32dp">
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/page_container">
     <TextView
             android:id="@+id/tv_error_message"
             android:layout_width="wrap_content"
@@ -75,5 +78,5 @@
 
     </Button>
 
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
