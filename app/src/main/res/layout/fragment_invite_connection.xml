@@ -4,7 +4,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:background="@drawable/ic_wallpaper"
         android:padding="32dp">
 
     <TextView
@@ -15,7 +14,7 @@
             android:textSize="45sp"
             android:layout_margin="18dp"
             android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
+            android:textColor="?attr/textAppearanceHeadline2"
             android:maxLines="2"
             app:autoSizeTextType="uniform"
             app:layout_constraintEnd_toEndOf="parent"

@@ -4,7 +4,6 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/ic_wallpaper"
         android:padding="32dp">
 
     <ScrollView
@@ -26,7 +25,7 @@
                 tools:text="The sharks are dangerous birds"
                 android:textSize="40sp"
                 android:fontFamily="@font/norwester"
-                android:textColor="@color/font_color"
+                android:textColor="?attr/textAppearanceHeadline2"
                 android:textAlignment="center">
 
         </TextView>
@@ -55,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="25"
-                android:textColor="@color/font_color"
+                android:textColor="?attr/textAppearanceHeadline2"
                 android:fontFamily="@font/norwester"
                 android:singleLine="true"
                 android:textSize="30sp"

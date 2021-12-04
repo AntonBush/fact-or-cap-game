@@ -6,8 +6,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.menu.MenuFragment"
         android:padding="32dp"
-        android:clipToPadding="false"
-        android:background="@drawable/ic_wallpaper">
+        android:clipToPadding="false">
 
     <include layout="@layout/google_sign_in"
             android:id="@+id/sign_in_layout_unauthorized"
@@ -38,7 +37,7 @@
             app:autoSizeTextType="uniform"
             android:textSize="60sp"
             app:layout_constraintVertical_bias="0.30"
-            android:textColor="@color/font_color"
+            android:textColor="?attr/textAppearanceHeadline2"
             android:text="@string/game_name"
             android:fontFamily="@font/norwester" />
 
@@ -88,7 +87,7 @@
             android:layout_height="60dp"
             android:padding="5dp"
             android:background="@drawable/green_round_background"
-            android:backgroundTint="@color/primary_green"
+            android:backgroundTint="?attr/colorPrimary"
             android:src="@drawable/ic_create"
             android:scaleType="fitCenter"
             android:gravity="start"
@@ -105,7 +104,7 @@
             android:layout_height="60dp"
             android:padding="5dp"
             android:background="@drawable/green_round_background"
-            android:backgroundTint="@color/primary_green"
+            android:backgroundTint="?attr/colorPrimary"
             android:src="@drawable/ic_join"
             android:scaleType="center"
             android:layout_marginTop="20dp"
