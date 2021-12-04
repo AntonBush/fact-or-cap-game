@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 data class Player(
     var id: String = "0",
     var loaded: Boolean = false,
-    var playerName: String = "",
+    var name: String = "",
     var score: Int = 0,
     var timeElapsed: Long = 0,
     var waiting: Boolean = false,
@@ -20,7 +20,7 @@ data class Player(
     fun toMapped(): Mapped {
         return Mapped(
             loaded,
-            playerName,
+            name,
             score,
             timeElapsed,
             waiting,
@@ -34,7 +34,7 @@ data class Player(
                 Log.d("Player.newInstance", "$key|$mapped")
                 id = key
                 loaded = mapped.loaded
-                playerName = mapped.playerName
+                name = mapped.playerName
                 score = mapped.score
                 timeElapsed = mapped.timeElapsed
                 waiting = mapped.waiting
@@ -50,17 +50,11 @@ data class Player(
 
     @IgnoreExtraProperties
     data class Mapped(
-        @PropertyName("loaded")
         var loaded: Boolean = false,
-        @PropertyName("playerName")
         var playerName: String = "",
-        @PropertyName("score")
         var score: Int = 0,
-        @PropertyName("timeElapsed")
         var timeElapsed: Long = 0,
-        @PropertyName("waiting")
         var waiting: Boolean = false,
-        @PropertyName("lastTimePing")
         var lastTimePing: Long = 0
     )
 }

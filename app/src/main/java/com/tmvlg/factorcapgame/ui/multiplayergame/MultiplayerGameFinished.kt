@@ -64,17 +64,6 @@ class MultiplayerGameFinished : Fragment() {
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
-        binding.restartButton.setOnClickListener {
-//            requireActivity().supportFragmentManager.beginTransaction()
-//                .replace(
-//                    R.id.main_fragment_container,
-//                    LobbyFragment.newInstance(
-//                        lobbyId.value ?: throw IllegalStateException("lobbyId is null")
-//                    )
-//                )
-//                .commit()
-            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
-        }
         binding.menuButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment.newInstance())

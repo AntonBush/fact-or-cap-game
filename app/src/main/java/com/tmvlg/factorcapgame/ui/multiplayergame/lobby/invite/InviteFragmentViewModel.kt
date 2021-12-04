@@ -1,9 +1,7 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -12,10 +10,8 @@ import com.tmvlg.factorcapgame.data.network.fcm.*
 import com.tmvlg.factorcapgame.data.network.fcm.models.DataModel
 import com.tmvlg.factorcapgame.data.network.fcm.models.NotificationModel
 import com.tmvlg.factorcapgame.data.network.fcm.models.RootModel
-import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
-import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback

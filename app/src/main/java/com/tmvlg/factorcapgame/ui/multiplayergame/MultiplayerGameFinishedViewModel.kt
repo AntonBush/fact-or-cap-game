@@ -41,7 +41,7 @@ class MultiplayerGameFinishedViewModel(
     fun getWinner(): String {
         val winner = firebaseLobbyRepository.calculateWinner()
         winner.isWinner = true
-        return winner.playerName
+        return winner.name
     }
 
     fun finish(lobbyId: String) {

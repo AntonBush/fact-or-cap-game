@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.userslist
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist
 
 import androidx.recyclerview.widget.DiffUtil
 import com.tmvlg.factorcapgame.data.repository.firebase.Player

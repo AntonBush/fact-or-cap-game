@@ -70,7 +70,7 @@ class UserRepository(
                 for (document in task.result) {
                     val username = document.data.get("username").toString()
                     val player = Player()
-                    player.playerName = username
+                    player.name = username
                     players.add(player)
                     Log.d("1", "getPlayers: $username")
                 }

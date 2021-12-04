@@ -4,25 +4,24 @@ import android.os.Parcelable
 import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
-import java.lang.Exception
 
 @Parcelize
 data class Lobby(
     var id: String = "0",
-    var host: String = "",
+    var hostName: String = "",
     var started: Boolean = false,
     var players: List<Player> = emptyList(),
-    var roomName: String = "",
+    var name: String = "",
     var lastTimeHostPing: Long = System.currentTimeMillis()
 ) : Parcelable {
     fun toMapped(): Mapped {
         return Mapped(
-            host,
+            hostName,
             started,
             mapOf(
-                * players.map { it.id to it }.toTypedArray()
+                * players.map { it.id to it.toMapped() }.toTypedArray()
             ),
-            roomName,
+            name,
             lastTimeHostPing
         )
     }
@@ -31,13 +30,14 @@ data class Lobby(
         fun newInstance(key: String, mapped: Mapped): Lobby {
             return Lobby().apply {
                 id = key
-                host = mapped.host
+                hostName = mapped.host
                 players = mapped.players.map { playerEntry ->
-                    playerEntry.value.apply {
-                        id = playerEntry.key
-                    }
+                    Player.newInstance(
+                        playerEntry.key,
+                        playerEntry.value
+                    )
                 }
-                roomName = mapped.roomName
+                name = mapped.roomName
                 lastTimeHostPing = mapped.lastTimeHostPing
             }
         }
@@ -49,15 +49,10 @@ data class Lobby(
 
     @IgnoreExtraProperties
     data class Mapped(
-        @PropertyName("host")
         var host: String = "",
-        @PropertyName("started")
         var started: Boolean = false,
-        @PropertyName("players")
-        var players: Map<String, Player> = emptyMap(),
-        @PropertyName("roomName")
+        var players: Map<String, Player.Mapped> = emptyMap(),
         var roomName: String = "",
-        @PropertyName("lastTimeHostPing")
         var lastTimeHostPing: Long = 0
     )
 }

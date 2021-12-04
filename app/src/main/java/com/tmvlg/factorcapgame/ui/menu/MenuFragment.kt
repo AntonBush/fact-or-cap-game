@@ -124,14 +124,14 @@ class MenuFragment : Fragment() {
             signOut()
         }
         // Start single game button listener
-        binding.singleGameButton.setOnClickListener() {
+        binding.singleGameButton.setOnClickListener {
             isEnabled = false
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
                 .commit()
         }
         // Multiplayer game button listener
-        binding.multiplayerGameButton.setOnClickListener() {
+        binding.multiplayerGameButton.setOnClickListener {
             isEnabled = false
             // Calling toggle mpb function
             Log.d(

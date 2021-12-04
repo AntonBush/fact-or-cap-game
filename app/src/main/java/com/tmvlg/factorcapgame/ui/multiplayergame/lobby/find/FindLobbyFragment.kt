@@ -145,7 +145,7 @@ class FindLobbyFragment : Fragment() {
         lobbyListSection.set(
             lobbies.filter { lobby ->
 //                Log.d("TAG", "${lobby.lastTimeHostPing - System.currentTimeMillis()}")
-                return@filter regex.containsMatchIn(lobby.roomName)
+                return@filter regex.containsMatchIn(lobby.name)
             }
         )
     }

@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite
 
 import android.content.Context
 import android.os.Bundle
@@ -7,21 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.userslist.SearchedUsersAdapter
-import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
 
 import java.lang.IllegalArgumentException
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.ContextCompat.getSystemService
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import java.lang.Exception
 
 
@@ -112,7 +108,7 @@ class InviteFragment : Fragment() {
 
         searchedUsersAdapter.onSearchedUserClickListener = {
             Log.d("1", "onViewCreated: $it")
-            selectedPlayerName = it.playerName
+            selectedPlayerName = it.name
         }
 
         observeViewModel()

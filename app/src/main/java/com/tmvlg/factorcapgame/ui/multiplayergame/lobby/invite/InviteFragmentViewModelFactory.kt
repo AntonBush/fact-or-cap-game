@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

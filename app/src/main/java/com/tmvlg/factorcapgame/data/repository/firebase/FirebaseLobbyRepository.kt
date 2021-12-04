@@ -13,7 +13,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.lang.Exception
@@ -61,7 +60,7 @@ class FirebaseLobbyRepository {
                             )
                             Log.d(
                                 "1",
-                                "onDataChange: ${player.playerName} is finished ${player.waiting}"
+                                "onDataChange: ${player.name} is finished ${player.waiting}"
                             )
                             addPlayer(player, playerId)
                         }
@@ -94,7 +93,7 @@ class FirebaseLobbyRepository {
 
     fun updatePlayerScore(score: Int, lobbyId: String, username: String) {
         players.forEach {
-            if (it.playerName == username) {
+            if (it.name == username) {
                 lobbiesRef.child(lobbyId)
                     .child("players")
                     .child(it.id)
@@ -112,7 +111,7 @@ class FirebaseLobbyRepository {
     fun setPlayerLoaded(lobbyId: String, username: String) {
         Log.d("1", "setPlayerLoaded: $lobbyId, $username")
         players.forEach {
-            if (it.playerName == username) {
+            if (it.name == username) {
                 lobbiesRef.child(lobbyId)
                     .child("players")
                     .child(it.id)
@@ -138,14 +137,14 @@ class FirebaseLobbyRepository {
         var timeElapsed = 10000000L to players[0]
         Log.d("1", "calculateWinner: players = $players")
         players.forEach {
-            Log.d("1", "calculateWinner: start for ${it.playerName}")
+            Log.d("1", "calculateWinner: start for ${it.name}")
             if (it.score > highScore.first) {
-                Log.d("1", "calculateWinner: ${it.playerName} = ${it.score}")
+                Log.d("1", "calculateWinner: ${it.name} = ${it.score}")
                 highScore = it.score to it
                 timeElapsed = it.timeElapsed to it
             } else if (it.score == highScore.first) {
                 if (it.timeElapsed < timeElapsed.first) {
-                    Log.d("1", "calculateWinner: ${it.playerName} = ${it.score}")
+                    Log.d("1", "calculateWinner: ${it.name} = ${it.score}")
                     highScore = it.score to it
                     timeElapsed = it.timeElapsed to it
                 }
@@ -209,22 +208,16 @@ class FirebaseLobbyRepository {
         lobbyId: String
     ) = withContext(Dispatchers.IO) {
         val lobbyPlayersRef = lobbiesRef.child(lobbyId).child("players")
-        lobbyPlayersRef.get().addOnSuccessListener {
-            val lobbyPlayers = it.children
+        lobbyPlayersRef.get().addOnSuccessListener { data ->
+            val lobbyPlayers = data.getValue<Map<String, Player.Mapped>>()
+                ?.map { Player.newInstance(it.key, it.value) }
+                ?: emptyList()
 
-            val isPlayerInRoom = lobbyPlayers.any { firebasePlayer ->
-                val playerId = firebasePlayer.key
-                    ?: throw IOException("can't find playerId")
-                val mappedPlayer = firebasePlayer.getValue<Player.Mapped>()
-                    ?: throw IOException("can't find playerBody")
-                val player = Player.newInstance(playerId, mappedPlayer)
-
-                return@any player.playerName == username
-            }
+            val isPlayerInRoom = lobbyPlayers.any { it.name == username }
 
             if (!isPlayerInRoom) {
                 val newPlayer = Player(
-                    playerName = username
+                    name = username
                 )
 
                 val newPlayerKey = lobbyPlayersRef.push().key
@@ -235,8 +228,6 @@ class FirebaseLobbyRepository {
                 lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMapped())
             }
         }
-
-
     }
 
     // -------------------------------- LOOK ROOM -----------------------------------
@@ -256,6 +247,8 @@ class FirebaseLobbyRepository {
                     ?: throw IOException("lobby does not contain key")
                 val firebaseLobbyValue = firebaseLobby.getValue<Lobby.Mapped>()
                     ?: throw IOException("lobby does not contain value")
+                Log.d("LISTEN LOBBY", "${firebaseLobby.getValue<Map<String, Any?>>()}")
+                Log.d("LISTEN LOBBY", "$firebaseLobbyValue")
                 _lobby.postValue(
                     Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
                 )
@@ -292,20 +285,40 @@ class FirebaseLobbyRepository {
             roomName
         }
         val newLobby = Lobby(
-            host = username,
-            roomName = _roomName
+            hostName = username,
+            name = _roomName
         )
         val newLobbyKey = lobbiesRef.push().key ?: throw IOException("can't add new lobby")
         lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMapped()))
-        addPlayerToLobby(username, newLobbyKey)
         return@withContext newLobbyKey
     }
 
     @WorkerThread
-    suspend fun startGame(
-        lobbyId: String
-    ) = withContext(Dispatchers.IO) {
+    suspend fun startGame(lobbyId: String) = withContext(Dispatchers.IO) {
         lobbiesRef.child(lobbyId).child("started").setValue(true)
+    }
+
+    @WorkerThread
+    fun updatePing(lobbyId: String, userId: String) {
+        lobbiesRef.child(lobbyId)
+            .child("players")
+            .child(userId)
+            .child("lastTimePing")
+            .setValue(System.currentTimeMillis())
+    }
+
+    @WorkerThread
+    fun updateLobbyPing(lobbyId: String) {
+        lobbiesRef.child(lobbyId)
+            .child("lastTimeHostPing")
+            .setValue(System.currentTimeMillis())
+    }
+
+    fun removePlayer(lobbyId: String, userId: String) {
+        lobbiesRef.child(lobbyId)
+            .child("players")
+            .child(userId)
+            .removeValue()
     }
 
     companion object {

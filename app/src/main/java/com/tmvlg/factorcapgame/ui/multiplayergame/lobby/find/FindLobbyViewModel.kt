@@ -6,6 +6,7 @@ import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.SoftInterruptThread
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -54,20 +55,15 @@ class FindLobbyViewModel(
     }
 
     fun stopListenLobbies() = viewModelScope.launch {
-        firebaseLobbyRepository.stopListenLobbies()
         val thread = filterThread
         if (thread != null) {
             thread.interrupt()
             filterThread = null
         }
+        firebaseLobbyRepository.stopListenLobbies()
     }
 
     fun connectLobby(selectedLobby: Lobby) = viewModelScope.launch {
-        firebaseLobbyRepository.addPlayerToLobby(
-            FactOrCapAuth.currentUser.value?.name
-                ?: throw IllegalStateException("User is unauthorized"),
-            selectedLobby.id
-        )
         connectedLobbyId.postValue(selectedLobby.id)
     }
 
@@ -78,9 +74,7 @@ class FindLobbyViewModel(
     class FilteringThread(
         private val filterSrc: LiveData<List<Lobby>>,
         private val filterDst: MutableLiveData<List<Lobby>>
-    ) : Thread() {
-        private var interrupted = false
-
+    ) : SoftInterruptThread() {
         override fun run() {
             while (!interrupted) {
                 val currentMillis = System.currentTimeMillis()
@@ -102,13 +96,9 @@ class FindLobbyViewModel(
             }
         }
 
-        override fun interrupt() {
-            interrupted = true
-        }
-
         companion object {
             const val SLEEP_TIME_MILLIS = 100L
-            const val LOBBY_TIMEOUT_MILLIS = 5_000L
+            const val LOBBY_TIMEOUT_MILLIS = 10_000L
         }
     }
 }
