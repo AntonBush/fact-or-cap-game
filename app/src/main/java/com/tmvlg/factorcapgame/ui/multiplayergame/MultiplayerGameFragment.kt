@@ -130,17 +130,12 @@ class MultiplayerGameFragment : Fragment() {
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             _binding?.tvScore?.text = it.toString()
-            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-            animator.addUpdateListener { anim ->
-                _binding?.tvTimer?.setTextColor(
-                    ColorUtils.blendARGB(
-                        getColor(R.color.online_indicator_color, requireContext()),
-                        getColor(R.color.font_color, requireContext()),
-                        anim.animatedFraction
-                    )
-                )
-            }
-            animator.setDuration(RIGHT_ANSWER_ANIMATION_DURATION).start()
+            startAnimator(
+                _binding,
+                getColor(R.color.online_indicator_color, requireContext()),
+                getColor(R.color.font_color, requireContext()),
+                RIGHT_ANSWER_ANIMATION_DURATION
+            )
         }
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
             if (!isStillLoading) {
@@ -156,17 +151,12 @@ class MultiplayerGameFragment : Fragment() {
                 getColor(R.color.online_indicator_color, requireContext())
             }
             val endColor: Int = getColor(R.color.font_color, requireContext())
-            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-            animator.addUpdateListener { anim ->
-                _binding?.tvTimer?.setTextColor(
-                    ColorUtils.blendARGB(
-                        startColor,
-                        endColor,
-                        anim.animatedFraction
-                    )
-                )
-            }
-            animator.setDuration(IS_ANSWER_CORRECT_ANIMATION_DURATION).start()
+            startAnimator(
+                _binding,
+                startColor,
+                endColor,
+                IS_ANSWER_CORRECT_ANIMATION_DURATION
+            )
         }
         // binds how much time left
         viewModel.timeLeftFormatted.observe(viewLifecycleOwner) {
@@ -194,6 +184,25 @@ class MultiplayerGameFragment : Fragment() {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
         const val RIGHT_ANSWER_ANIMATION_DURATION = 200L
         const val IS_ANSWER_CORRECT_ANIMATION_DURATION = 2_000L
+
+        private fun startAnimator(
+            binding: FragmentMultiplayerGameBinding?,
+            startColor: Int,
+            endColor: Int,
+            duration: Long
+        ) {
+            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+            animator.addUpdateListener { anim ->
+                binding?.tvTimer?.setTextColor(
+                    ColorUtils.blendARGB(
+                        startColor,
+                        endColor,
+                        anim.animatedFraction
+                    )
+                )
+            }
+            animator.setDuration(duration).start()
+        }
 
         private fun getColor(colorId: Int, context: Context): Int {
             return AppCompatResources.getColorStateList(

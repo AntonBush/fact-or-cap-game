@@ -9,7 +9,6 @@ import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
 class LobbyViewModel(
@@ -27,7 +26,7 @@ class LobbyViewModel(
     }
 
     val lobby = firebaseLobbyRepository.lobby.map {
-       Log.d("LobbyViewModel.lobby", "${it}")
+        Log.d("LobbyViewModel.lobby", "$it")
         it
     }
     val isHost = lobby.map { it?.hostName == username }
@@ -35,7 +34,8 @@ class LobbyViewModel(
     val isGameStarted = lobby.map {
         Log.d("LobbyViewModel", "------------ $it")
         Log.d("LobbyViewModel", "------------ ${it?.started ?: false}")
-        it?.started ?: false }
+        it?.started ?: false
+    }
 
     val isDisconnected = lobby.map { lobby ->
         val l = lobby ?: return@map false

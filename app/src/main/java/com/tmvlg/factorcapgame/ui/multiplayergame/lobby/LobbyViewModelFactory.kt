@@ -3,7 +3,6 @@ package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
 class LobbyViewModelFactory(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
