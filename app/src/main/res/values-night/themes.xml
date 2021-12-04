@@ -12,14 +12,24 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="colorAccent">@color/primary_red</item>
+        <item name="colorAccent">@color/c9</item>
 
         <!-- Font. -->
         <item name="textAppearanceHeadline2">@color/c6</item>
 
         <!-- Gradients. -->
-        <item name="textAppearanceSubtitle1">@color/c3</item>
-        <item name="textAppearanceSubtitle2">@color/c4</item>
+        <item name="textAppearanceSubtitle1">@color/c7</item>
+        <item name="textAppearanceSubtitle2">@color/c7</item>
+
+        <!-- Gradients EditText. -->
+        <item name="textAppearanceSearchResultTitle">@color/c4</item>
+        <item name="textAppearanceSearchResultSubtitle">@color/c4</item>
+
+        <!-- Buttons. -->
+        <item name="textAppearanceHeadline3">@color/c8</item>
+        <item name="textAppearanceHeadline4">@color/c9</item>
+        <item name="textAppearanceHeadline5">@color/c7</item>
+        <item name="textAppearanceHeadline6">@color/c7</item>
 
         <!-- Ripple colors. -->
         <item name="textAppearanceBody1">@color/ripple_color_light</item>
@@ -37,7 +47,8 @@
         <item name="colorPrimary">@color/c7</item>
     </style>
     <style name="Button.Variant" parent="ThemeOverlay.AppCompat">
-        <item name="colorPrimary">@color/primary_red</item>
+        <item name="colorPrimary">@color/c7</item>
+        <item name="colorOnPrimary">@color/c9</item>
     </style>
 
 
