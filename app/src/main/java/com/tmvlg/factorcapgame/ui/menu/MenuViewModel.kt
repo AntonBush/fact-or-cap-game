@@ -1,63 +1,177 @@
 package com.tmvlg.factorcapgame.ui.menu
 
 import android.app.Activity
-import android.content.Context
+import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
+import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import kotlinx.coroutines.launch
 
 class MenuViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModel() {
-    lateinit var auth: FirebaseAuth // Var for Firebase auth
-    lateinit var googleSignInClient: GoogleSignInClient // Var for Google auth
-    lateinit var menufragment: MenuFragment
+    private lateinit var googleSignInClient: GoogleSignInClient
+    private val firebaseAuth by lazy { Firebase.auth }
 
-    // Function to auth with google account
-    fun googleAuth(result: ActivityResult, activity: Activity, context: Context) {
+    private val _user = MutableLiveData<FirebaseUser?>(null)
+    val user = _user.map { it }
+    val username = user.map { it?.email?.dropLast(EMAIL_LETTERS_COUNT) }
+
+    val isUserSignedIn = user.map { it != null }
+    private val _errorMessage = MutableLiveData<String?>(null)
+
+    val errorMessage = _errorMessage.map { it }
+
+    val createdLobbyId = MutableLiveData<String?>(null)
+
+    fun initializeAuth(activity: Activity) = viewModelScope.launch {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(activity.getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(activity, gso)
+        googleSignInClient.silentSignIn()
+            .addOnSuccessListener { account ->
+                firebaseSignIn(account.idToken!!, activity)
+            }.addOnCompleteListener { task ->
+                Log.d("silentSignIn", "Completed: ${task.isSuccessful}")
+            }
+    }
+
+    fun startSignInIntent(launcher: ActivityResultLauncher<Intent>) = viewModelScope.launch {
+        _errorMessage.postValue(null)
+        // Same as startActivityForResult
+        Log.d("startSignInIntent", "-----------------------")
+        launcher.launch(googleSignInClient.signInIntent)
+    }
+
+    fun signInFromIntent(result: ActivityResult, activity: Activity) = viewModelScope.launch {
+        if (result.resultCode != Activity.RESULT_OK) {
+            _errorMessage.postValue("Intent failure")
+            _user.postValue(null)
+            return@launch
+        }
+        // Calling viewModel function to get data
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data) // Get data from intent
-        try {
-            // Google Sign In was successful, authenticate with Firebase
-            val account = task.getResult(ApiException::class.java)!! // Get signed in account
-            Log.d(GOOGLETAG, "firebaseAuthWithGoogle:" + account.id)
-            firebaseAuthWithGoogle(account.idToken!!, activity, context) // Call auth with Firebase
-        } catch (e: ApiException) {
-            // Google Sign In failed, update UI appropriately
-            Log.d(GOOGLETAG, "Google sign in failed")
-            Toast.makeText(context, "Authentication via Google failed", Toast.LENGTH_SHORT).show()
-            menufragment.updateUI(null)
+        task.addOnCompleteListener(activity) { resultTask ->
+            if (!resultTask.isSuccessful) {
+                Log.w(TAG, "googleSignIn failure")
+                _errorMessage.postValue("Authentication via Google failed")
+                _user.postValue(null)
+                return@addOnCompleteListener
+            }
+
+            val idToken = resultTask.result.idToken!!
+            Log.i(TAG, "googleSignIn success: <$idToken>")
+            firebaseSignIn(idToken, activity)
         }
     }
-    // Function auth in Firebase with Google token
-    private fun firebaseAuthWithGoogle(idToken: String, activity: Activity, context: Context) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null) // Get user data from firebase
-        auth.signInWithCredential(credential) // Sign in with firebase user data
+
+    fun signOut() = viewModelScope.launch {
+        val username = firebaseAuth.currentUser?.email?.dropLast(EMAIL_LETTERS_COUNT)
+        signOutFromFirestore(username!!)
+        firebaseAuth.signOut()
+        googleSignInClient.signOut()
+        saveUser().join()
+        _user.postValue(null)
+    }
+
+    fun createLobby(roomName: String) = viewModelScope.launch {
+        try {
+            val roomId = firebaseLobbyRepository.createLobby(
+                username.value ?: throw IllegalStateException("User is null"),
+                roomName
+            )
+            _errorMessage.postValue(null)
+            createdLobbyId.postValue(roomId)
+        } catch (e: Exception) {
+            _errorMessage.postValue(e.message)
+        }
+    }
+
+    private fun saveUser() = viewModelScope.launch {
+        val username = firebaseAuth.currentUser?.email?.dropLast(EMAIL_LETTERS_COUNT)
+        userRepository.saveUsername(
+            username
+        )
+
+        if (username != null)
+            saveUserToFirestore(username)
+
+    }
+
+    private fun saveUserToFirestore(username: String) {
+        val db = Firebase.firestore
+
+
+        val token = userRepository.getToken()
+
+        val user = hashMapOf(
+            "username" to username,
+            "token" to token
+        )
+
+        db.collection("users")
+            .document(username ?: "")
+            .set(user, SetOptions.merge())
+    }
+
+    private fun signOutFromFirestore(username: String) {
+        val db = Firebase.firestore
+
+        val user = hashMapOf(
+            "username" to username,
+            "token" to ""
+        )
+
+        db.collection("users")
+            .document(username ?: "")
+            .set(user, SetOptions.merge())
+    }
+
+    private fun firebaseSignIn(
+        idToken: String,
+        activity: Activity
+    ) = viewModelScope.launch {
+        val credential = GoogleAuthProvider
+            .getCredential(idToken, null) // Get user data from firebase
+        firebaseAuth.signInWithCredential(credential) // Sign in with firebase user data
             .addOnCompleteListener(activity) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(GOOGLETAG, "signInWithCredential:success")
-                    menufragment.updateUI(auth.currentUser) // UpdateUI with user
+                    viewModelScope.launch {
+                        saveUser().join()
+                        _user.postValue(firebaseAuth.currentUser)
+                    }
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(GOOGLETAG, "signInWithCredential:failure", task.exception)
-                    Toast.makeText(context, "Authentication via Firebase failed", Toast.LENGTH_SHORT).show()
-                    menufragment.updateUI(null) // UpdateUI with no user
+                    Log.w(TAG, "signInWithCredential:failure", task.exception)
+                    _errorMessage.postValue("Authentication via Firebase failed")
+                    _user.postValue(null)
+                    signOut()
                 }
             }
     }
 
-    fun saveUser(username: String) {
-        userRepository.saveUsername(username)
-    }
-
     companion object {
-        private const val GOOGLETAG = "GoogleActivityViewModel"
+        const val EMAIL_LETTERS_COUNT = "@gmail.com".length
+        private const val TAG = "MenuViewModel"
     }
 }

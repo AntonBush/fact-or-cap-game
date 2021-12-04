@@ -10,11 +10,9 @@ import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.util.*
 import java.util.ArrayDeque
 import kotlin.NoSuchElementException
 
@@ -85,8 +83,7 @@ class MultiplayerGameViewModel(
             try {
                 _factsList.push(factRepository.getFact())
                 _exception.postValue(null)
-            }
-            catch (e: IOException) {
+            } catch (e: IOException) {
                 _exception.postValue(e)
             }
         }
@@ -106,7 +103,7 @@ class MultiplayerGameViewModel(
     }
 
     fun setUserReady(lobbyId: String) {
-        val username = userRepository.getUsername()
+        val username = userRepository.getUsername()!!
         firebaseLobbyRepository.setPlayerLoaded(lobbyId, username)
     }
 

@@ -17,7 +17,8 @@
             android:scaleType="fitCenter" />
 
     <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/user_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="User1"
             android:layout_weight="1"

@@ -1,8 +1,6 @@
 package com.tmvlg.factorcapgame.ui.statisitics
 
 import android.annotation.SuppressLint
-import android.text.format.DateUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.utils.getTimeAgo
-import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 import kotlin.collections.ArrayList
-
 
 class GameListAdapter :
     RecyclerView.Adapter<GameListAdapter.GameViewHolder>() {
@@ -50,7 +46,6 @@ class GameListAdapter :
 //        resultdate = sdf.format(Date(currentGame.date))
 //        holder.date.text = resultdate.toString()
         holder.date.text = Date(currentGame.date).getTimeAgo()
-
     }
 
     override fun getItemCount(): Int {

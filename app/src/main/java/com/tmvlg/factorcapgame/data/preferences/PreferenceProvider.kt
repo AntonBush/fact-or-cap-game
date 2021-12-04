@@ -61,12 +61,20 @@ class PreferenceProvider(context: Context) {
         )
     }
 
-    fun saveUsername(username: String) {
+    fun saveUsername(username: String?) {
         preference.edit().putString(KEY_USERNAME, username).apply()
     }
 
-    fun getUsername(): String {
-        return preference.getString(KEY_USERNAME, "") ?: ""
+    fun getUsername(): String? {
+        return preference.getString(KEY_USERNAME, "")
+    }
+
+    fun getRegistrationToken(): String? {
+        return preference.getString(KEY_REGISTRATION_TOKEN, "")
+    }
+
+    fun setRegistrationToken(token: String?) {
+        preference.edit().putString(KEY_REGISTRATION_TOKEN, token).apply()
     }
 
     companion object {
@@ -77,5 +85,6 @@ class PreferenceProvider(context: Context) {
         const val KEY_AVERAGE_SCORE = "keyAverageScore"
         const val KEY_ALL_SCORES = "keyAllScores"
         const val KEY_USERNAME = "keyUsername"
+        const val KEY_REGISTRATION_TOKEN = "keyRegistrationToken"
     }
 }

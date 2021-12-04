@@ -13,7 +13,7 @@ class MultiplayerGameViewModelFactory(
     private val userRepository: UserRepository,
     private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MultiplayerGameViewModel::class.java))
             return MultiplayerGameViewModel(gameRepository, factRepository, userRepository, firebaseLobbyRepository) as T
         throw IllegalArgumentException("Unknown view model class $modelClass")

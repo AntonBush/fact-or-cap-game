@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.R
 import kotlin.collections.ArrayList
 
-class PlayerListAdapter:
+class PlayerListAdapter :
     RecyclerView.Adapter<PlayerListAdapter.PlayerViewHolder>() {
 
     private val allScores = ArrayList<PlayerScore>()
