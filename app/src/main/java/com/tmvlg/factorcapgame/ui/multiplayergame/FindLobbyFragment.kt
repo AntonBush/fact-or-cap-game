@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,14 +7,15 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
+import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
+import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
-class InviteFragment : Fragment() {
+class FindLobbyFragment : Fragment() {
 
-    private var _binding: FragmentInviteBinding? = null
+    private var _binding: FragmentFindLobbyBinding? = null
 
-    private val binding: FragmentInviteBinding
+    private val binding: FragmentFindLobbyBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     override fun onCreateView(
@@ -22,7 +23,7 @@ class InviteFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentInviteBinding.inflate(inflater, container, false)
+        _binding = FragmentFindLobbyBinding.inflate(inflater, container, false)
 
         binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
@@ -39,16 +40,12 @@ class InviteFragment : Fragment() {
         binding.returnButton.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, LobbyFragment())
+                .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
-        binding.searchButton.setOnClickListener {
+        binding.joinButton.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            // TODO("Search for friends to invite")
-        }
-        binding.confirmButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            // TODO("Invite selected friend")
+            // TODO("Join lobby")
         }
     }
 }

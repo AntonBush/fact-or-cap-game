@@ -8,13 +8,14 @@
         android:layout_height="match_parent"
         android:id="@+id/scrollView"
         android:layout_alignParentStart="true"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:background="@drawable/ic_wallpaper">
 
     <RelativeLayout xmlns:tools="http://schemas.android.com/tools"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_wallpaper"
+            android:id="@+id/page_container"
             android:padding="32dp">
 
         <ImageButton
