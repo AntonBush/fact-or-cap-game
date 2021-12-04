@@ -19,4 +19,17 @@
     <color name="green_gradient_end">#66E2FBC1</color>
     <color name="online_indicator_color">#3FC282</color>
     <color name="offline_indicator_color">#777799</color>
+    <color name="edit_gradient_start">#CCDFEFCB</color>
+    <color name="edit_gradient_end">#33E2FBC1</color>
+
+    <color name="c1">#647F9E</color>
+    <color name="c2">#73879E</color>
+    <color name="c3">#333435</color>
+    <color name="c4">#333435</color>
+    <color name="c5">#202020</color>
+    <color name="c6">#d0d0d0</color>
+    <color name="c7">#393939</color>
+    <color name="c8">#7CC860</color>
+    <color name="c9">#CF6679</color>
+
 </resources>

@@ -16,6 +16,15 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import java.lang.IllegalArgumentException
+import androidx.annotation.ColorInt
+
+
+import android.content.res.Resources.Theme
+
+import android.util.TypedValue
+
+
+
 
 class MultiplayerGameFragment : Fragment() {
 
@@ -135,27 +144,27 @@ class MultiplayerGameFragment : Fragment() {
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
-            try {
-                val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-                animator.addUpdateListener { anim ->
-                    binding.tvTimer.setTextColor(
-                        ColorUtils.blendARGB(
-                            AppCompatResources.getColorStateList(
-                                requireContext(),
-                                R.color.online_indicator_color
-                            ).defaultColor,
-                            AppCompatResources.getColorStateList(
-                                requireContext(),
-                                R.color.font_color
-                            ).defaultColor,
-                            anim.animatedFraction
-                        )
-                    )
-                }
-                animator.setDuration(200).start()
-            } catch (e: java.lang.IllegalStateException) {
-                return@observe
-            }
+//            try {
+//                val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+//                animator.addUpdateListener { anim ->
+//                    binding.tvTimer.setTextColor(
+//                        ColorUtils.blendARGB(
+//                            AppCompatResources.getColorStateList(
+//                                requireContext(),
+//                                R.color.online_indicator_color
+//                            ).defaultColor,
+//                            AppCompatResources.getColorStateList(
+//                                requireContext(),
+//                                R.color.font_color
+//                            ).defaultColor,
+//                            anim.animatedFraction
+//                        )
+//                    )
+//                }
+//                animator.setDuration(200).start()
+//            } catch (e: java.lang.IllegalStateException) {
+//                return@observe
+//            }
         }
 
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
@@ -168,19 +177,27 @@ class MultiplayerGameFragment : Fragment() {
 
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
             Log.d("1", "answer coorect = : $isCorrect")
+
+            val typedValue = TypedValue()
+            val theme = requireContext().theme
+
+
+            theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
+            @ColorInt val colorCorrect = typedValue.data
+
+            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+            @ColorInt val colorIncorrect = typedValue.data
+
             val startColor = if (isCorrect) {
-                AppCompatResources.getColorStateList(requireContext(), R.color.primary_red)
+                colorCorrect
             } else {
-                AppCompatResources.getColorStateList(
-                    requireContext(),
-                    R.color.online_indicator_color
-                )
-            }.defaultColor
+                colorIncorrect
+            }
             Log.d("1", "answer color: $startColor")
-            val endColor: Int = AppCompatResources.getColorStateList(
-                requireContext(),
-                R.color.font_color
-            ).defaultColor
+
+            theme.resolveAttribute(R.attr.textAppearanceHeadline2, typedValue, true)
+            @ColorInt val endColor = typedValue.data
+
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
                 try {

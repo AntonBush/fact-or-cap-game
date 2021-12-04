@@ -9,7 +9,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:background="@drawable/circle_background"
-            android:backgroundTint="@color/font_color"
+            android:backgroundTint="?attr/textAppearanceHeadline2"
             android:src="@drawable/ic_person"
             android:contentDescription="@string/profile_picture_placeholder"
             android:scaleType="fitCenter"

@@ -2,20 +2,39 @@
     <!-- Base application theme. -->
     <style name="Theme.FactOrCapGame" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primary_green</item>
-        <item name="colorPrimaryVariant">@color/secondary_green</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/c7</item>
+        <item name="colorPrimaryVariant">@color/c1</item>
+        <item name="colorOnPrimary">@color/c7</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/c1</item>
+        <item name="colorSecondaryVariant">@color/c2</item>
+        <item name="colorOnSecondary">@color/offline_indicator_color</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="colorAccent">@color/primary_red</item>
+
+        <!-- Font. -->
+        <item name="textAppearanceHeadline2">@color/c6</item>
+
+        <!-- Gradients. -->
+        <item name="textAppearanceSubtitle1">@color/c3</item>
+        <item name="textAppearanceSubtitle2">@color/c4</item>
+
+        <!-- Ripple colors. -->
+        <item name="textAppearanceBody1">@color/ripple_color_light</item>
+        <item name="textAppearanceBody2">@color/ripple_color_item</item>
+        <item name="textAppearanceCaption">@color/ripple_color</item>
+
+        <!-- Wallpapers. -->
+        <item name="android:windowBackground">@color/c5</item>
+
+        <item name="colorBackgroundFloating">@color/c5</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+
     </style>
     <style name="Button.Main" parent="ThemeOverlay.AppCompat">
-        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorPrimary">@color/c7</item>
     </style>
     <style name="Button.Variant" parent="ThemeOverlay.AppCompat">
         <item name="colorPrimary">@color/primary_red</item>
@@ -23,10 +42,10 @@
 
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="colorPrimary">@color/secondary_green</item>
-        <item name="colorSecondary">@color/secondary_green</item>
-        <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@color/font_color</item>
+        <item name="colorPrimary">@color/c1</item>
+        <item name="colorSecondary">@color/c1</item>
+        <item name="colorSurface">@color/c6</item>
+        <item name="colorOnSurface">@color/c7</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>

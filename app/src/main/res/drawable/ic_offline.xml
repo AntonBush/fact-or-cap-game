@@ -3,7 +3,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
         android:shape="oval">
 
-    <solid android:color="@color/offline_indicator_color" />
+    <solid android:color="?attr/colorOnSecondary" />
     <stroke android:width="2dp"
-            android:color="@color/white"/>
+            android:color="?attr/colorOnPrimary"/>
 </shape>
