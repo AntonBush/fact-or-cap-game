@@ -1,6 +1,7 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +25,7 @@ class LobbyFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels LobbyViewModelFactory(
-            app.firebaseLobbyRepository,
-            app.userRepository
+            app.firebaseLobbyRepository
         )
     }
 
@@ -97,6 +97,7 @@ class LobbyFragment : Fragment() {
             listAdapter.submitList(lobby.players)
         }
         viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
+            Log.d("LobbyFragment", "isHost: $isHost")
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
@@ -108,6 +109,7 @@ class LobbyFragment : Fragment() {
             }
         }
         viewModel.isGameStarted.observe(viewLifecycleOwner) { isGameStarted ->
+            Log.d("LobbyFragment", "IS STARTED : $isGameStarted")
             if (isGameStarted) {
                 goTo(MultiplayerGameFragment.newInstance(lobbyId))
             }

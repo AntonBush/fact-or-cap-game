@@ -6,15 +6,13 @@ import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 
 class LobbyViewModelFactory(
-    private val firebaseLobbyRepository: FirebaseLobbyRepository,
-    private val userRepository: UserRepository,
+    private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return try {
             modelClass.getConstructor(
-                FirebaseLobbyRepository::class.java,
-                UserRepository::class.java
-            ).newInstance(firebaseLobbyRepository, userRepository)
+                FirebaseLobbyRepository::class.java
+            ).newInstance(firebaseLobbyRepository)
         } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")
             exception.addSuppressed(e)

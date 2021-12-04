@@ -13,8 +13,7 @@ import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.launch
 
 class LobbyViewModel(
-    private val firebaseLobbyRepository: FirebaseLobbyRepository,
-    private val userRepository: UserRepository
+    private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModel() {
     private var _username: String? = null
     val username: String
@@ -27,10 +26,16 @@ class LobbyViewModel(
         }
     }
 
-    val lobby = firebaseLobbyRepository.lobby.map { it }
+    val lobby = firebaseLobbyRepository.lobby.map {
+       Log.d("LobbyViewModel.lobby", "${it}")
+        it
+    }
     val isHost = lobby.map { it?.hostName == username }
 
-    val isGameStarted = lobby.map { it?.started ?: false }
+    val isGameStarted = lobby.map {
+        Log.d("LobbyViewModel", "------------ $it")
+        Log.d("LobbyViewModel", "------------ ${it?.started ?: false}")
+        it?.started ?: false }
 
     val isDisconnected = lobby.map { lobby ->
         val l = lobby ?: return@map false
@@ -66,7 +71,9 @@ class LobbyViewModel(
 
     fun startGame() = viewModelScope.launch {
         val lobbyId = lobby.value?.id
+        Log.d("LobbyViewModel", "+++++ $lobbyId")
         if (lobbyId != null) {
+            Log.d("LobbyViewModel", "+++++ $lobbyId")
             firebaseLobbyRepository.startGame(lobbyId)
         }
     }

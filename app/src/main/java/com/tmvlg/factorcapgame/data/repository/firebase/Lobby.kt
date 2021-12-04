@@ -28,6 +28,7 @@ data class Lobby(
             return Lobby().apply {
                 id = key
                 hostName = mapped.host
+                started = mapped.started
                 players = mapped.players.map { playerEntry ->
                     Player.newInstance(
                         playerEntry.key,
