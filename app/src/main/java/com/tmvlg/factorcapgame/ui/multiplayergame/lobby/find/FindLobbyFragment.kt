@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.addTextChangedListener
@@ -16,6 +17,7 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import mva3.adapter.ListSection
@@ -27,8 +29,7 @@ class FindLobbyFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels FindLobbyViewModelFactory(
-            app.firebaseRepository,
-            app.userRepository
+            app.firebaseLobbyRepository
         )
     }
 
@@ -44,7 +45,7 @@ class FindLobbyFragment : Fragment() {
         }
 
     private val lobbyListSection = ListSection<Lobby>()
-    private val lobbyListAdapter = LobbyListAdapter(
+    private val lobbyListAdapter = newLobbyListAdapter(
         object : LobbyBinder.OnLobbySelectedListener {
             override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
                 with(binding.lobbyItem) {
@@ -66,7 +67,6 @@ class FindLobbyFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.listenLobbies()
 //        loadState(requireArguments())
     }
 
@@ -76,17 +76,23 @@ class FindLobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFindLobbyBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            viewModel.stopListenLobbies()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
         binding.joinButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             if (lobbyListSection.selectedItems.isEmpty()) {
                 Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
@@ -113,12 +119,11 @@ class FindLobbyFragment : Fragment() {
         super.onDestroyView()
     }
 
-    override fun onDestroy() {
-        viewModel.stopListenLobbies()
-        super.onDestroy()
-    }
-
     private fun observeViewModel() {
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!!!!!!!!!! БЕЗ ЭТОГО РАБОТАТЬ НЕ БУДЕТ !!!!!!!!!!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        viewModel.firebaseLobbies.observe(viewLifecycleOwner) {}
         viewModel.lobbies.observe(viewLifecycleOwner) { lobbies ->
             Log.d(tag, "lobbies in fragment: $lobbies")
             filterText(lobbies)
@@ -129,6 +134,7 @@ class FindLobbyFragment : Fragment() {
                 return@observe
             }
 
+            viewModel.stopListenLobbies()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(
                     R.id.main_fragment_container,
@@ -144,7 +150,8 @@ class FindLobbyFragment : Fragment() {
         val regex = text.toRegex(RegexOption.IGNORE_CASE)
         lobbyListSection.set(
             lobbies.filter { lobby ->
-                return@filter regex.containsMatchIn(lobby.roomName)
+//                Log.d("TAG", "${lobby.lastTimeHostPing - System.currentTimeMillis()}")
+                return@filter regex.containsMatchIn(lobby.name)
             }
         )
     }

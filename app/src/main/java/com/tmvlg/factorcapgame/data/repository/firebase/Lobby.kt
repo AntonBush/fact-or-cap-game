@@ -1,52 +1,52 @@
 package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
+import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
-import java.lang.Exception
 
 @Parcelize
 data class Lobby(
     var id: String = "0",
-    var host: String = "",
+    var hostName: String = "",
     var started: Boolean = false,
     var players: List<Player> = emptyList(),
-    var roomName: String = "",
+    var name: String = "",
+    var lastTimeHostPing: Long = System.currentTimeMillis()
 ) : Parcelable {
-    fun toMutableMap(): MutableMap<String, Any?> {
-        return mutableMapOf(
-            "host" to host,
-            "started" to started,
-            "score" to mutableMapOf(* players.map { it.id to it }.toTypedArray()),
-            "roomName" to roomName
+    fun toMapped(): Mapped {
+        return Mapped(
+            hostName,
+            started,
+            players.map { it.id to it.toMapped() }.toMap(),
+            name,
+            lastTimeHostPing
         )
     }
 
     companion object {
-        fun newInstance(key: String, map: Map<String, Any?>): Lobby {
+        fun newInstance(key: String, mapped: Mapped): Lobby {
             return Lobby().apply {
                 id = key
-                host = map["host"] as String?
-                    ?: throw IllegalFieldException("host")
-                started = map["started"] as Boolean?
-                    ?: throw IllegalFieldException("started")
-                players = try {
-                    val playersMap = map["players"]
-                        ?: throw IllegalArgumentException()
-                    (playersMap as Map<String, Map<String, Any?>>).map { playerEntry ->
-                        Player.newInstance(playerEntry.key, playerEntry.value)
-                    }
-                } catch (e: Exception) {
-                    throw IllegalFieldException("players").apply {
-                        addSuppressed(e)
-                    }
+                hostName = mapped.host
+                started = mapped.started
+                players = mapped.players.map { playerEntry ->
+                    Player.newInstance(
+                        playerEntry.key,
+                        playerEntry.value
+                    )
                 }
-                roomName = map["roomName"] as String?
-                    ?: throw IllegalFieldException("roomName")
+                name = mapped.roomName
+                lastTimeHostPing = mapped.lastTimeHostPing
             }
         }
-
-        private fun IllegalFieldException(field: String): IllegalArgumentException {
-            return IllegalArgumentException("map contain invalid field<$field>")
-        }
     }
+
+    @IgnoreExtraProperties
+    data class Mapped(
+        var host: String = "",
+        var started: Boolean = false,
+        var players: Map<String, Player.Mapped> = emptyMap(),
+        var roomName: String = "",
+        var lastTimeHostPing: Long = 0
+    )
 }

@@ -5,15 +5,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
+import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragment
 import java.lang.IllegalArgumentException
 
 class LobbyFragment : Fragment() {
@@ -22,8 +27,7 @@ class LobbyFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels LobbyViewModelFactory(
-            app.firebaseRepository,
-            app.userRepository
+            app.firebaseLobbyRepository
         )
     }
 
@@ -47,25 +51,26 @@ class LobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLobbyBinding.inflate(inflater, container, false)
-        Log.d("1", "onCreateView: ${requireActivity().intent.extras}")
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
-                .commit()
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            goTo(FindLobbyFragment.newInstance())
         }
         binding.inviteButton.setOnClickListener {
-//            Toast.makeText(requireContext(), "Under development", Toast.LENGTH_SHORT).show()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .add(R.id.main_fragment_container, InviteFragment.newInstance(lobbyId))
-                .addToBackStack(null)
-                .commit()
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            goTo(InviteFragment.newInstance(lobbyId))
         }
-        listAdapter = LobbyUserListAdapter()
+        listAdapter = LobbyUserListAdapter { v ->
+            val username = v.findViewById<TextView>(R.id.user_name).text.toString()
+            viewModel.removePlayer(username)
+        }
         binding.rvLobbyUsers.adapter = listAdapter
         binding.rvLobbyUsers.layoutManager = LinearLayoutManager(requireContext())
         observeViewModel()
@@ -74,18 +79,6 @@ class LobbyFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        Log.d("1", "onDestroyView: ${requireActivity().intent.extras}")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.stopListenLobby()
-        Log.d("1", "onDestroy: ${requireActivity().intent.extras}")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("1", "onPause: ${requireActivity().intent.extras}")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -93,14 +86,11 @@ class LobbyFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    // saves data to bundle
     private fun saveState(outState: Bundle) {
         outState.putString(KEY_LOBBY_ID, lobbyId)
     }
 
-    // loads data from bundle
     private fun loadState(bundle: Bundle) {
-        Log.d("1", "loadState: loading")
         lobbyId = bundle.getString(KEY_LOBBY_ID)
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
@@ -110,14 +100,15 @@ class LobbyFragment : Fragment() {
             if (lobby == null) {
                 return@observe
             }
-
-            binding.tvLobby.text = lobby.roomName
+            binding.tvLobby.text = lobby.name
             listAdapter.submitList(lobby.players)
         }
         viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
+            Log.d("LobbyFragment", "isHost: $isHost")
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
+                    if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
                     viewModel.startGame()
                 }
             } else {
@@ -126,13 +117,34 @@ class LobbyFragment : Fragment() {
             }
         }
         viewModel.isGameStarted.observe(viewLifecycleOwner) { isGameStarted ->
+            Log.d("LobbyFragment", "IS STARTED : $isGameStarted")
             if (isGameStarted) {
-                Toast.makeText(requireContext(), "Experimental feature", Toast.LENGTH_SHORT).show()
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.main_fragment_container, MultiplayerGameFragment.newInstance(lobbyId))
-                    .commit()
+                goTo(MultiplayerGameFragment.newInstance(lobbyId))
             }
         }
+        viewModel.isDisconnected.observe(viewLifecycleOwner) { isDisconnected ->
+            if (isDisconnected == true) {
+                MaterialAlertDialogBuilder(
+                    requireContext(),
+                    R.style.ThemeOverlay_App_MaterialAlertDialog
+                )
+                    .setTitle("Disconnected")
+                    .setMessage(
+                        "Timeout is out."
+                    )
+                    .setNeutralButton("Ok") { _, _ -> }
+                    .show()
+//                goTo(FindLobbyFragment.newInstance())
+                goTo(MenuFragment.newInstance())
+            }
+        }
+    }
+
+    private fun goTo(fragment: Fragment) {
+        viewModel.stopListenLobby()
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.main_fragment_container, fragment)
+            .commit()
     }
 
     companion object {

@@ -9,7 +9,7 @@
     </style>
 
     <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="materialThemeOverlay">@color/white</item>
+        <item name="materialThemeOverlay">?attr/colorOnPrimary</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 

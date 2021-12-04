@@ -10,8 +10,15 @@ class StatisticsViewModelFactory(
     private val gameRepository: GameRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(StatisticsViewModel::class.java))
-            return StatisticsViewModel(userRepository, gameRepository) as T
-        throw IllegalArgumentException("Unknown view model class $modelClass")
+        return try {
+            modelClass.getConstructor(
+                UserRepository::class.java,
+                GameRepository::class.java
+            ).newInstance(userRepository, gameRepository)
+        } catch (e: ReflectiveOperationException) {
+            val exception = IllegalArgumentException("Unknown view model class $modelClass")
+            exception.addSuppressed(e)
+            throw exception
+        }
     }
 }

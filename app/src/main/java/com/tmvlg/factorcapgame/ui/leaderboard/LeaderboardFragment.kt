@@ -8,7 +8,6 @@ import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentLeaderboardBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
@@ -16,13 +15,7 @@ import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class LeaderboardFragment : Fragment() {
 
-    private val viewModel: LeaderboardViewModel by viewModels {
-        // inits viewmodel
-        val app = activity?.application as FactOrCapApplication
-        return@viewModels LeaderboardViewModelFactory(
-            app.userRepository
-        )
-    }
+    private val viewModel: LeaderboardViewModel by viewModels()
     private var _binding: FragmentLeaderboardBinding? = null
     private val binding: FragmentLeaderboardBinding
 

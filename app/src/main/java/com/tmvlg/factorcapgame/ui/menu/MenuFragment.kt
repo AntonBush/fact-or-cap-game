@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,8 +28,7 @@ class MenuFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MenuViewModelFactory(
-            app.userRepository,
-            app.firebaseRepository
+            app.firebaseLobbyRepository
         )
     }
 
@@ -38,9 +36,12 @@ class MenuFragment : Fragment() {
     private val binding: FragmentMenuBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    private var isEnabled: Boolean
+    private var isMultiplayerButtonToggled: Boolean = false
+
+    private var isEnabled: Boolean = true
         get() = binding.root.isEnabled
         set(value) {
+            Log.d(TAG, "isEnabled $field -> $value")
             binding.apply {
                 changeVolumeButton.isEnabled = value
                 createRoomButton.isEnabled = value
@@ -51,13 +52,8 @@ class MenuFragment : Fragment() {
                 statButton.isEnabled = value
                 singleGameButton.isEnabled = value
             }
+            field = value
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate after super.onCreate")
-        viewModel.initializeAuth(requireActivity())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +62,10 @@ class MenuFragment : Fragment() {
     ): View {
         Log.d(TAG, "onCreateView")
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
+        if (viewModel.isUserSignedIn.value != true) {
+            isEnabled = false
+            viewModel.silentSignIn(requireActivity() as MainActivity) { isEnabled = true }
+        }
 
         binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
@@ -77,8 +77,13 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated after super.onViewCreated")
-        setupListeners()
+        setupAuthLayoutAndBottomMenuListeners()
+        setupGameButtonsListeners()
         observeViewModel()
+        if (viewModel.isUserSignedIn.value != true) {
+            isEnabled = false
+            viewModel.silentSignIn(requireActivity() as MainActivity) { isEnabled = true }
+        }
         Log.d(TAG, "onViewCreated end")
     }
 
@@ -87,7 +92,7 @@ class MenuFragment : Fragment() {
         _binding = null
     }
 
-    private fun setupListeners() {
+    private fun setupAuthLayoutAndBottomMenuListeners() {
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
@@ -102,91 +107,17 @@ class MenuFragment : Fragment() {
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
+            Log.d(TAG, "signIn button clicked")
             // Calling sign in function
             signIn()
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            Log.d(TAG, "signOut button clicked")
             // Calling sign out function
             signOut()
         }
-        // Start single game button listener
-        binding.singleGameButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            isEnabled = false
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, SingleGameFragment())
-                .commit()
-        }
-        // Multiplayer game button listener
-        binding.multiplayerGameButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            isEnabled = false
-            // Calling toggle mpb function
-            Log.d(
-                "-----------------------",
-                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
-            )
-            if (viewModel.isUserSignedIn.value == true) {
-                toggleMultiplayerButton()
-                Log.d("-------------------tog-", "")
-                isEnabled = true
-            } else {
-                MaterialAlertDialogBuilder(
-                    requireContext(),
-                    R.style.ThemeOverlay_App_MaterialAlertDialog
-                )
-                    .setTitle("Auth required")
-                    .setMessage(
-                        "You are not authorized yet." +
-                                " You should authorize via Google to play multiplayer." +
-                                " Do you want to proceed?"
-                    )
-                    .setNegativeButton("Cancel") { dialog, which ->
-                        Log.d("-------------------can-", "")
-                        isEnabled = true
-                        dialog.cancel()
-                    }
-                    .setPositiveButton("Sign in with Google") { dialog, which ->
-                        signIn()
-                    }
-                    .show()
-            }
-        }
-        // Create room button listener
-        binding.createRoomButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            isEnabled = false
-            val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
-            MaterialAlertDialogBuilder(
-                requireContext(),
-                R.style.ThemeOverlay_App_MaterialAlertDialog
-            )
-                .setTitle("New room name")
-                .setMessage(
-                    "You are going to create new lobby." +
-                            " You should enter the name of new room to play multiplayer." +
-                            " Do you want to proceed?"
-                )
-                .setView(b.root)
-                .setNegativeButton("Cancel") { dialog, which ->
-                    isEnabled = true
-                    dialog.cancel()
-                }
-                .setPositiveButton("Create room") { dialog, which ->
-                    viewModel.createLobby(b.editRoomName.text.toString())
-                }
-                .show()
-        }
-        // Join room button listener
-        binding.joinRoomButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
-                .commit()
-        }
-
         binding.changeVolumeButton.setOnClickListener(){
             if ((this.activity as MainActivity).soundEnabled){
                 (this.activity as MainActivity).soundEnabled = false
@@ -215,6 +146,90 @@ class MenuFragment : Fragment() {
         }
     }
 
+    private fun setupGameButtonsListeners() {
+        // Start single game button listener
+        binding.singleGameButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            isEnabled = false
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, SingleGameFragment())
+                .commit()
+        }
+        // Multiplayer game button listener
+        binding.multiplayerGameButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            isEnabled = false
+            // Calling toggle mpb function
+            Log.d(
+                "-----------------------",
+                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
+            )
+            if (viewModel.isUserSignedIn.value == true) {
+                toggleMultiplayerButton()
+                Log.d("-------------------tog-", "")
+                isEnabled = true
+            } else {
+                createDialog(
+                    DialogParams(
+                        "Auth required",
+                        "You are not authorized yet." +
+                            " You should authorize via Google to play multiplayer." +
+                            " Do you want to proceed?",
+                        "Sign in with Google",
+                        "Cancel"
+                    )
+                ) { signIn() }
+                    .show()
+            }
+        }
+        // Create room button listener
+        binding.createRoomButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            isEnabled = false
+            val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
+            createDialog(
+                DialogParams(
+                    "New room name",
+                    "You are going to create new lobby." +
+                        " You should enter the name of new room to play multiplayer." +
+                        " Do you want to proceed?",
+                    "Create room",
+                    "Cancel"
+                )
+            ) { viewModel.createLobby(b.editRoomName.text.toString()) }
+                .setView(b.root)
+                .show()
+        }
+        // Join room button listener
+        binding.joinRoomButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
+                .commit()
+        }
+    }
+
+    private fun createDialog(
+        params: DialogParams,
+        positiveAction: () -> Unit
+    ): MaterialAlertDialogBuilder {
+        return MaterialAlertDialogBuilder(
+            requireContext(),
+            R.style.ThemeOverlay_App_MaterialAlertDialog
+        )
+            .setTitle(params.title)
+            .setMessage(params.message)
+            .setNegativeButton(params.negativeButtonText) { dialog, _ ->
+                dialog.cancel()
+            }
+            .setPositiveButton(params.positiveButtonText) { _, _ ->
+                positiveAction()
+            }
+            .setOnCancelListener {
+                isEnabled = true
+            }
+    }
+
     private fun observeViewModel() {
 //        viewModel.user.observe(viewLifecycleOwner) { isEnabled = true }
         viewModel.username.observe(viewLifecycleOwner) { username ->
@@ -234,19 +249,22 @@ class MenuFragment : Fragment() {
                 binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
 
                 binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
-            }
 
-            Log.d("----------------------1", "$isUserSignedIn")
-            Log.d(
-                "-----------------------",
-                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
-            )
+                if (isMultiplayerButtonToggled) {
+                    toggleMultiplayerButton()
+                }
+            }
             isEnabled = true
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                Log.d("-------------------err-", "")
+                isEnabled = true
+            }
+        }
+        viewModel.authError.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 isEnabled = true
             }
         }
@@ -266,23 +284,18 @@ class MenuFragment : Fragment() {
 
     private fun signIn() {
         isEnabled = false
-        viewModel.startSignInIntent(launcher)
-    }
-
-    private val launcher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        Log.d("startSignInIntent", "-----------------------")
-        viewModel.signInFromIntent(result, requireActivity())
+        val activity = requireActivity() as MainActivity
+        viewModel.signIn(activity, activity.launcher)
     }
 
     private fun signOut() {
         isEnabled = false
-        viewModel.signOut()
+        viewModel.signOut(requireActivity() as MainActivity)
     }
 
     // Animation
     private fun toggleMultiplayerButton() {
+        isMultiplayerButtonToggled = !isMultiplayerButtonToggled
         val visibility = binding.joinRoomButton.visibility.xor(XOR_VISIBLE_VALUE_2)
         val upperAnim = if (visibility == View.VISIBLE) {
             AnimationUtils.loadAnimation(requireContext(), R.anim.multiplayer_in_upper)
@@ -299,6 +312,13 @@ class MenuFragment : Fragment() {
         binding.joinRoomButton.visibility = visibility
         binding.joinRoomButton.startAnimation(lowerAnim)
     }
+
+    private data class DialogParams(
+        val title: String,
+        val message: String,
+        val positiveButtonText: String,
+        val negativeButtonText: String
+    )
 
     companion object {
         const val XOR_VISIBLE_VALUE_2 = 4

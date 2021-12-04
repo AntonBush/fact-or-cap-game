@@ -81,8 +81,9 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.4.0'
     // FireBase
     implementation platform('com.google.firebase:firebase-bom:29.0.0')
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
+
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
     // Firestore
     implementation 'com.google.firebase:firebase-firestore-ktx:24.0.0'
@@ -92,4 +93,7 @@ dependencies {
     implementation 'dev.ahamed.mva3:ext-databinding:3.0.0'  // DataBinding
     implementation 'dev.ahamed.mva3:ext-decorator:3.0.0'    // Decorators
     implementation 'dev.ahamed.mva3:ext-diffutil-rx:3.0.0'  // RxDiffUtil
+    // RecyclerView
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
 }

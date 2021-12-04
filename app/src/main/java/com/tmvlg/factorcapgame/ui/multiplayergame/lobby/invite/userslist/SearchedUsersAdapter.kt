@@ -1,16 +1,13 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.userslist
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FoundUserBinding
-import com.tmvlg.factorcapgame.databinding.PlayerScoreboardBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayerViewHolder
 
 class SearchedUsersAdapter :
     ListAdapter<Player, SearchedUsersViewHolder>(SearchedUsersDiffCallback()) {
@@ -31,19 +28,16 @@ class SearchedUsersAdapter :
     override fun onBindViewHolder(holder: SearchedUsersViewHolder, position: Int) {
         val item = getItem(position)
 
-
         with(holder) {
 
             val borderResId = if (position == currentSelection)
-                    R.drawable.green_border
-                else
-                    0
-
+                R.drawable.green_border
+            else
+                0
 
             binding.userLayout.setBackgroundResource(borderResId)
 
-
-            binding.usernameTextview.text = item.playerName
+            binding.usernameTextview.text = item.name
 
             binding.userLayout.setOnClickListener {
                 notifyItemChanged(currentSelection)

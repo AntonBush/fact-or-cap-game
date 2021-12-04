@@ -21,8 +21,8 @@ class LobbyBinder(
 
     override fun bindViewHolder(holder: ViewHolder, lobby: Lobby) {
         with(holder) {
-            binding.lobby.text = lobby.roomName
-            binding.host.text = lobby.host
+            binding.lobby.text = lobby.name
+            binding.host.text = lobby.hostName
             binding.playersNumber.text = lobby.players.size.toString()
             onLobbySelectedListener?.onLobbySelected(binding, isItemSelected)
         }
@@ -48,7 +48,7 @@ class LobbyBinder(
     }
 }
 
-fun LobbyListAdapter(
+fun newLobbyListAdapter(
     onLobbySelectedListener: LobbyBinder.OnLobbySelectedListener? = null
 ): MultiViewAdapter {
     return MultiViewAdapter().apply {
