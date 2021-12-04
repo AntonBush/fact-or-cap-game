@@ -105,6 +105,8 @@ class LobbyViewModel(
 
                 firebaseLobbyRepository.updatePing(lobby.id, player.id)
 
+//                if (lobby.lastTimeHostPing)
+
                 doHostStuff(lobby, player)
 
                 sleep(SLEEP_TIME_MILLIS)
@@ -131,6 +133,8 @@ class LobbyViewModel(
                 }
             }
         }
+
+//        private fun isActualTime()
 
         companion object {
             const val SLEEP_TIME_MILLIS = 1_000L
