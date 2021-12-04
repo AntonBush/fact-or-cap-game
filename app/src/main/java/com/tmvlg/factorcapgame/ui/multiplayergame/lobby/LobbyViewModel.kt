@@ -97,6 +97,19 @@ class LobbyViewModel(
                     if (lobby.hostName == player.name) {
                         Log.d("THREAD LOBBY", "player is host")
                         firebaseLobbyRepository.updateLobbyPing(lobby.id)
+
+                        val currentMillis = System.currentTimeMillis()
+
+                        lobby.players.forEach { player ->
+                            if (player.name == lobby.hostName) {
+                                return@forEach
+                            }
+
+                            val diff = currentMillis - player.lastTimePing
+                            if (diff > PLAYER_TIMEOUT_MILLIS) {
+                                firebaseLobbyRepository.removePlayer(lobby.id, player.id)
+                            }
+                        }
                     }
                 }
                 sleep(SLEEP_TIME_MILLIS)
@@ -105,6 +118,7 @@ class LobbyViewModel(
 
         companion object {
             const val SLEEP_TIME_MILLIS = 1_000L
+            const val PLAYER_TIMEOUT_MILLIS = 10_000L
         }
     }
 }
