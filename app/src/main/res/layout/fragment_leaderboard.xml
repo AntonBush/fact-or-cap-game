@@ -5,8 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.leaderboard.LeaderboardFragment"
-        android:padding="32dp"
-        android:background="@drawable/ic_wallpaper">
+        android:padding="32dp">
 
     <TextView
             android:id="@+id/leaderboard_header"
@@ -17,7 +16,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:textSize="40sp"
-            android:textColor="@color/font_color"
+            android:textColor="?attr/textAppearanceHeadline2"
             android:text="@string/leaderboard_string"
             android:maxLines="1"
             app:autoSizeTextType="uniform"

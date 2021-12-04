@@ -65,11 +65,14 @@ class FCMService : FirebaseMessagingService() {
         // after from here are the generally same. tricks above
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0 /* Request code */,
-            intent,
+        val pendingFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            PendingIntent.FLAG_MUTABLE
+        else
             PendingIntent.FLAG_ONE_SHOT
+
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0 /* Request code */, intent,
+            pendingFlag
         )
 
         val notificationBuilder: NotificationCompat.Builder =

@@ -11,7 +11,7 @@
             android:layout_height="35dp"
             android:layout_margin="7dp"
             android:background="@drawable/circle_background"
-            android:backgroundTint="@color/font_color"
+            android:backgroundTint="?attr/textAppearanceHeadline2"
             android:src="@drawable/ic_person"
             android:contentDescription="@string/profile_picture_placeholder"
             android:scaleType="fitCenter" />
@@ -26,7 +26,7 @@
             android:layout_marginBottom="10dp"
             android:textSize="35sp"
             android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
+            android:textColor="?attr/textAppearanceHeadline2"
             android:maxLines="1">
 
     </TextView>

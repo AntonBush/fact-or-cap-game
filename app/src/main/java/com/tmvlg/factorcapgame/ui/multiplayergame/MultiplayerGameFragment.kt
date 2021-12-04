@@ -17,6 +17,15 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import java.lang.IllegalArgumentException
+import androidx.annotation.ColorInt
+
+
+import android.content.res.Resources.Theme
+
+import android.util.TypedValue
+
+
+
 
 class MultiplayerGameFragment : Fragment() {
 
@@ -130,12 +139,12 @@ class MultiplayerGameFragment : Fragment() {
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             _binding?.tvScore?.text = it.toString()
-            startAnimator(
-                _binding,
-                getColor(R.color.online_indicator_color, requireContext()),
-                getColor(R.color.font_color, requireContext()),
-                RIGHT_ANSWER_ANIMATION_DURATION
-            )
+//            startAnimator(
+//                    _binding,
+//                    getColor(R.color.online_indicator_color, requireContext()),
+//                    getColor(R.color.font_color, requireContext()),
+//                    RIGHT_ANSWER_ANIMATION_DURATION
+//            )            
         }
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
             if (!isStillLoading) {
@@ -145,12 +154,27 @@ class MultiplayerGameFragment : Fragment() {
             }
         }
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
+            Log.d("1", "answer coorect = : $isCorrect")
+
+            val typedValue = TypedValue()
+            val theme = requireContext().theme
+
+            theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
+            @ColorInt val colorCorrect = typedValue.data
+
+            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+            @ColorInt val colorIncorrect = typedValue.data
+
             val startColor = if (isCorrect) {
-                getColor(R.color.primary_red, requireContext())
+                colorCorrect
             } else {
-                getColor(R.color.online_indicator_color, requireContext())
+                colorIncorrect
             }
-            val endColor: Int = getColor(R.color.font_color, requireContext())
+            Log.d("1", "answer color: $startColor")
+
+            theme.resolveAttribute(R.attr.textAppearanceHeadline2, typedValue, true)
+            @ColorInt val endColor = typedValue.data
+          
             startAnimator(
                 _binding,
                 startColor,
@@ -191,6 +215,7 @@ class MultiplayerGameFragment : Fragment() {
             endColor: Int,
             duration: Long
         ) {
+            try {
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
                 binding?.tvTimer?.setTextColor(
@@ -202,6 +227,9 @@ class MultiplayerGameFragment : Fragment() {
                 )
             }
             animator.setDuration(duration).start()
+            } catch (e: IllegalStateException) {
+                return@observe
+            }
         }
 
         private fun getColor(colorId: Int, context: Context): Int {
