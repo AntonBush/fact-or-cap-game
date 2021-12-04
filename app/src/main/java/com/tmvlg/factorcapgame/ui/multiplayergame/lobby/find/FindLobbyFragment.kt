@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.addTextChangedListener
@@ -16,6 +17,7 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import mva3.adapter.ListSection
@@ -74,18 +76,23 @@ class FindLobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFindLobbyBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             viewModel.stopListenLobbies()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
         binding.joinButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             isEnabled = false
             if (lobbyListSection.selectedItems.isEmpty()) {
                 Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()

@@ -38,8 +38,6 @@
 
         <!-- Wallpapers. -->
         <item name="android:windowBackground">@drawable/ic_wallpaper</item>
-
-        <item name="colorBackgroundFloating">@drawable/ic_wallpaper</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
 
     </style>

@@ -22,7 +22,7 @@ import kotlin.NoSuchElementException
 
 class MultiplayerGameViewModel(
     private val factRepository: FactRepository,
-    private val firebaseGameRepository: FirebaseGameRepository
+    private val firebaseGameRepository: FirebaseGameRepository,
     private val fragment: MultiplayerGameFragment
 ) : ViewModel() {
     private var firstFact = true

@@ -37,7 +37,6 @@ class MultiplayerGameFragment : Fragment() {
         val app = activity?.application as FactOrCapApplication
         return@viewModels MultiplayerGameViewModelFactory(
             app.factRepository,
-            app.userRepository,
             app.firebaseGameRepository,
             this
         )
@@ -270,9 +269,7 @@ class MultiplayerGameFragment : Fragment() {
                 )
             }
             animator.setDuration(duration).start()
-            } catch (e: IllegalStateException) {
-                return@observe
-            }
+            } catch (e: IllegalStateException) { }
         }
 
         private fun getColor(colorId: Int, context: Context): Int {

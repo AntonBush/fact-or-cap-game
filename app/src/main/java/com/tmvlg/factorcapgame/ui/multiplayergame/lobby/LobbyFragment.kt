@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,6 +14,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
@@ -49,15 +51,20 @@ class LobbyFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLobbyBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             goTo(FindLobbyFragment.newInstance())
         }
         binding.inviteButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             goTo(InviteFragment.newInstance(lobbyId))
         }
         listAdapter = LobbyUserListAdapter { v ->
@@ -101,6 +108,7 @@ class LobbyFragment : Fragment() {
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
+                    if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
                     viewModel.startGame()
                 }
             } else {

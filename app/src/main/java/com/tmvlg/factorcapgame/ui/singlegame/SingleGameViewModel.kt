@@ -86,32 +86,35 @@ class SingleGameViewModel(
             stats.highestScore = score
             _isHighScore.postValue(true)
         }
-        if (userRepository.getUsername()!!.isNotEmpty()) checkAccountHighScore(score)
+        val username = FactOrCapAuth.currentUser.value?.name
+        if (username != null) {
+            checkAccountHighScore(username, score)
+        }
         userRepository.saveGame(stats)
     }
 
-    private fun checkAccountHighScore(score: Int) {
+    private fun checkAccountHighScore(username: String, score: Int) {
         val db = Firebase.firestore
         var accountscore: Long = -1
         db.collection("leaderboard")
-            .whereEqualTo("username", userRepository.getUsername())
+            .whereEqualTo("username", username)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     accountscore = document.data.getValue("score") as Long
                 }
-                if (score > accountscore) postToFirestore(score)
+                if (score > accountscore) postToFirestore(username, score)
             }
     }
 
-    private fun postToFirestore(score: Int) {
+    private fun postToFirestore(username: String, score: Int) {
         val db = Firebase.firestore
         val item = hashMapOf(
-            "username" to userRepository.getUsername(),
+            "username" to username,
             "score" to score
         )
         // Add a new document with a generated ID
-        db.collection("leaderboard").document(userRepository.getUsername()!!)
+        db.collection("leaderboard").document(username)
             .set(item, SetOptions.merge())
             .addOnSuccessListener {
                 Log.d(TAG, "DocumentSnapshot added ")
