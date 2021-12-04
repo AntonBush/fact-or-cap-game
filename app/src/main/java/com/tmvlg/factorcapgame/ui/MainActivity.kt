@@ -5,11 +5,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.InviteConnectionFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 
 class MainActivity : AppCompatActivity() {
+    val launcher = FactOrCapAuth.SignInLauncher.newInstance(this)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -22,9 +24,9 @@ class MainActivity : AppCompatActivity() {
 //            val lobbyId: String = arguments.getString("lobbyId") ?: ""
             Log.d("1", "onCreate: lobbyid = $lobbyId")
             Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
+            FactOrCapAuth.signIn(this, launcher)
             navigateToLobby(lobbyId)
-        }
-        else {
+        } else {
 
             // Set MenuFragment as first
             navigateToMenu()
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateToLobby(lobbyId: String) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_fragment_container, InviteConnectionFragment.newInstance(lobbyId))
+            .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
             .commit()
     }
 }

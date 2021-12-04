@@ -17,7 +17,7 @@ class PlayersScoreboardAdapter : ListAdapter<Player, PlayerViewHolder>(PlayersDi
     override fun onBindViewHolder(holder: PlayerViewHolder, position: Int) {
         val item = getItem(position)
         with(holder) {
-            binding.memberUsername.text = item.playerName
+            binding.memberUsername.text = item.name
             if (item.isWinner)
                 binding.corona.visibility = View.VISIBLE
             if (item.waiting)

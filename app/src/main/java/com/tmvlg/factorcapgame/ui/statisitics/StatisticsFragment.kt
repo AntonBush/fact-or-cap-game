@@ -65,13 +65,13 @@ class StatisticsFragment : Fragment() {
             if (binding.grid.visibility == View.VISIBLE) {
                 binding.grid.visibility = View.GONE
                 binding.gamesStatisticsList.visibility = View.VISIBLE
-                binding.statisticsToggleButton.rotation = 0f
-                binding.gamesToggleButton.rotation = 90f
+                binding.statisticsToggleButton.rotation = FLOAT_ZERO
+                binding.gamesToggleButton.rotation = FLOAT_90
             } else {
                 binding.grid.visibility = View.VISIBLE
                 binding.gamesStatisticsList.visibility = View.GONE
-                binding.statisticsToggleButton.rotation = 90f
-                binding.gamesToggleButton.rotation = 0f
+                binding.statisticsToggleButton.rotation = FLOAT_90
+                binding.gamesToggleButton.rotation = FLOAT_ZERO
             }
         }
 
@@ -79,13 +79,13 @@ class StatisticsFragment : Fragment() {
             if (binding.gamesStatisticsList.visibility == View.VISIBLE) {
                 binding.grid.visibility = View.VISIBLE
                 binding.gamesStatisticsList.visibility = View.GONE
-                binding.gamesToggleButton.rotation = 0f
-                binding.statisticsToggleButton.rotation = 90f
+                binding.gamesToggleButton.rotation = FLOAT_ZERO
+                binding.statisticsToggleButton.rotation = FLOAT_90
             } else {
                 binding.gamesStatisticsList.visibility = View.VISIBLE
                 binding.grid.visibility = View.GONE
-                binding.gamesToggleButton.rotation = 90f
-                binding.statisticsToggleButton.rotation = 0f
+                binding.gamesToggleButton.rotation = FLOAT_90
+                binding.statisticsToggleButton.rotation = FLOAT_ZERO
             }
         }
     }
@@ -108,5 +108,10 @@ class StatisticsFragment : Fragment() {
         viewModel.averageScore.observe(viewLifecycleOwner) {
             binding.averageScoreValue.text = it.toString()
         }
+    }
+
+    companion object {
+        const val FLOAT_ZERO = 0f
+        const val FLOAT_90 = 90f
     }
 }

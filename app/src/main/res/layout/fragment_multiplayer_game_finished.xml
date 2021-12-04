@@ -22,9 +22,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textAlignment="center">
-
-    </TextView>
+            android:textAlignment="center"/>
 
     <TextView
             android:layout_width="wrap_content"
@@ -75,32 +73,7 @@
             app:autoSizeTextType="uniform"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-    </Button>
-
-    <Button
-            android:id="@+id/restart_button"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            app:cornerRadius="80dp"
-            android:textAllCaps="false"
-            android:letterSpacing="0"
-            android:padding="13dp"
-            android:layout_marginBottom="10dp"
-            android:text="@string/to_lobby"
-            android:textSize="35sp"
-            android:textColor="?attr/textAppearanceHeadline2"
-            android:fontFamily="@font/norwester"
-            android:maxLines="1"
-            app:autoSizeTextType="uniform"
-            android:src="@drawable/green_round_background"
-            android:theme="@style/Button.Main"
-            app:layout_constraintBottom_toTopOf="@id/menu_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-    </Button>
+            app:layout_constraintStart_toStartOf="parent"/>
 
     <Button
             android:id="@+id/find_lobby_button"
@@ -119,7 +92,7 @@
             app:autoSizeTextType="uniform"
             android:src="@drawable/green_round_background"
             android:theme="@style/Button.Main"
-            app:layout_constraintBottom_toTopOf="@id/restart_button"
+            app:layout_constraintBottom_toTopOf="@id/menu_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 

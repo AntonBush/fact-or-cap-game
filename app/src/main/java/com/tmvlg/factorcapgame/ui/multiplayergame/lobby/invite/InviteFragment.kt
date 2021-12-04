@@ -1,4 +1,4 @@
-package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
+package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite
 
 import android.content.Context
 import android.os.Bundle
@@ -7,23 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.userslist.SearchedUsersAdapter
-import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
-
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
 import java.lang.IllegalArgumentException
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.ContextCompat.getSystemService
-import java.lang.Exception
-
 
 class InviteFragment : Fragment() {
 
@@ -45,7 +38,6 @@ class InviteFragment : Fragment() {
     private lateinit var searchedUsersAdapter: SearchedUsersAdapter
 
     private var selectedPlayerName: String? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,12 +74,10 @@ class InviteFragment : Fragment() {
             if (selectedPlayerName != null) {
                 val userToBeInvited = selectedPlayerName!!
                 viewModel.invite(userToBeInvited, lobbyId)
-            }
-            else {
+            } else {
                 Toast.makeText(requireContext(), "Select a friend first", Toast.LENGTH_SHORT)
                     .show()
             }
-
         }
 
         binding.searchButton.setOnClickListener {
@@ -96,13 +86,13 @@ class InviteFragment : Fragment() {
             try {
                 val imm = requireActivity()
                     .getSystemService(Context.INPUT_METHOD_SERVICE)
-                        as InputMethodManager
+                    as InputMethodManager
                 imm.hideSoftInputFromWindow(
-                    requireActivity().currentFocus?.getWindowToken(),
+                    requireActivity().currentFocus?.windowToken,
                     0
                 )
-            } catch (e: Exception) {
-                // TODO: handle exception
+            } catch (e: IllegalStateException) {
+                TODO("Handle exception")
             }
         }
 
@@ -112,11 +102,10 @@ class InviteFragment : Fragment() {
 
         searchedUsersAdapter.onSearchedUserClickListener = {
             Log.d("1", "onViewCreated: $it")
-            selectedPlayerName = it.playerName
+            selectedPlayerName = it.name
         }
 
         observeViewModel()
-
     }
 
     private fun observeViewModel() {
@@ -125,7 +114,6 @@ class InviteFragment : Fragment() {
             searchedUsersAdapter.submitList(it)
         }
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -143,7 +131,6 @@ class InviteFragment : Fragment() {
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
 
-
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
 
@@ -155,5 +142,4 @@ class InviteFragment : Fragment() {
             }
         }
     }
-
 }

@@ -6,12 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import kotlinx.coroutines.launch
+import java.lang.IllegalStateException
 
-class LeaderboardViewModel(
-    userRepository: UserRepository
-) : ViewModel() {
+class LeaderboardViewModel : ViewModel() {
     val db = Firebase.firestore
     var allScores: MutableList<PlayerScore> = arrayListOf()
     lateinit var adapter: PlayerListAdapter
@@ -19,7 +18,8 @@ class LeaderboardViewModel(
 
     init {
         viewModelScope.launch {
-            username = userRepository.getUsername()!!
+            username = FactOrCapAuth.currentUser.value?.name
+                ?: throw IllegalStateException("User is unauthorized")
         }
     }
 
@@ -33,7 +33,7 @@ class LeaderboardViewModel(
 
         db.collection("leaderboard")
             .orderBy("score", Query.Direction.DESCENDING)
-            .limit(100)
+            .limit(LOAD_DATA_FROM_DB_LIMIT)
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
@@ -85,5 +85,6 @@ class LeaderboardViewModel(
 
     companion object {
         const val TAG = "FireStoreActivity"
+        const val LOAD_DATA_FROM_DB_LIMIT = 100L
     }
 }
