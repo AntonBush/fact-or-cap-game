@@ -11,12 +11,12 @@ class SingleGameViewModelFactory(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository,
-    private val username: String
+    private val fragment: SingleGameFragment
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SingleGameViewModel::class.java))
-            return SingleGameViewModel(gameRepository, factRepository, userRepository, username) as T
+            return SingleGameViewModel(gameRepository, factRepository, userRepository, fragment) as T
         throw IllegalArgumentException("Unknown view model class $modelClass")
     }
 }

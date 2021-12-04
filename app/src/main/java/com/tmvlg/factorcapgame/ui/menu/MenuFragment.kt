@@ -1,8 +1,11 @@
 package com.tmvlg.factorcapgame.ui.menu
 
+import android.R.attr
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +32,15 @@ import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewMod
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
+import kotlin.random.Random
+import android.animation.ValueAnimator
+
+import android.R.attr.animationDuration
+import android.animation.ValueAnimator.*
+import android.view.ViewPropertyAnimator
+import androidx.core.view.animation.PathInterpolatorCompat
+import androidx.interpolator.view.animation.FastOutLinearInInterpolator
+
 
 class MenuFragment : Fragment() {
 
@@ -50,14 +62,21 @@ class MenuFragment : Fragment() {
     ): View {
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
 
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
+        if (!(this.activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
+
         // Start single game button listener
         binding.singleGameButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
                 .commit()
         }
+
         // Statistics button listener
         binding.statButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, StatisticsFragment())
                 .addToBackStack(null)
@@ -65,6 +84,7 @@ class MenuFragment : Fragment() {
         }
         // Leader button listener
         binding.leaderboardButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LeaderboardFragment())
                 .addToBackStack(null)
@@ -73,11 +93,13 @@ class MenuFragment : Fragment() {
         }
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             binding.signInLayoutAuthorized.signOutLayout.visibility =
                 binding.signInLayoutAuthorized.signOutLayout.visibility.xor(XOR_VISIBLE_VALUE_1)
         }
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             // Check if user is signed in in firebase
             if (viewModel.auth.currentUser != null) {
                 Log.d(GOOGLETAG, "User already signed in")
@@ -90,12 +112,14 @@ class MenuFragment : Fragment() {
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             Log.d(GOOGLETAG, "Sign out")
             // Calling sign out function
             googleSignOut()
         }
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             // Calling toggle mpb function
             if (viewModel.auth.currentUser != null) {
                 toggleMultiplayerButton()
@@ -117,6 +141,7 @@ class MenuFragment : Fragment() {
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LobbyFragment())
                 .addToBackStack(null)
@@ -124,10 +149,22 @@ class MenuFragment : Fragment() {
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+
+        binding.changeVolumeButton.setOnClickListener(){
+            if ((this.activity as MainActivity).soundEnabled){
+                (this.activity as MainActivity).soundEnabled = false
+                binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
+            }
+            else {
+                (this.activity as MainActivity).soundEnabled = true
+                binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_up)
+            }
         }
         return binding.root
     }
@@ -234,7 +271,7 @@ class MenuFragment : Fragment() {
     private fun enableButtons(enablebool: Boolean) {
         binding.singleGameButton.isEnabled = enablebool
         binding.statButton.isEnabled = enablebool
-        binding.changeLanguageButton.isEnabled = enablebool
+        binding.changeVolumeButton.isEnabled = enablebool
         binding.createRoomButton.isEnabled = enablebool
         binding.joinRoomButton.isEnabled = enablebool
         binding.leaderboardButton.isEnabled = enablebool

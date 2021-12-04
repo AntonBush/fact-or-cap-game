@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,11 +27,20 @@ class LeaderboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLeaderboardBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         binding.returnButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
+        }
+        binding.leaderboardRefreshButton.setOnClickListener(){
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+
+            viewModel.loadDataFromDB()
         }
         return binding.root
     }

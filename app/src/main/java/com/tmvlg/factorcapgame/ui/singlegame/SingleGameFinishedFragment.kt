@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameFinishedBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class SingleGameFinishedFragment : Fragment() {
@@ -30,6 +32,9 @@ class SingleGameFinishedFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSingleGameFinishedBinding.inflate(inflater, container, false)
+
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         return binding.root
     }
 
@@ -61,6 +66,7 @@ class SingleGameFinishedFragment : Fragment() {
 
         // return to menu
         binding.menuButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
@@ -68,6 +74,7 @@ class SingleGameFinishedFragment : Fragment() {
 
         // restart a game
         binding.restartButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
                 .commit()

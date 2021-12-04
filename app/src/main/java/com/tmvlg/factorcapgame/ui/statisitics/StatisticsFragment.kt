@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentStatisticsBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class StatisticsFragment : Fragment() {
@@ -34,7 +36,10 @@ class StatisticsFragment : Fragment() {
 
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
 
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+
         binding.returnButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
@@ -62,6 +67,7 @@ class StatisticsFragment : Fragment() {
         }
 
         binding.statisticsToggleButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             if (binding.grid.visibility == View.VISIBLE) {
                 binding.grid.visibility = View.GONE
                 binding.gamesStatisticsList.visibility = View.VISIBLE
@@ -77,6 +83,7 @@ class StatisticsFragment : Fragment() {
         }
 
         binding.gamesToggleButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             if (binding.gamesStatisticsList.visibility == View.VISIBLE) {
                 binding.grid.visibility = View.VISIBLE
                 binding.gamesStatisticsList.visibility = View.GONE

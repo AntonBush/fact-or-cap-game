@@ -1,4 +1,5 @@
 package com.tmvlg.factorcapgame.ui.singlegame
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider.Companion.KEY_USERNAME
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
@@ -16,13 +18,16 @@ import com.tmvlg.factorcapgame.ui.leaderboard.PlayerScore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.lang.Exception
 
 class SingleGameViewModel(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
     private val userRepository: UserRepository,
-    private val username: String
+    private val fragment: SingleGameFragment
 ) : ViewModel() {
+    private var firstFact: Boolean
+
     // exception that throws when can't fetch a fact
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
@@ -50,13 +55,17 @@ class SingleGameViewModel(
     fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
+            fragment.funkyAnimationCorrect()
             getFact()
         } else {
             saveStats().join()
             saveGame().join()
+            fragment.funkyAnimationWrong()
+            delay(800)
             _gameFinished.postValue(true)
         }
     }
+
 
     // calls to save statistics in Statistics object. Shows in statistics fragment
     fun saveStats() = viewModelScope.launch {
@@ -70,10 +79,8 @@ class SingleGameViewModel(
         if (score > stats.highestScore) {
             stats.highestScore = score
             _isHighScore.postValue(true)
-            // У нас статистика ведется по устройству а аккаунт можно менять :(
-            //postToFirestore(score)
         }
-        checkAccountHighScore(score)
+        if (userRepository.getUsername().isNotEmpty()) checkAccountHighScore(score)
         userRepository.saveGame(stats)
     }
 
@@ -81,7 +88,7 @@ class SingleGameViewModel(
         val db = Firebase.firestore
         var accountscore: Long = -1
         db.collection("leaderboard")
-            .whereEqualTo("username", username)
+            .whereEqualTo("username", userRepository.getUsername())
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
@@ -94,11 +101,11 @@ class SingleGameViewModel(
     private fun postToFirestore(score: Int) {
         val db = Firebase.firestore
         val item = hashMapOf(
-            "username" to username,
+            "username" to userRepository.getUsername(),
             "score" to score
         )
         // Add a new document with a generated ID
-        db.collection("leaderboard").document(username)
+        db.collection("leaderboard").document(userRepository.getUsername())
             .set(item, SetOptions.merge())
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "DocumentSnapshot added ")
@@ -111,7 +118,14 @@ class SingleGameViewModel(
     // fetches new fact from repository
     fun getFact() = viewModelScope.launch {
         try {
-            _fact.postValue(factRepository.getFact())
+            val fact = factRepository.getFact()
+            if (!firstFact) {
+                fragment.hideText()
+                delay(800)
+                fragment.showText()
+            }
+            else firstFact = false
+            _fact.postValue(fact)
             _exception.postValue(null)
         } catch (e: IOException) {
             _exception.postValue(e)
@@ -138,6 +152,7 @@ class SingleGameViewModel(
     }
 
     init {
+        firstFact = true
         startGame()
     }
 
