@@ -2,18 +2,30 @@ package com.tmvlg.factorcapgame.ui.leaderboard
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.tmvlg.factorcapgame.data.repository.user.UserRepository
+import kotlinx.coroutines.launch
 
-class LeaderboardViewModel : ViewModel() {
+class LeaderboardViewModel(
+    userRepository: UserRepository
+) : ViewModel() {
     val db = Firebase.firestore
     var allScores: MutableList<PlayerScore> = arrayListOf()
-    lateinit var adapter : PlayerListAdapter
-    lateinit var username : String
+    lateinit var adapter: PlayerListAdapter
+    lateinit var username: String
+
+    init {
+        viewModelScope.launch {
+            username = userRepository.getUsername()!!
+        }
+    }
+
 //    val docRef = db.collection("leaderboard")
 
-    fun loadDataFromDB(){
+    fun loadDataFromDB() {
         allScores = arrayListOf()
         var i = 1
         var isInList = false
@@ -40,6 +52,7 @@ class LeaderboardViewModel : ViewModel() {
                 Log.w(TAG, "Error getting documents.", exception)
             }
     }
+
     private fun addUserToList(){
         db.collection("leaderboard")
             .whereEqualTo("username", username)
@@ -70,7 +83,7 @@ class LeaderboardViewModel : ViewModel() {
 //        }
 //    }
 
-    companion object{
+    companion object {
         const val TAG = "FireStoreActivity"
     }
 }

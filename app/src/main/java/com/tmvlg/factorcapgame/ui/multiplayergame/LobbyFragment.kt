@@ -10,6 +10,7 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.InviteFragment
 
 class LobbyFragment : Fragment() {
 

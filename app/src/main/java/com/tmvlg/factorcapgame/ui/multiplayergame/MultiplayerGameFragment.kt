@@ -1,8 +1,6 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,11 +18,11 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import java.lang.RuntimeException
+import java.lang.IllegalArgumentException
 
 class MultiplayerGameFragment : Fragment() {
 
     private val viewModel: MultiplayerGameViewModel by viewModels {
-
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MultiplayerGameViewModelFactory(
@@ -41,17 +40,17 @@ class MultiplayerGameFragment : Fragment() {
     private var congratsArray = arrayOfNulls<String>(0)
 
     private var _binding: FragmentMultiplayerGameBinding? = null
-
     private val binding: FragmentMultiplayerGameBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    val lobbyId = MutableLiveData<String>()
+    private val lobbyId = MutableLiveData<String>()
+
+    // check for fact is shown, enables agree and disagree buttons if true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadState(requireArguments())
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,17 +75,41 @@ class MultiplayerGameFragment : Fragment() {
         return binding.root
     }
 
+    // all the bindings here
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupListeners()
+        observeViewModel()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    // all the bindings here
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState != null) {
-            loadState(savedInstanceState)
+    override fun onSaveInstanceState(outState: Bundle) {
+        saveState(outState)
+        super.onSaveInstanceState(outState)
+    }
+
+    // saves data to bundle
+    private fun saveState(outState: Bundle) {
+        val lid = lobbyId.value
+        if (lid != null) {
+            outState.putString(KEY_LOBBY_ID, lid)
         }
+    }
+
+    // loads data from bundle
+    private fun loadState(bundle: Bundle) {
+        Log.d("1", "loadState: loading")
+        lobbyId.postValue(
+            bundle.getString(KEY_LOBBY_ID)
+                ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        )
+    }
+
+    private fun setupListeners() {
         // sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
@@ -113,7 +136,6 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-
         // throws exception if can't fetch a fact for some reason
         viewModel.exception.observe(viewLifecycleOwner) { e ->
             if (e != null) {
@@ -142,8 +164,14 @@ class MultiplayerGameFragment : Fragment() {
                 animator.addUpdateListener { anim ->
                     binding.tvTimer.setTextColor(
                         ColorUtils.blendARGB(
-                            resources.getColor(R.color.online_indicator_color),
-                            resources.getColor(R.color.font_color),
+                            AppCompatResources.getColorStateList(
+                                requireContext(),
+                                R.color.online_indicator_color
+                            ).defaultColor,
+                            AppCompatResources.getColorStateList(
+                                requireContext(),
+                                R.color.font_color
+                            ).defaultColor,
                             anim.animatedFraction
                         )
                     )
@@ -152,7 +180,6 @@ class MultiplayerGameFragment : Fragment() {
             } catch (e: java.lang.IllegalStateException) {
                 return@observe
             }
-
         }
 
         viewModel.factsLoadingState.observe(viewLifecycleOwner) { isStillLoading ->
@@ -165,11 +192,19 @@ class MultiplayerGameFragment : Fragment() {
 
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
             Log.d("1", "answer coorect = : $isCorrect")
-            var startColor = if (isCorrect)
-                resources.getColor(R.color.primary_red) else
-                resources.getColor(R.color.online_indicator_color)
+            val startColor = if (isCorrect) {
+                AppCompatResources.getColorStateList(requireContext(), R.color.primary_red)
+            } else {
+                AppCompatResources.getColorStateList(
+                    requireContext(),
+                    R.color.online_indicator_color
+                )
+            }.defaultColor
             Log.d("1", "answer color: $startColor")
-            var endColor: Int = resources.getColor(R.color.font_color)
+            val endColor: Int = AppCompatResources.getColorStateList(
+                requireContext(),
+                R.color.font_color
+            ).defaultColor
             val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
             animator.addUpdateListener { anim ->
                 try {
@@ -193,26 +228,6 @@ class MultiplayerGameFragment : Fragment() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        saveState(outState)
-    }
-
-    // saves data to bundle
-    private fun saveState(outState: Bundle) {
-        val lid = lobbyId.value
-        if (lid != null) {
-            outState.putString(KEY_LOBBY_ID, lid)
-        }
-    }
-
-    // loads data from bundle
-    private fun loadState(bundle: Bundle) {
-        Log.d("1", "loadState: loading")
-        lobbyId.value = bundle.getString(KEY_LOBBY_ID)
-        Log.d("1", "lobbyId: ${lobbyId.value}")
-
-    }
 
     fun funkyAnimationCorrect(){
         if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).correctSE.start()
@@ -224,11 +239,11 @@ class MultiplayerGameFragment : Fragment() {
         binding.singleGameAnimationText.visibility = View.INVISIBLE
     }
 
-
     // calls when game is finished. Goes to finish fragment with score results
     private fun endGame() {
         val score = viewModel.rightAnswersCount.value ?: 0
-        val lobbyIdValue: String = lobbyId.value ?: throw RuntimeException("can't fetch lobby id")
+        val lobbyIdValue: String =
+            lobbyId.value ?: throw IllegalStateException("can't fetch lobby id")
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(
                 R.id.main_fragment_container,
@@ -248,9 +263,9 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     companion object {
-        const val KEY_LOBBY_ID = "lobby_id"
+        const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
 
-        // calls from MultiplayerGameFragment.kt to create this fragment and pass arguments
+        // calls from MultiplayerGameFragment.kt to create this fragment
         fun newInstance(lobbyId: String): MultiplayerGameFragment {
             return MultiplayerGameFragment().apply {
                 arguments = Bundle().apply {

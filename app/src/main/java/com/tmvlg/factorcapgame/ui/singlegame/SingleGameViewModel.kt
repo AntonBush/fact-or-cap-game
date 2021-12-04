@@ -14,7 +14,6 @@ import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
 import com.tmvlg.factorcapgame.data.repository.game.GameRepository
 import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import com.tmvlg.factorcapgame.ui.leaderboard.PlayerScore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -27,7 +26,12 @@ class SingleGameViewModel(
     private val fragment: SingleGameFragment
 ) : ViewModel() {
     private var firstFact: Boolean
-
+    private lateinit var username: String
+    init {
+        viewModelScope.launch {
+            username = userRepository.getUsername()!!
+        }
+    }
     // exception that throws when can't fetch a fact
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
@@ -80,7 +84,7 @@ class SingleGameViewModel(
             stats.highestScore = score
             _isHighScore.postValue(true)
         }
-        if (userRepository.getUsername().isNotEmpty()) checkAccountHighScore(score)
+        if (userRepository.getUsername()!!.isNotEmpty()) checkAccountHighScore(score)
         userRepository.saveGame(stats)
     }
 
@@ -105,7 +109,7 @@ class SingleGameViewModel(
             "score" to score
         )
         // Add a new document with a generated ID
-        db.collection("leaderboard").document(userRepository.getUsername())
+        db.collection("leaderboard").document(userRepository.getUsername()!!)
             .set(item, SetOptions.merge())
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "DocumentSnapshot added ")

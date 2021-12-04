@@ -18,11 +18,13 @@ class UserRepository(
         return preferenceProvider.getStatistics()
     }
 
-    fun saveUsername(username: String) {
+    @WorkerThread
+    fun saveUsername(username: String?) {
         preferenceProvider.saveUsername(username)
     }
 
-    fun getUsername(): String {
+    @WorkerThread
+    fun getUsername(): String? {
         return preferenceProvider.getUsername()
     }
 }

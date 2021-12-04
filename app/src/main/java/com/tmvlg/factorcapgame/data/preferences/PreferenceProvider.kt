@@ -61,12 +61,12 @@ class PreferenceProvider(context: Context) {
         )
     }
 
-    fun saveUsername(username: String) {
+    fun saveUsername(username: String?) {
         preference.edit().putString(KEY_USERNAME, username).apply()
     }
 
-    fun getUsername(): String {
-        return preference.getString(KEY_USERNAME, "") ?: ""
+    fun getUsername(): String? {
+        return preference.getString(KEY_USERNAME, "")
     }
 
     companion object {

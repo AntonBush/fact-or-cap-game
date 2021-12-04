@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var correctSE: MediaPlayer
     lateinit var wrongSE: MediaPlayer
     var soundEnabled = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

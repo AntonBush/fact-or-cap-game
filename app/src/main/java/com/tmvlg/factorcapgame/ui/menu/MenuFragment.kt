@@ -1,11 +1,7 @@
 package com.tmvlg.factorcapgame.ui.menu
 
-import android.R.attr
-import android.animation.ObjectAnimator
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,33 +10,18 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.databinding.CreateRoomDialogBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
-import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.FindLobbyFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.LobbyFragment
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFinishedViewModelFactory
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
-import kotlin.random.Random
-import android.animation.ValueAnimator
-
-import android.R.attr.animationDuration
 import android.animation.ValueAnimator.*
-import android.view.ViewPropertyAnimator
-import androidx.core.view.animation.PathInterpolatorCompat
-import androidx.interpolator.view.animation.FastOutLinearInInterpolator
-
+import com.tmvlg.factorcapgame.ui.MainActivity
 
 class MenuFragment : Fragment() {
 
@@ -48,93 +29,124 @@ class MenuFragment : Fragment() {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels MenuViewModelFactory(
-            app.userRepository
+            app.userRepository,
+            app.firebaseRepository
         )
     }
+
     private var _binding: FragmentMenuBinding? = null
     private val binding: FragmentMenuBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
+
+    private var isEnabled: Boolean
+        get() = binding.root.isEnabled
+        set(value) {
+            binding.apply {
+                changeVolumeButton.isEnabled = value
+                createRoomButton.isEnabled = value
+                gameButtonsLl.isEnabled = value
+                joinRoomButton.isEnabled = value
+                leaderboardButton.isEnabled = value
+                multiplayerGameButton.isEnabled = value
+                statButton.isEnabled = value
+                singleGameButton.isEnabled = value
+            }
+        }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate after super.onCreate")
+        viewModel.initializeAuth(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d(TAG, "onCreateView")
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
 
         binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
         if (!(this.activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
 
-        // Start single game button listener
-        binding.singleGameButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, SingleGameFragment())
-                .commit()
-        }
+        return binding.root
+    }
 
-        // Statistics button listener
-        binding.statButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, StatisticsFragment())
-                .addToBackStack(null)
-                .commit()
-        }
-        // Leader button listener
-        binding.leaderboardButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, LeaderboardFragment())
-                .addToBackStack(null)
-                .commit()
-//            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated after super.onViewCreated")
+        setupListeners()
+        observeViewModel()
+        Log.d(TAG, "onViewCreated end")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun setupListeners() {
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            binding.signInLayoutAuthorized.signOutLayout.visibility =
-                binding.signInLayoutAuthorized.signOutLayout.visibility.xor(XOR_VISIBLE_VALUE_1)
+            val signOutLayout = binding.signInLayoutAuthorized.signOutLayout
+            when (signOutLayout.visibility) {
+                View.GONE -> signOutLayout.visibility = View.VISIBLE
+                View.VISIBLE -> signOutLayout.visibility = View.GONE
+                else -> signOutLayout.visibility = View.GONE
+            }
         }
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            // Check if user is signed in in firebase
-            if (viewModel.auth.currentUser != null) {
-                Log.d(GOOGLETAG, "User already signed in")
-                updateUI(viewModel.auth.currentUser)
-            } else {
-                Log.d(GOOGLETAG, "Signing in")
-                // Calling sign in intent; Start auth via Google
-                startSignInIntent()
-            }
+            isEnabled = false
+            // Calling sign in function
+            signIn()
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            Log.d(GOOGLETAG, "Sign out")
             // Calling sign out function
-            googleSignOut()
+            signOut()
+        }
+        // Start single game button listener
+        binding.singleGameButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            isEnabled = false
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, SingleGameFragment())
+                .commit()
         }
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener() {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            isEnabled = false
             // Calling toggle mpb function
-            if (viewModel.auth.currentUser != null) {
+            Log.d("-----------------------", "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}")
+            if (viewModel.isUserSignedIn.value == true) {
                 toggleMultiplayerButton()
+                Log.d("-------------------tog-", "")
+                isEnabled = true
             } else {
-                MaterialAlertDialogBuilder(requireContext(),
-                R.style.ThemeOverlay_App_MaterialAlertDialog)
+                MaterialAlertDialogBuilder(
+                    requireContext(),
+                    R.style.ThemeOverlay_App_MaterialAlertDialog
+                )
                     .setTitle("Auth required")
-                    .setMessage("You are not authorized yet." +
+                    .setMessage(
+                        "You are not authorized yet." +
                             " You should authorize via Google to play multiplayer." +
-                            " Do you want to proceed?")
+                            " Do you want to proceed?"
+                    )
                     .setNegativeButton("Cancel") { dialog, which ->
+                        Log.d("-------------------can-", "")
+                        isEnabled = true
                         dialog.cancel()
                     }
-                    .setPositiveButton("Sign in with Google") {dialog, which ->
-                        startSignInIntent()
+                    .setPositiveButton("Sign in with Google") { dialog, which ->
+                        signIn()
                     }
                     .show()
             }
@@ -142,17 +154,33 @@ class MenuFragment : Fragment() {
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, LobbyFragment())
-                .addToBackStack(null)
-                .commit()
+            isEnabled = false
+            val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
+            MaterialAlertDialogBuilder(
+                requireContext(),
+                R.style.ThemeOverlay_App_MaterialAlertDialog
+            )
+                .setTitle("Auth required")
+                .setMessage(
+                    "You are going to create new lobby." +
+                        " You should enter the name of new room to play multiplayer." +
+                        " Do you want to proceed?"
+                )
+                .setView(b.root)
+                .setNegativeButton("Cancel") { dialog, which ->
+                    isEnabled = true
+                    dialog.cancel()
+                }
+                .setPositiveButton("Create room") { dialog, which ->
+                    viewModel.createLobby(b.editRoomName.text.toString())
+                }
+                .show()
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
             if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, FindLobbyFragment())
-                .addToBackStack(null)
+                .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
 
@@ -166,88 +194,84 @@ class MenuFragment : Fragment() {
                 binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_up)
             }
         }
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // Setting viewmodel variables
-        viewModel.menufragment = this
-        viewModel.auth = Firebase.auth
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            // Setting up google sign in parameters
-            .build()
-        // Setting viewmodel variables
-        viewModel.googleSignInClient = GoogleSignIn.getClient(this.activity as Activity, gso)
-        // Update UI if user is signed in or not
-        updateUI(viewModel.auth.currentUser)
-    }
-
-    // Google start auth function
-    private fun startSignInIntent() {
-        enableButtons(false)
-        // Init google sign in intent
-        val signInIntent = viewModel.googleSignInClient.signInIntent
-        // Same as startActivityForResult
-        launcher.launch(signInIntent)
-    }
-
-    // Same as onActivityResult (Listener)
-    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            // Calling viewModel function to get data
-            viewModel.googleAuth(result, (activity as Activity), requireContext())
+        // Statistics button listener
+        binding.statButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, StatisticsFragment())
+                .commit()
         }
-        else {
-            enableButtons(true)
+        // Leader button listener
+        binding.leaderboardButton.setOnClickListener() {
+            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, LeaderboardFragment())
+                .commit()
+//            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
     }
-    // Sign out function
-    private fun googleSignOut() {
-        enableButtons(false)
-        // Sign out from Google
-        viewModel.googleSignInClient.signOut()
-        // Sign out from Firebase
-        viewModel.auth.signOut()
-        // UpdateUI
-        updateUI(viewModel.auth.currentUser)
-    }
-    // Function to Update Username and sign in status on fragment
-    fun updateUI(user: FirebaseUser?) {
-        // Get user email from firebase
-        val username: String = user?.email ?: ""
-        // Update username in MainActivity
-        (activity as MainActivity).username = username.dropLast(EMAIL_LETTERS_COUNT)
-        Log.d(GOOGLETAG, username + " - " + viewModel.auth.currentUser?.email.toString())
-        // Update xml dep on sign in status
-        val username_formatted = username.dropLast(EMAIL_LETTERS_COUNT)
-        viewModel.saveUser(username_formatted)
-        checkUser(username_formatted)
-        enableButtons(true)
-    }
-    // Function to update xml dep on sign in status
-    private fun checkUser(username: String) {
-        if (username.isEmpty()) {
-            binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
-            binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
-        } else {
-            binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
-            binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
-            val usernameS = getString(
+
+    private fun observeViewModel() {
+//        viewModel.user.observe(viewLifecycleOwner) { isEnabled = true }
+        viewModel.username.observe(viewLifecycleOwner) { username ->
+            binding.signInLayoutAuthorized.usernameTextview.text = getString(
                 R.string.hello_string,
-                username
+                username ?: ""
             )
-            binding.signInLayoutAuthorized.usernameTextview.text = usernameS
+        }
+        viewModel.isUserSignedIn.observe(viewLifecycleOwner) { isUserSignedIn ->
+            if (isUserSignedIn) {
+                binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
+
+                binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
+                binding.signInLayoutAuthorized.signOutButton.visibility = View.VISIBLE
+            } else {
+                binding.signInLayoutAuthorized.signOutLayout.visibility = View.GONE
+                binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
+
+                binding.signInLayoutUnauthorized.root.visibility = View.VISIBLE
+            }
+
+            Log.d("----------------------1", "$isUserSignedIn")
+            Log.d("-----------------------", "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}")
+            isEnabled = true
+        }
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                Log.d("-------------------err-", "")
+                isEnabled = true
+            }
+        }
+        viewModel.createdLobbyId.observe(viewLifecycleOwner) { lobbyId ->
+            if (lobbyId == null) {
+                return@observe
+            }
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(
+                    R.id.main_fragment_container,
+                    LobbyFragment.newInstance(lobbyId)
+                )
+                .commit()
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun signIn() {
+        isEnabled = false
+        viewModel.startSignInIntent(launcher)
     }
+
+    private val launcher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result -> viewModel.signInFromIntent(result, requireActivity()) }
+
+    private fun signOut() {
+        isEnabled = false
+        viewModel.signOut()
+    }
+
     // Animation
     private fun toggleMultiplayerButton() {
         val visibility = binding.joinRoomButton.visibility.xor(XOR_VISIBLE_VALUE_2)
@@ -267,20 +291,12 @@ class MenuFragment : Fragment() {
         binding.joinRoomButton.startAnimation(lowerAnim)
     }
 
-    // Enable or disable buttons
-    private fun enableButtons(enablebool: Boolean) {
-        binding.singleGameButton.isEnabled = enablebool
-        binding.statButton.isEnabled = enablebool
-        binding.changeVolumeButton.isEnabled = enablebool
-        binding.createRoomButton.isEnabled = enablebool
-        binding.joinRoomButton.isEnabled = enablebool
-        binding.leaderboardButton.isEnabled = enablebool
-        binding.multiplayerGameButton.isEnabled = enablebool
-    }
     companion object {
-        const val XOR_VISIBLE_VALUE_1 = 8
         const val XOR_VISIBLE_VALUE_2 = 4
-        const val EMAIL_LETTERS_COUNT = 10
-        private const val GOOGLETAG = "GoogleActivity"
+        private const val TAG = "MenuFragment"
+
+        fun newInstance(): MenuFragment {
+            return MenuFragment()
+        }
     }
 }
