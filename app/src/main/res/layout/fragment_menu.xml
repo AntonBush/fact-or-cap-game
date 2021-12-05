@@ -111,7 +111,7 @@
             android:padding="5dp"
             android:background="@drawable/green_round_background"
             android:backgroundTint="?attr/colorPrimary"
-            android:src="@drawable/ic_join"
+            android:src="@drawable/ic_join_lobby"
             android:scaleType="center"
             android:layout_marginTop="20dp"
             android:contentDescription="@string/join_room_placeholder"
