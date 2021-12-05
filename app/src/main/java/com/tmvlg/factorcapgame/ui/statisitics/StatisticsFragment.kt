@@ -18,8 +18,8 @@ class StatisticsFragment : Fragment() {
     private val viewModel: StatisticsViewModel by viewModels {
         val app = activity?.application as FactOrCapApplication
         return@viewModels StatisticsViewModelFactory(
-                app.userRepository,
-                app.gameRepository
+            app.userRepository,
+            app.gameRepository
         )
     }
 

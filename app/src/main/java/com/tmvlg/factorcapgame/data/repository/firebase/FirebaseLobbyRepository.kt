@@ -12,9 +12,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -117,12 +115,12 @@ class FirebaseLobbyRepository {
                     ?: throw IOException("lobby does not contain key")
                 val firebaseLobbyValue = firebaseLobby.getValue<Lobby.Mapped>()
                     ?: throw IOException("lobby does not contain value")
-                runBlocking {
-                    Log.d(TAG, "${Thread.currentThread()}")
-                    Log.d(TAG, "Before send")
-                    lobby.set(Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue))
-                    Log.d(TAG, "After send")
-                }
+
+                Log.d(TAG, "${Thread.currentThread()}")
+                Log.d(TAG, "Before send")
+                Log.d(TAG, firebaseLobbyId)
+                lobby.set(Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue))
+                Log.d(TAG, "After send")
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -141,6 +139,7 @@ class FirebaseLobbyRepository {
         if (localLobbyEventListener != null) {
             val lr = lobbyRef ?: throw IllegalStateException("lobbyRef is null")
             lr.removeEventListener(localLobbyEventListener)
+            lobby.set(null)
         }
     }
 

@@ -20,8 +20,6 @@ import com.tmvlg.factorcapgame.databinding.LobbyBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
-import mva3.adapter.ListSection
-import mva3.adapter.util.Mode
 
 class FindLobbyFragment : Fragment() {
 

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
@@ -14,12 +13,10 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.NoInternetFragment
-import kotlinx.coroutines.delay
-import kotlin.random.Random
 
 class SingleGameFragment : Fragment() {
 
-    private val viewModel: SingleGameViewModel by viewModels{
+    private val viewModel: SingleGameViewModel by viewModels {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels SingleGameViewModelFactory(
@@ -48,7 +45,8 @@ class SingleGameFragment : Fragment() {
 
         binding.gameContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
-        congratsArray = arrayOf(getString(R.string.correct_answer_string_1),
+        congratsArray = arrayOf(
+            getString(R.string.correct_answer_string_1),
             getString(R.string.correct_answer_string_2),
             getString(R.string.correct_answer_string_3),
             getString(R.string.correct_answer_string_4),
@@ -57,7 +55,8 @@ class SingleGameFragment : Fragment() {
             getString(R.string.correct_answer_string_7),
             getString(R.string.correct_answer_string_8),
             getString(R.string.correct_answer_string_9),
-            getString(R.string.correct_answer_string_10))
+            getString(R.string.correct_answer_string_10)
+        )
 
         return binding.root
     }
@@ -129,7 +128,7 @@ class SingleGameFragment : Fragment() {
         }
     }
 
-    fun funkyAnimationCorrect(){
+    fun funkyAnimationCorrect() {
         (activity as MainActivity).correctSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_correct_answer)
         binding.singleGameAnimationText.text = congratsArray.random()
@@ -139,7 +138,7 @@ class SingleGameFragment : Fragment() {
         binding.singleGameAnimationText.visibility = View.INVISIBLE
     }
 
-    fun funkyAnimationWrong(){
+    fun funkyAnimationWrong() {
         (activity as MainActivity).wrongSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_wrong_answer)
         binding.gameContainer.startAnimation(animation)

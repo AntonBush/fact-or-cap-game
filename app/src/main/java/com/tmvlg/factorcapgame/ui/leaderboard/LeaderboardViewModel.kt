@@ -8,7 +8,6 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
 
 class LeaderboardViewModel : ViewModel() {
     val db = Firebase.firestore
@@ -53,7 +52,7 @@ class LeaderboardViewModel : ViewModel() {
             }
     }
 
-    private fun addUserToList(){
+    private fun addUserToList() {
         db.collection("leaderboard")
             .whereEqualTo("username", username)
             .get()
@@ -61,7 +60,7 @@ class LeaderboardViewModel : ViewModel() {
                 for (document in result) {
                     val curusername = document.data.getValue("username").toString()
                     val curscore = document.data.getValue("score").toString()
-                    allScores.add(PlayerScore( "", "...", ""))
+                    allScores.add(PlayerScore("", "...", ""))
                     allScores.add(PlayerScore(">100", curusername, curscore))
                 }
                 adapter.updateList(allScores)

@@ -1,5 +1,4 @@
 package com.tmvlg.factorcapgame.ui.singlegame
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
-import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider.Companion.KEY_USERNAME
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.game.Game
@@ -18,7 +16,6 @@ import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.lang.Exception
 
 class SingleGameViewModel(
     private val gameRepository: GameRepository,
@@ -71,12 +68,11 @@ class SingleGameViewModel(
             val beginTime = System.nanoTime()
             saveStats().join()
             saveGame().join()
-            val diffTime = (System.nanoTime() - beginTime) / 1_000_000
+            val diffTime = (System.nanoTime() - beginTime) / MILLIS_IN_NANOS
             delay(ANIMATIONS_DELAY_MILLIS - diffTime)
             _gameFinished.postValue(true)
         }
     }
-
 
     // calls to save statistics in Statistics object. Shows in statistics fragment
     fun saveStats() = viewModelScope.launch {
@@ -166,6 +162,7 @@ class SingleGameViewModel(
     companion object {
         private const val ANIMATIONS_DELAY_MILLIS = 800L
         private const val DELAY_MILLIS = 100L
+        private const val MILLIS_IN_NANOS = 1_000_000L
         private const val TAG = "FirestoreActivity"
     }
 }

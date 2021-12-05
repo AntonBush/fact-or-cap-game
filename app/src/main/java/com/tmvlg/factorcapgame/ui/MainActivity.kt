@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.menu.MenuViewModel
-
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 
 class MainActivity : AppCompatActivity() {

@@ -16,10 +16,7 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragmentViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragmentViewModelFactory
 
 class InviteFragment : Fragment() {
 

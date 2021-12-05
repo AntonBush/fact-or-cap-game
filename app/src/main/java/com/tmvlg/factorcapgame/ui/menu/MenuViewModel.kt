@@ -1,5 +1,6 @@
 package com.tmvlg.factorcapgame.ui.menu
 
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,6 +47,7 @@ class MenuViewModel(
                 roomName
             )
             _errorMessage.postValue(null)
+            Log.d(TAG, "create lobby id: $roomId")
             createdLobbyId.postValue(roomId)
         } catch (e: IllegalStateException) {
             _errorMessage.postValue(e.message)

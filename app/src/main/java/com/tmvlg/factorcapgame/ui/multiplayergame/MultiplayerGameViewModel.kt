@@ -9,11 +9,6 @@ import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseGameRepository
-import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.game.GameRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException

@@ -27,7 +27,7 @@
             android:id="@+id/tv_lobby"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lobby #987645"
+            android:text="Lobby is loading"
             android:textSize="45sp"
             android:layout_margin="18dp"
             android:fontFamily="@font/norwester"

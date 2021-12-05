@@ -1,7 +1,6 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -48,9 +47,9 @@ class LobbyListAdapter(
         }
 
         override fun areContentsTheSame(oldItem: Lobby, newItem: Lobby): Boolean {
-            return oldItem.name == newItem.name
-                    && oldItem.hostName == newItem.hostName
-                    && oldItem.players.size == oldItem.players.size
+            return oldItem.name == newItem.name &&
+                oldItem.hostName == newItem.hostName &&
+                oldItem.players.size == oldItem.players.size
         }
     }
 

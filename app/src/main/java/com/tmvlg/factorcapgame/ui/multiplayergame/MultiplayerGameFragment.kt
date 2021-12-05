@@ -4,11 +4,13 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.annotation.ColorInt
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
@@ -18,15 +20,7 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
-import java.lang.RuntimeException
 import java.lang.IllegalArgumentException
-import androidx.annotation.ColorInt
-
-
-import android.content.res.Resources.Theme
-
-import android.util.TypedValue
-
 
 class MultiplayerGameFragment : Fragment() {
 
@@ -194,10 +188,10 @@ class MultiplayerGameFragment : Fragment() {
             val typedValue = TypedValue()
             val theme = requireContext().theme
 
-            theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
+            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
             @ColorInt val colorCorrect = typedValue.data
 
-            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+            theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
             @ColorInt val colorIncorrect = typedValue.data
 
             val startColor = if (isCorrect) {
@@ -222,7 +216,6 @@ class MultiplayerGameFragment : Fragment() {
             _binding?.tvTimer?.text = it
         }
     }
-
 
     private fun funkyAnimationCorrect() {
         (this.activity as MainActivity).correctSEStart()
@@ -277,12 +270,12 @@ class MultiplayerGameFragment : Fragment() {
             }
         }
 
-        private fun getColor(colorId: Int, context: Context): Int {
-            return AppCompatResources.getColorStateList(
-                context,
-                colorId
-            ).defaultColor
-        }
+//        private fun getColor(colorId: Int, context: Context): Int {
+//            return AppCompatResources.getColorStateList(
+//                context,
+//                colorId
+//            ).defaultColor
+//        }
 
         // calls from MultiplayerGameFragment.kt to create this fragment
         fun newInstance(lobbyId: String): MultiplayerGameFragment {

@@ -1,12 +1,19 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
+import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
@@ -42,18 +49,23 @@ class LobbyViewModel(
         firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
         firebaseLobbyRepository.listenLobby(lobbyId)
 
-        Log.d("LobbyViewModel", "Before receive job launched")
+        val thread = PingThread(
+            firebaseLobbyRepository,
+            username
+        )
+        thread.start()
+        pingThread = thread
 
-        val lobbyChannel = Channel<Lobby>()
+        Log.d("LobbyViewModel", "Before receive job launched")
         receivingJob = viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 while (true) {
-                    val l = firebaseLobbyRepository.lobby.get()
-                    Log.d(TAG, "lobby received ${l?.id}")
+                    val receivedLobby = firebaseLobbyRepository.lobby.get()
+                    Log.d(TAG, "lobby received ${receivedLobby?.id}")
 
-                    if (l != null) {
-                        _lobby.postValue(l)
-                        lobbyChannel.send(l)
+                    if (receivedLobby != null) {
+                        _lobby.postValue(receivedLobby)
+                        thread.lobby.set(receivedLobby)
                     }
 
                     delay(PingThread.SLEEP_TIME_MILLIS)
@@ -61,14 +73,6 @@ class LobbyViewModel(
             }
         }
 
-        Log.d("LobbyViewModel", "After receive job launched")
-        val thread = PingThread(
-            firebaseLobbyRepository,
-            username,
-            lobbyChannel
-        )
-        thread.start()
-        pingThread = thread
         Log.d("LobbyViewModel", "Listen lobby end")
     }
 
@@ -96,9 +100,9 @@ class LobbyViewModel(
     fun removePlayer(userId: String) = viewModelScope.launch {
         val lobby = lobby.value
 
-        if (isHost.value == false
-            || lobby == null
-            || lobby.hostName == lobby.players.find { it.id == userId }?.name
+        if (isHost.value == false ||
+            lobby == null ||
+            lobby.hostName == lobby.players.find { it.id == userId }?.name
         ) {
             return@launch
         }

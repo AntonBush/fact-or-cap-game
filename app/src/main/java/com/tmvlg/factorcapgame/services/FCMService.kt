@@ -71,7 +71,9 @@ class FCMService : FirebaseMessagingService() {
             PendingIntent.FLAG_ONE_SHOT
 
         val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
+            this,
+            0 /* Request code */,
+            intent,
             pendingFlag
         )
 

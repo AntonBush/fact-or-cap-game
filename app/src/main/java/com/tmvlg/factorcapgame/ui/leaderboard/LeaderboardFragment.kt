@@ -40,7 +40,7 @@ class LeaderboardFragment : Fragment() {
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
-        binding.leaderboardRefreshButton.setOnClickListener(){
+        binding.leaderboardRefreshButton.setOnClickListener() {
             (activity as MainActivity).snapSEStart()
             viewModel.loadDataFromDB()
         }

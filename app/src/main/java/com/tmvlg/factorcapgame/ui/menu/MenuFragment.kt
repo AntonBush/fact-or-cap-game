@@ -14,13 +14,12 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.CreateRoomDialogBinding
 import com.tmvlg.factorcapgame.databinding.FragmentMenuBinding
+import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
-import android.animation.ValueAnimator.*
-import com.tmvlg.factorcapgame.ui.MainActivity
 
 class MenuFragment : Fragment() {
 
@@ -197,8 +196,8 @@ class MenuFragment : Fragment() {
                     DialogParams(
                         "Auth required",
                         "You are not authorized yet." +
-                                " You should authorize via Google to play multiplayer." +
-                                " Do you want to proceed?",
+                            " You should authorize via Google to play multiplayer." +
+                            " Do you want to proceed?",
                         "Sign in with Google",
                         "Cancel"
                     )
@@ -215,8 +214,8 @@ class MenuFragment : Fragment() {
                 DialogParams(
                     "New room name",
                     "You are going to create new lobby." +
-                            " You should enter the name of new room to play multiplayer." +
-                            " Do you want to proceed?",
+                        " You should enter the name of new room to play multiplayer." +
+                        " Do you want to proceed?",
                     "Create room",
                     "Cancel"
                 )
