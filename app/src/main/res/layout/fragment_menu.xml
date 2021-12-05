@@ -5,13 +5,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.menu.MenuFragment"
-        android:padding="32dp"
         android:clipToPadding="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/page_container"
+            android:padding="32dp"
             android:clipToPadding="false">
 
         <include layout="@layout/google_sign_in"

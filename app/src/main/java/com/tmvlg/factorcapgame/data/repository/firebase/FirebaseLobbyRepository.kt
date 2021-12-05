@@ -12,6 +12,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
@@ -71,7 +72,7 @@ class FirebaseLobbyRepository {
     ) = withContext(Dispatchers.IO) {
         val lobbyRef = lobbiesRef.child(lobbyId)
         val lobbyPlayersRef = lobbyRef.child("players")
-        lobbyRef.get().addOnSuccessListener { lobbyData ->
+        val task = lobbyRef.get().addOnSuccessListener { lobbyData ->
             val lobbyPlayers = lobbyData.child("players").getValue<Map<String, Player.Mapped>>()
                 ?.map { Player.newInstance(it.key, it.value) }
                 ?: emptyList()
@@ -89,6 +90,10 @@ class FirebaseLobbyRepository {
                 ?: throw IOException("can't add new player to lobby")
             newPlayer.id = newPlayerKey
             lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMapped())
+        }
+
+        while (!task.isComplete || !task.isComplete) {
+            delay(1)
         }
     }
 
@@ -109,8 +114,6 @@ class FirebaseLobbyRepository {
                     ?: throw IOException("lobby does not contain key")
                 val firebaseLobbyValue = firebaseLobby.getValue<Lobby.Mapped>()
                     ?: throw IOException("lobby does not contain value")
-                Log.d("LISTEN LOBBY", "${firebaseLobby.getValue<Map<String, Any?>>()}")
-                Log.d("LISTEN LOBBY", "$firebaseLobbyValue")
                 _lobby.postValue(
                     Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
                 )
@@ -178,6 +181,7 @@ class FirebaseLobbyRepository {
             .setValue(System.currentTimeMillis())
     }
 
+    @WorkerThread
     fun removePlayer(lobbyId: String, userId: String) {
         lobbiesRef.child(lobbyId)
             .child("players")

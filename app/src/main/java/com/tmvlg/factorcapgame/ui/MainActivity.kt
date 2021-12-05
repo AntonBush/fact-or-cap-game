@@ -15,10 +15,10 @@ import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 class MainActivity : AppCompatActivity() {
     val launcher = FactOrCapAuth.SignInLauncher.newInstance(this)
 
-    lateinit var viewModel: MenuViewModel
-    lateinit var username: String
     lateinit var snapSE: MediaPlayer
+
     lateinit var correctSE: MediaPlayer
+
     lateinit var wrongSE: MediaPlayer
     var soundEnabled = true
 

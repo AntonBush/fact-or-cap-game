@@ -44,31 +44,26 @@ class FindLobbyFragment : Fragment() {
             binding.root.isEnabled = value
         }
 
-    private val lobbyListSection = ListSection<Lobby>()
-    private val lobbyListAdapter = newLobbyListAdapter(
-        object : LobbyBinder.OnLobbySelectedListener {
-            override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
+    private val lobbyListAdapter = LobbyListAdapter(
+        object : LobbyListAdapter.OnSelectedListener {
+            override fun onSelected(binding: LobbyBinding, isSelected: Boolean) {
                 with(binding.lobbyItem) {
                     Log.d("FindLobby", "OnSelect: $isSelected")
                     background = if (isSelected) {
-                        AppCompatResources.getDrawable(context, R.color.primary_red)
+                        AppCompatResources.getDrawable(
+                            context,
+                            R.color.primary_red
+                        )
                     } else {
-                        AppCompatResources.getDrawable(context, R.color.transparent)
+                        AppCompatResources.getDrawable(
+                            context,
+                            R.color.transparent
+                        )
                     }
                 }
             }
         }
     )
-
-    init {
-        lobbyListSection.setSelectionMode(Mode.SINGLE)
-        lobbyListAdapter.addSection(lobbyListSection)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        loadState(requireArguments())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,40 +72,21 @@ class FindLobbyFragment : Fragment() {
     ): View {
         _binding = FragmentFindLobbyBinding.inflate(inflater, container, false)
 
-        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+        binding.pageContainer.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.fragment_change
+            )
+        )
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.returnButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            viewModel.stopListenLobbies()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
-                .commit()
-        }
-        binding.joinButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            isEnabled = false
-            if (lobbyListSection.selectedItems.isEmpty()) {
-                Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
-                isEnabled = true
-                return@setOnClickListener
-            }
-
-            viewModel.connectLobby(lobbyListSection.selectedItems.first())
-        }
-        binding.findLobbyEdittext.addTextChangedListener { text ->
-            filterText(textString = text?.toString())
-        }
-//        if (savedInstanceState != null) {
-//            loadState(savedInstanceState)
-//        }
         binding.findLobbyRecyclerview.adapter = lobbyListAdapter
         binding.findLobbyRecyclerview.layoutManager = LinearLayoutManager(requireContext())
-        binding.findLobbyRecyclerview.addItemDecoration(lobbyListAdapter.itemDecoration)
+        setupListeners()
         observeViewModel()
     }
 
@@ -119,13 +95,33 @@ class FindLobbyFragment : Fragment() {
         super.onDestroyView()
     }
 
+    private fun setupListeners() {
+        binding.returnButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
+            viewModel.stopListenLobbies()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, MenuFragment())
+                .commit()
+        }
+        binding.joinButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
+            isEnabled = false
+            val selectedPosition = lobbyListAdapter.selectedPosition
+            if (selectedPosition == null) {
+                Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
+                isEnabled = true
+                return@setOnClickListener
+            }
+
+            viewModel.connectLobby(lobbyListAdapter.currentList[selectedPosition])
+        }
+        binding.findLobbyEdittext.addTextChangedListener { text ->
+            filterText(textString = text?.toString())
+        }
+    }
+
     private fun observeViewModel() {
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!!!!!!!!!! БЕЗ ЭТОГО РАБОТАТЬ НЕ БУДЕТ !!!!!!!!!!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        viewModel.firebaseLobbies.observe(viewLifecycleOwner) {}
         viewModel.lobbies.observe(viewLifecycleOwner) { lobbies ->
-            Log.d(tag, "lobbies in fragment: $lobbies")
             filterText(lobbies)
         }
         viewModel.connectedLobbyId.observe(viewLifecycleOwner) { lobbyId ->
@@ -148,9 +144,8 @@ class FindLobbyFragment : Fragment() {
         val text = textString ?: binding.findLobbyEdittext.text?.toString() ?: return
         val lobbies = lobbyList ?: viewModel.lobbies.value ?: return
         val regex = text.toRegex(RegexOption.IGNORE_CASE)
-        lobbyListSection.set(
+        lobbyListAdapter.submitList(
             lobbies.filter { lobby ->
-//                Log.d("TAG", "${lobby.lastTimeHostPing - System.currentTimeMillis()}")
                 return@filter regex.containsMatchIn(lobby.name)
             }
         )

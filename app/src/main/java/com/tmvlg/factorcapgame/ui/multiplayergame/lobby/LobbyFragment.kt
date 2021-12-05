@@ -6,14 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import com.tmvlg.factorcapgame.databinding.FragmentLobbyBinding
+import com.tmvlg.factorcapgame.databinding.LobbyUserBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.MultiplayerGameFragment
@@ -52,7 +53,12 @@ class LobbyFragment : Fragment() {
     ): View {
         _binding = FragmentLobbyBinding.inflate(inflater, container, false)
 
-        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+        binding.pageContainer.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.fragment_change
+            )
+        )
 
         return binding.root
     }
@@ -60,17 +66,21 @@ class LobbyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.returnButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
             goTo(FindLobbyFragment.newInstance())
         }
         binding.inviteButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
             goTo(InviteFragment.newInstance(lobbyId))
         }
-        listAdapter = LobbyUserListAdapter { v ->
-            val username = v.findViewById<TextView>(R.id.user_name).text.toString()
-            viewModel.removePlayer(username)
-        }
+        listAdapter = LobbyUserListAdapter(
+            onClickListener = object : LobbyUserListAdapter.OnClickListener {
+                override fun onClick(player: Player) {
+                    Log.d(TAG, "Player id to remove: ${player.id}")
+                    viewModel.removePlayer(player.id)
+                }
+            }
+        )
         binding.rvLobbyUsers.adapter = listAdapter
         binding.rvLobbyUsers.layoutManager = LinearLayoutManager(requireContext())
         observeViewModel()
@@ -101,14 +111,17 @@ class LobbyFragment : Fragment() {
                 return@observe
             }
             binding.tvLobby.text = lobby.name
+            listAdapter.isHost = viewModel.isHost.value ?: false
+            listAdapter.hostName = lobby.hostName
             listAdapter.submitList(lobby.players)
         }
         viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
             Log.d("LobbyFragment", "isHost: $isHost")
+            listAdapter.isHost = isHost
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
-                    if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+                    if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
                     viewModel.startGame()
                 }
             } else {
@@ -129,13 +142,9 @@ class LobbyFragment : Fragment() {
                     R.style.ThemeOverlay_App_MaterialAlertDialog
                 )
                     .setTitle("Disconnected")
-                    .setMessage(
-                        "Timeout is out."
-                    )
                     .setNeutralButton("Ok") { _, _ -> }
                     .show()
-//                goTo(FindLobbyFragment.newInstance())
-                goTo(MenuFragment.newInstance())
+                goTo(FindLobbyFragment.newInstance())
             }
         }
     }
@@ -148,6 +157,7 @@ class LobbyFragment : Fragment() {
     }
 
     companion object {
+        const val TAG = "LobbyFragment"
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
 
         fun newInstance(lobbyId: String): LobbyFragment {

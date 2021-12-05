@@ -19,7 +19,7 @@ class LeaderboardViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             username = FactOrCapAuth.currentUser.value?.name
-                ?: throw IllegalStateException("User is unauthorized")
+                ?: ""
         }
     }
 

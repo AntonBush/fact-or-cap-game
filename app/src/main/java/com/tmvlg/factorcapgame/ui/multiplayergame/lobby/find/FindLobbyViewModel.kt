@@ -1,11 +1,6 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.SoftInterruptThread
@@ -14,20 +9,17 @@ import kotlinx.coroutines.launch
 class FindLobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
 ) : ViewModel() {
-    private val _firebaseLobbies = firebaseLobbyRepository.lobbyList.map { lobbyList ->
-        val l = lobbyList.filter {
-            !it.started
-        }
-        Log.d("11111111111", "${l.size}")
-        l
-    }
-    val firebaseLobbies = _firebaseLobbies.map {
-        Log.d("222222222222", "${it.size}")
-        it
-    }
+    private val originLobbies = firebaseLobbyRepository
+        .lobbyList.map { it.filter { lobby -> !lobby.started } }
 
-    private val _lobbies = MutableLiveData<List<Lobby>>(emptyList())
-    val lobbies = _lobbies.map { it }
+    private val filteredLobbies = MutableLiveData<List<Lobby>>(emptyList())
+    val lobbies = filteredLobbies.switchMap { filteredLobbies ->
+        firebaseLobbyRepository.lobbyList.map { originLobbies ->
+            return@map filteredLobbies ?: originLobbies.filter {
+                !it.started
+            }
+        }
+    }
 
 //        firebaseLobbyRepository.lobbyList.map { lobbyList ->
 //        val currentMillis = System.currentTimeMillis()
@@ -39,23 +31,23 @@ class FindLobbyViewModel(
 
     val connectedLobbyId = MutableLiveData<String?>(null)
 
-    var filterThread: Thread? = null
+    var filteringThread: FilteringThread? = null
 
     private fun listenLobbies() = viewModelScope.launch {
         firebaseLobbyRepository.listenLobbies()
         val thread = FilteringThread(
-            firebaseLobbies,
-            _lobbies
+            originLobbies,
+            filteredLobbies
         )
         thread.start()
-        filterThread = thread
+        filteringThread = thread
     }
 
     fun stopListenLobbies() = viewModelScope.launch {
-        val thread = filterThread
+        val thread = filteringThread
         if (thread != null) {
             thread.interrupt()
-            filterThread = null
+            filteringThread = null
         }
         firebaseLobbyRepository.stopListenLobbies()
     }
@@ -74,26 +66,30 @@ class FindLobbyViewModel(
     ) : SoftInterruptThread() {
         override fun run() {
             while (!interrupted) {
-                val currentMillis = System.currentTimeMillis()
-                Log.d(
-                    "THREADD",
-                    "origin ${ filterSrc.value?.size?.toString() ?: "null" }"
+                filterDst.postValue(
+                    filterLobbyList(
+                        filterSrc.value ?: emptyList()
+                    )
                 )
-                val filtered = filterSrc.value?.filter {
-                    val dif = currentMillis - it.lastTimeHostPing
-                    Log.d("THREADD", "dif $dif")
-                    dif < LOBBY_TIMEOUT_MILLIS
-                } ?: emptyList()
-                Log.d(
-                    "THREADD",
-                    " filtered ${filtered.size}"
-                )
-                filterDst.postValue(filtered)
                 sleep(SLEEP_TIME_MILLIS)
             }
         }
 
         companion object {
+            private fun filterLobbyList(lobbies: List<Lobby>): List<Lobby> {
+                val currentMillis = System.currentTimeMillis()
+                return lobbies.filter {
+                    !isTimeout(it.lastTimeHostPing, currentMillis)
+                }
+            }
+
+            private fun isTimeout(
+                examined: Long,
+                current: Long = System.currentTimeMillis()
+            ): Boolean {
+                return current - examined > LOBBY_TIMEOUT_MILLIS
+            }
+
             const val SLEEP_TIME_MILLIS = 100L
             const val LOBBY_TIMEOUT_MILLIS = 10_000L
         }

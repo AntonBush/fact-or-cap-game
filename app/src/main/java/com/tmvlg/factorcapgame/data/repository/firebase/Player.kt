@@ -30,7 +30,6 @@ data class Player(
     companion object {
         fun newInstance(key: String, mapped: Mapped): Player {
             return Player().apply {
-                Log.d("Player.newInstance", "$key|$mapped")
                 id = key
                 loaded = mapped.loaded
                 name = mapped.playerName
