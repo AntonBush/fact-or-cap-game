@@ -9,7 +9,7 @@ import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
 
 class LobbyListAdapter(
-    var onSelectedListener: OnSelectedListener? = null
+    var onLobbySelectedListener: OnLobbySelectedListener? = null
 ) : ListAdapter<Lobby, LobbyListAdapter.LobbyViewHolder>(LobbyDiffCallback()) {
     var selectedPosition: Int? = null
         private set
@@ -32,7 +32,7 @@ class LobbyListAdapter(
                 } else {
                     position
                 }
-                onSelectedListener?.onSelected(binding, selectedPosition == position)
+                onLobbySelectedListener?.onLobbySelected(binding, selectedPosition == position)
             }
         }
     }
@@ -53,7 +53,7 @@ class LobbyListAdapter(
         }
     }
 
-    interface OnSelectedListener {
-        fun onSelected(binding: LobbyBinding, isSelected: Boolean)
+    interface OnLobbySelectedListener {
+        fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean)
     }
 }

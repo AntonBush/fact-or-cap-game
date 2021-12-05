@@ -43,12 +43,7 @@ class FindLobbyFragment : Fragment() {
         }
 
     private val lobbyListAdapter = LobbyListAdapter(
-        object : LobbyListAdapter.OnSelectedListener {
-            override fun onSelected(binding: LobbyBinding, isSelected: Boolean) {
-                with(binding.lobbyItem) {
-    private val lobbyListSection = ListSection<Lobby>()
-    private val lobbyListAdapter = newLobbyListAdapter(
-        object : LobbyBinder.OnLobbySelectedListener {
+        object : LobbyListAdapter.OnLobbySelectedListener {
             override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
                 with(binding.bgLayout) {
                     Log.d("FindLobby", "OnSelect: $isSelected")
