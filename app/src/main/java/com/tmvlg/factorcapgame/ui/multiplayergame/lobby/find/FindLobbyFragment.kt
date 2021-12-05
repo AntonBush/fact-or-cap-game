@@ -117,6 +117,7 @@ class FindLobbyFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        viewModel.dummyLobbies.observe(viewLifecycleOwner) {}
         viewModel.lobbies.observe(viewLifecycleOwner) { lobbies ->
             filterText(lobbies)
         }

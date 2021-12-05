@@ -17,14 +17,9 @@ class FindLobbyViewModel(
     private val originLobbies = firebaseLobbyRepository
         .lobbyList.map { it.filter { lobby -> !lobby.started } }
 
+    val dummyLobbies = originLobbies.map { it }
     private val filteredLobbies = MutableLiveData<List<Lobby>>(emptyList())
-    val lobbies = filteredLobbies.switchMap { filteredLobbies ->
-        firebaseLobbyRepository.lobbyList.map { originLobbies ->
-            return@map filteredLobbies ?: originLobbies.filter {
-                !it.started
-            }
-        }
-    }
+    val lobbies = filteredLobbies.map { it }
 
 //        firebaseLobbyRepository.lobbyList.map { lobbyList ->
 //        val currentMillis = System.currentTimeMillis()
