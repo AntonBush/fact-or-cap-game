@@ -78,9 +78,14 @@ class FirebaseLobbyRepository {
                 ?.map { Player.newInstance(it.key, it.value) }
                 ?: emptyList()
 
-            val isPlayerInRoom = lobbyPlayers.any { it.name == username }
+            val playerInRoom = lobbyPlayers.find { it.name == username }
             val isGameStarted = lobbyData.child("started").getValue<Boolean>() == true
-            if (isPlayerInRoom || isGameStarted) {
+
+            if (playerInRoom != null || isGameStarted) {
+                if (playerInRoom != null) {
+                    lobbyPlayersRef.child(playerInRoom.id).child("lastTimePing")
+                        .setValue(System.currentTimeMillis())
+                }
                 return@addOnSuccessListener
             }
 
