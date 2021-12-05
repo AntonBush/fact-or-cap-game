@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tmvlg.factorcapgame.FactOrCapApplication
@@ -24,8 +25,7 @@ class SingleGameFragment : Fragment() {
         return@viewModels SingleGameViewModelFactory(
             app.gameRepository,
             app.factRepository,
-            app.userRepository,
-            this
+            app.userRepository
         )
     }
 
@@ -73,16 +73,18 @@ class SingleGameFragment : Fragment() {
         // sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
             if (isEnabled) {
-                binding.tvFact.visibility = View.INVISIBLE
                 isEnabled = false
+                (activity as MainActivity).snapSEStart()
+                binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(true)
             }
         }
         // sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
             if (isEnabled) {
-                binding.tvFact.visibility = View.INVISIBLE
                 isEnabled = false
+                (activity as MainActivity).snapSEStart()
+                binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(false)
             }
         }
@@ -108,16 +110,25 @@ class SingleGameFragment : Fragment() {
         // bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
             binding.tvFact.text = it.text
+            binding.tvFact.visibility = View.VISIBLE
             isEnabled = true
         }
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
         }
+        viewModel.isRightAnswer.observe(viewLifecycleOwner) { isRightAnswer ->
+            isRightAnswer ?: return@observe
+            if (isRightAnswer) {
+                funkyAnimationCorrect()
+            } else {
+                funkyAnimationWrong()
+            }
+        }
     }
 
     fun funkyAnimationCorrect(){
-        if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).correctSE.start()
+        (activity as MainActivity).correctSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_correct_answer)
         binding.singleGameAnimationText.text = congratsArray.random()
         binding.singleGameAnimationImage.startAnimation(animation)
@@ -127,7 +138,7 @@ class SingleGameFragment : Fragment() {
     }
 
     fun funkyAnimationWrong(){
-        if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).wrongSE.start()
+        (activity as MainActivity).wrongSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_wrong_answer)
         binding.gameContainer.startAnimation(animation)
     }
@@ -145,12 +156,5 @@ class SingleGameFragment : Fragment() {
                 )
             )
             .commit()
-    }
-
-    fun hideText() {
-        binding.tvFact.visibility = View.INVISIBLE
-    }
-    fun showText() {
-        binding.tvFact.visibility = View.VISIBLE
     }
 }

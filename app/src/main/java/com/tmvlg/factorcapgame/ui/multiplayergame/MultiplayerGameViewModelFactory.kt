@@ -11,19 +11,16 @@ import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
 
 class MultiplayerGameViewModelFactory(
     private val factRepository: FactRepository,
-    private val firebaseGameRepository: FirebaseGameRepository,
-    private val fragment: MultiplayerGameFragment
+    private val firebaseGameRepository: FirebaseGameRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return try {
             modelClass.getConstructor(
                 FactRepository::class.java,
-                FirebaseGameRepository::class.java,
-                MultiplayerGameFragment::class.java
+                FirebaseGameRepository::class.java
             ).newInstance(
                 factRepository,
-                firebaseGameRepository,
-                fragment
+                firebaseGameRepository
             )
         } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")

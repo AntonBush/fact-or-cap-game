@@ -23,10 +23,8 @@ import java.lang.Exception
 class SingleGameViewModel(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
-    private val userRepository: UserRepository,
-    private val fragment: SingleGameFragment
+    private val userRepository: UserRepository
 ) : ViewModel() {
-    private var firstFact: Boolean
     private lateinit var username: String
     init {
         viewModelScope.launch {
@@ -50,6 +48,10 @@ class SingleGameViewModel(
     private val _rightAnswersCount = MutableLiveData(0)
     val rightAnswersCount = _rightAnswersCount.map { it }
 
+    // is answer correct
+    private val _isRightAnswer = MutableLiveData<Boolean?>(null)
+    val isRightAnswer = _isRightAnswer.map { it }
+
     // fetches fact object from repository
     private val _fact = MutableLiveData<Fact>()
     val fact = _fact.map { it }
@@ -59,15 +61,18 @@ class SingleGameViewModel(
 
     // check is answer is correct. If true loads new fact. If false finishes a game and saves statistics
     fun sendAnswer(answer: Boolean) = viewModelScope.launch {
-        if (fact.value?.isTrue == answer) {
+        val isCorrectAnswer = fact.value?.isTrue == answer
+        _isRightAnswer.postValue(isCorrectAnswer)
+        if (isCorrectAnswer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
-            fragment.funkyAnimationCorrect()
+            delay(ANIMATIONS_DELAY_MILLIS)
             getFact()
         } else {
+            val beginTime = System.nanoTime()
             saveStats().join()
             saveGame().join()
-            fragment.funkyAnimationWrong()
-            delay(800)
+            val diffTime = (System.nanoTime() - beginTime) / 1_000_000
+            delay(ANIMATIONS_DELAY_MILLIS - diffTime)
             _gameFinished.postValue(true)
         }
     }
@@ -128,12 +133,6 @@ class SingleGameViewModel(
     fun getFact() = viewModelScope.launch {
         try {
             val fact = factRepository.getFact()
-            if (!firstFact) {
-                fragment.hideText()
-                delay(800)
-                fragment.showText()
-            }
-            else firstFact = false
             _fact.postValue(fact)
             _exception.postValue(null)
         } catch (e: IOException) {
@@ -161,11 +160,11 @@ class SingleGameViewModel(
     }
 
     init {
-        firstFact = true
         startGame()
     }
 
     companion object {
+        private const val ANIMATIONS_DELAY_MILLIS = 800L
         private const val DELAY_MILLIS = 100L
         private const val TAG = "FirestoreActivity"
     }

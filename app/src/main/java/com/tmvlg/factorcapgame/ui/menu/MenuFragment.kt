@@ -43,14 +43,17 @@ class MenuFragment : Fragment() {
         set(value) {
             Log.d(TAG, "isEnabled $field -> $value")
             binding.apply {
-                changeVolumeButton.isEnabled = value
-                createRoomButton.isEnabled = value
-                gameButtonsLl.isEnabled = value
-                joinRoomButton.isEnabled = value
-                leaderboardButton.isEnabled = value
-                multiplayerGameButton.isEnabled = value
-                statButton.isEnabled = value
+                signInLayoutAuthorized.root.isEnabled = value
+                signInLayoutUnauthorized.root.isEnabled = value
+
                 singleGameButton.isEnabled = value
+                multiplayerGameButton.isEnabled = value
+                createRoomButton.isEnabled = value
+                joinRoomButton.isEnabled = value
+
+                statButton.isEnabled = value
+                leaderboardButton.isEnabled = value
+                changeVolumeButton.isEnabled = value
             }
             field = value
         }
@@ -67,9 +70,16 @@ class MenuFragment : Fragment() {
             viewModel.silentSignIn(requireActivity() as MainActivity) { isEnabled = true }
         }
 
-        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+        binding.pageContainer.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.fragment_change
+            )
+        )
 
-        if (!(this.activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
+        if (!(this.activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(
+            R.drawable.ic_volume_off
+        )
 
         return binding.root
     }
@@ -77,6 +87,20 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated after super.onViewCreated")
+        binding.apply {
+            signInLayoutAuthorized.signedUserCardview.isSoundEffectsEnabled = false
+            signInLayoutAuthorized.signOutButton.isSoundEffectsEnabled = false
+            signInLayoutUnauthorized.googleSignInCardview.isSoundEffectsEnabled = false
+
+            singleGameButton.isSoundEffectsEnabled = false
+            multiplayerGameButton.isSoundEffectsEnabled = false
+            createRoomButton.isSoundEffectsEnabled = false
+            joinRoomButton.isSoundEffectsEnabled = false
+
+            statButton.isSoundEffectsEnabled = false
+            leaderboardButton.isSoundEffectsEnabled = false
+            changeVolumeButton.isSoundEffectsEnabled = false
+        }
         setupAuthLayoutAndBottomMenuListeners()
         setupGameButtonsListeners()
         observeViewModel()
@@ -95,7 +119,7 @@ class MenuFragment : Fragment() {
     private fun setupAuthLayoutAndBottomMenuListeners() {
         // Sign in button listener for toggling sign out button visibility
         binding.signInLayoutAuthorized.signedUserCardview.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             val signOutLayout = binding.signInLayoutAuthorized.signOutLayout
             when (signOutLayout.visibility) {
                 View.GONE -> signOutLayout.visibility = View.VISIBLE
@@ -105,7 +129,7 @@ class MenuFragment : Fragment() {
         }
         // Sign in button listener
         binding.signInLayoutUnauthorized.googleSignInCardview.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             isEnabled = false
             Log.d(TAG, "signIn button clicked")
             // Calling sign in function
@@ -113,17 +137,17 @@ class MenuFragment : Fragment() {
         }
         // Sign out button listener
         binding.signInLayoutAuthorized.signOutButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             Log.d(TAG, "signOut button clicked")
             // Calling sign out function
             signOut()
         }
-        binding.changeVolumeButton.setOnClickListener(){
-            if ((this.activity as MainActivity).soundEnabled){
+        binding.changeVolumeButton.setOnClickListener {
+            if ((this.activity as MainActivity).soundEnabled) {
                 (this.activity as MainActivity).soundEnabled = false
                 binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
-            }
-            else {
+            } else {
+                (activity as MainActivity).snapSE.start()
                 (this.activity as MainActivity).soundEnabled = true
                 binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_up)
             }
@@ -131,14 +155,14 @@ class MenuFragment : Fragment() {
 
         // Statistics button listener
         binding.statButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, StatisticsFragment())
                 .commit()
         }
         // Leader button listener
         binding.leaderboardButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, LeaderboardFragment())
                 .commit()
@@ -149,7 +173,7 @@ class MenuFragment : Fragment() {
     private fun setupGameButtonsListeners() {
         // Start single game button listener
         binding.singleGameButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             isEnabled = false
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, SingleGameFragment())
@@ -157,7 +181,7 @@ class MenuFragment : Fragment() {
         }
         // Multiplayer game button listener
         binding.multiplayerGameButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             isEnabled = false
             // Calling toggle mpb function
             Log.d(
@@ -173,8 +197,8 @@ class MenuFragment : Fragment() {
                     DialogParams(
                         "Auth required",
                         "You are not authorized yet." +
-                            " You should authorize via Google to play multiplayer." +
-                            " Do you want to proceed?",
+                                " You should authorize via Google to play multiplayer." +
+                                " Do you want to proceed?",
                         "Sign in with Google",
                         "Cancel"
                     )
@@ -184,15 +208,15 @@ class MenuFragment : Fragment() {
         }
         // Create room button listener
         binding.createRoomButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             isEnabled = false
             val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
             createDialog(
                 DialogParams(
                     "New room name",
                     "You are going to create new lobby." +
-                        " You should enter the name of new room to play multiplayer." +
-                        " Do you want to proceed?",
+                            " You should enter the name of new room to play multiplayer." +
+                            " Do you want to proceed?",
                     "Create room",
                     "Cancel"
                 )
@@ -202,7 +226,7 @@ class MenuFragment : Fragment() {
         }
         // Join room button listener
         binding.joinRoomButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()

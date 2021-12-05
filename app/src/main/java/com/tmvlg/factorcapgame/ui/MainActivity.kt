@@ -16,10 +16,26 @@ class MainActivity : AppCompatActivity() {
     val launcher = FactOrCapAuth.SignInLauncher.newInstance(this)
 
     lateinit var snapSE: MediaPlayer
+    fun snapSEStart() {
+        if (soundEnabled) {
+            snapSE.start()
+        }
+    }
 
     lateinit var correctSE: MediaPlayer
+    fun correctSEStart() {
+        if (soundEnabled) {
+            correctSE.start()
+        }
+    }
 
     lateinit var wrongSE: MediaPlayer
+    fun wrongSEStart() {
+        if (soundEnabled) {
+            wrongSE.start()
+        }
+    }
+
     var soundEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {

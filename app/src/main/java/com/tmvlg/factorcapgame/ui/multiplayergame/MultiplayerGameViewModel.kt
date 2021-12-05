@@ -22,11 +22,8 @@ import kotlin.NoSuchElementException
 
 class MultiplayerGameViewModel(
     private val factRepository: FactRepository,
-    private val firebaseGameRepository: FirebaseGameRepository,
-    private val fragment: MultiplayerGameFragment
+    private val firebaseGameRepository: FirebaseGameRepository
 ) : ViewModel() {
-    private var firstFact = true
-
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
 
@@ -56,12 +53,11 @@ class MultiplayerGameViewModel(
     fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
-            fragment.funkyAnimationCorrect()
-            timeLeft += EXTRA_TIME_FOR_RIGHT_ANSWER
-            _isAnswerCorrect.value = false
-        } else {
-            timeLeft -= LOST_TIME_FOR_WRONG_ANSWER
             _isAnswerCorrect.value = true
+            timeLeft += EXTRA_TIME_FOR_RIGHT_ANSWER
+        } else {
+            _isAnswerCorrect.value = false
+            timeLeft -= LOST_TIME_FOR_WRONG_ANSWER
         }
 //        _timeLeftFormatted.value = formatTime(timeLeft)
         getFact()
@@ -73,12 +69,6 @@ class MultiplayerGameViewModel(
             Log.d("1", "loadFactsList: ${_factsList.size}")
             try {
                 val fact = _factsList.pop()
-                if (!firstFact) {
-                    fragment.hideText()
-                    delay(800)
-                    fragment.showText()
-                }
-                else firstFact = false
                 _fact.postValue(fact)
                 break
             } catch (e: NoSuchElementException) {
