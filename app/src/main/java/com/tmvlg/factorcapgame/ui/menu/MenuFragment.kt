@@ -142,12 +142,15 @@ class MenuFragment : Fragment() {
             signOut()
         }
         binding.changeVolumeButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled) {
-                (this.activity as MainActivity).soundEnabled = false
+            val act = activity as MainActivity
+            if (act.soundEnabled) {
+                act.soundEnabled = false
+                viewModel.turnVolume(act.soundEnabled, requireContext())
                 binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_off)
             } else {
-                (activity as MainActivity).snapSE.start()
-                (this.activity as MainActivity).soundEnabled = true
+                act.snapSE.start()
+                act.soundEnabled = true
+                viewModel.turnVolume(act.soundEnabled, requireContext())
                 binding.changeVolumeButton.setImageResource(R.drawable.ic_volume_up)
             }
         }
@@ -224,7 +227,7 @@ class MenuFragment : Fragment() {
                 .show()
         }
         // Join room button listener
-        binding.joinRoomButton.setOnClickListener() {
+        binding.joinRoomButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
@@ -266,7 +269,7 @@ class MenuFragment : Fragment() {
                 binding.signInLayoutUnauthorized.root.visibility = View.INVISIBLE
 
                 binding.signInLayoutAuthorized.root.visibility = View.VISIBLE
-                binding.signInLayoutAuthorized.signOutButton.visibility = View.VISIBLE
+                binding.signInLayoutAuthorized.signOutLayout.visibility = View.GONE
             } else {
                 binding.signInLayoutAuthorized.signOutLayout.visibility = View.GONE
                 binding.signInLayoutAuthorized.root.visibility = View.INVISIBLE
