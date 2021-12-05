@@ -1,33 +1,45 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class PingThread(
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val username: String,
-    private val lobbyLiveData: LiveData<Lobby?>
+    private val lobbyChannel: Channel<Lobby>
 ) : SoftInterruptThread() {
-    override fun run() {
-        while (!interrupted) {
-            val lobby = lobbyLiveData.value
-            val player = lobby?.players?.find { it.name == username }
+    var _lobby: Lobby? = null
+    override fun run() = runBlocking {
+        withContext(Dispatchers.IO) {
+            while (!interrupted) {
+                delay(SLEEP_TIME_MILLIS)
 
-            if (lobby == null || player == null) {
-                continue
+                Log.d("PingThread", "${_lobby?.id}")
+                if (lobbyChannel.isEmpty.not()) {
+                    _lobby = lobbyChannel.receive()
+                }
+
+
+                val lobby = _lobby ?: continue
+
+                val player = lobby.players.find { it.name == username } ?: continue
+
+                firebaseLobbyRepository.updatePing(lobby.id, player.id)
+
+                if (isTimeout(lobby.lastTimeHostPing)) {
+                    firebaseLobbyRepository.removePlayer(lobby.id, player.id)
+                }
+
+                doHostStuff(lobby, player)
             }
-
-            firebaseLobbyRepository.updatePing(lobby.id, player.id)
-
-            if (isTimeout(lobby.lastTimeHostPing)) {
-                firebaseLobbyRepository.removePlayer(lobby.id, player.id)
-            }
-
-            doHostStuff(lobby, player)
-
-            sleep(SLEEP_TIME_MILLIS)
         }
     }
 
