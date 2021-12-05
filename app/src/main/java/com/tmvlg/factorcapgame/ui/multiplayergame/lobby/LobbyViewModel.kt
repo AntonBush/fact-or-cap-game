@@ -10,7 +10,6 @@ import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,7 +60,6 @@ class LobbyViewModel(
             withContext(Dispatchers.IO) {
                 while (true) {
                     val receivedLobby = firebaseLobbyRepository.lobby.get()
-                    Log.d(TAG, "lobby received ${receivedLobby?.id}")
 
                     if (receivedLobby != null) {
                         _lobby.postValue(receivedLobby)

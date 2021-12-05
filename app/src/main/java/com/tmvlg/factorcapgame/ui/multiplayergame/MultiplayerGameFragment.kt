@@ -1,7 +1,6 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.animation.ValueAnimator
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -11,7 +10,6 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.annotation.ColorInt
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -48,7 +46,9 @@ class MultiplayerGameFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadState(requireArguments())
+        Log.d("1", "loadState: loading")
+        lobbyId.value = requireArguments().getString(KEY_LOBBY_ID)
+            ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
 
     override fun onCreateView(
@@ -96,25 +96,11 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        saveState(outState)
-        super.onSaveInstanceState(outState)
-    }
-
-    // saves data to bundle
-    private fun saveState(outState: Bundle) {
         val lid = lobbyId.value
         if (lid != null) {
             outState.putString(KEY_LOBBY_ID, lid)
         }
-    }
-
-    // loads data from bundle
-    private fun loadState(bundle: Bundle) {
-        Log.d("1", "loadState: loading")
-        lobbyId.postValue(
-            bundle.getString(KEY_LOBBY_ID)
-                ?: throw IllegalArgumentException("Bundle must contain lobbyId")
-        )
+        super.onSaveInstanceState(outState)
     }
 
     private fun setupListeners() {
@@ -244,6 +230,7 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     companion object {
+        const val TAG = "MultiplayerGameFragment"
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
         const val RIGHT_ANSWER_ANIMATION_DURATION = 200L
         const val IS_ANSWER_CORRECT_ANIMATION_DURATION = 2_000L
@@ -267,15 +254,9 @@ class MultiplayerGameFragment : Fragment() {
                 }
                 animator.setDuration(duration).start()
             } catch (e: IllegalStateException) {
+                Log.w(TAG, e.message ?: "")
             }
         }
-
-//        private fun getColor(colorId: Int, context: Context): Int {
-//            return AppCompatResources.getColorStateList(
-//                context,
-//                colorId
-//            ).defaultColor
-//        }
 
         // calls from MultiplayerGameFragment.kt to create this fragment
         fun newInstance(lobbyId: String): MultiplayerGameFragment {

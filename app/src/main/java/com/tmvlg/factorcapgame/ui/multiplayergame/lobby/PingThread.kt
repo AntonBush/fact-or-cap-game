@@ -1,11 +1,9 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
-import android.util.Log
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -21,18 +19,24 @@ class PingThread(
             while (!interrupted) {
                 delay(SLEEP_TIME_MILLIS)
 
-                val lobby = lobby.get() ?: continue
+                val lobby = lobby.get()
+                val player = lobby?.players?.find { it.name == username }
 
-                val player = lobby.players.find { it.name == username } ?: continue
-
-                firebaseLobbyRepository.updatePing(lobby.id, player.id)
-
-                if (isTimeout(lobby.lastTimeHostPing)) {
-                    firebaseLobbyRepository.removePlayer(lobby.id, player.id)
+                if (lobby == null || player == null) {
+                    continue
                 }
 
+                doStuff(lobby, player)
                 doHostStuff(lobby, player)
             }
+        }
+    }
+
+    private fun doStuff(lobby: Lobby, player: Player) {
+        firebaseLobbyRepository.updatePing(lobby.id, player.id)
+
+        if (isTimeout(lobby.lastTimeHostPing)) {
+            firebaseLobbyRepository.removePlayer(lobby.id, player.id)
         }
     }
 

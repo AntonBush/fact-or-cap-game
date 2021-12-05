@@ -13,7 +13,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicReference
@@ -39,8 +38,8 @@ class FirebaseLobbyRepository {
                 // Lobby = String + Map<String, Map<String, Any?>>
                 // LobbyList = Map<String, Map<String, Map<String, Any?>>>
                 val mappedLobbyList = firebaseLobbyList.getValue<
-                        Map<String, Lobby.Mapped>
-                        >()
+                    Map<String, Lobby.Mapped>
+                    >()
                     ?: throw IOException("lobby does not contain value")
                 _lobbyList.postValue(
                     mappedLobbyList.map { lobbyEntry ->
@@ -116,11 +115,7 @@ class FirebaseLobbyRepository {
                 val firebaseLobbyValue = firebaseLobby.getValue<Lobby.Mapped>()
                     ?: throw IOException("lobby does not contain value")
 
-                Log.d(TAG, "${Thread.currentThread()}")
-                Log.d(TAG, "Before send")
-                Log.d(TAG, firebaseLobbyId)
                 lobby.set(Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue))
-                Log.d(TAG, "After send")
             }
 
             override fun onCancelled(error: DatabaseError) {
