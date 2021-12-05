@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.concurrent.thread
 
 class LobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
@@ -42,19 +43,20 @@ class LobbyViewModel(
     }
 
     private var receivingJob: Job? = null
-    private var pingThread: PingThread? = null
+    private var pingJob: Job? = null
+    private val pingThread = PingThread(
+        firebaseLobbyRepository,
+        username
+    )
 
     fun listenLobby(lobbyId: String) = viewModelScope.launch {
         firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
         firebaseLobbyRepository.listenLobby(lobbyId)
 
-        val thread = PingThread(
-            firebaseLobbyRepository,
-            username
-        )
-        thread.start()
-        pingThread = thread
-
+        pingThread.interrupted = false
+        pingJob = viewModelScope.launch {
+            pingThread.start()
+        }
         Log.d("LobbyViewModel", "Before receive job launched")
         receivingJob = viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -63,22 +65,23 @@ class LobbyViewModel(
 
                     if (receivedLobby != null) {
                         _lobby.postValue(receivedLobby)
-                        thread.lobby.set(receivedLobby)
+                        pingThread.lobby.set(receivedLobby)
                     }
+
+                    Log.d("RECEIVING_JOB", "${receivedLobby?.id}")
 
                     delay(PingThread.SLEEP_TIME_MILLIS)
                 }
             }
         }
-
         Log.d("LobbyViewModel", "Listen lobby end")
     }
 
     fun stopListenLobby() = viewModelScope.launch {
-        val thread = pingThread
-        if (thread != null) {
-            thread.interrupt()
-            pingThread = null
+        val ping = pingJob
+        if (ping != null) {
+            pingThread.interrupt()
+            ping.join()
         }
         val job = receivingJob
         if (job != null) {

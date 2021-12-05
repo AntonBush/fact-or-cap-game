@@ -1,5 +1,6 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
+import android.util.Log
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.data.repository.firebase.Player
@@ -12,23 +13,32 @@ import java.util.concurrent.atomic.AtomicReference
 class PingThread(
     private val firebaseLobbyRepository: FirebaseLobbyRepository,
     private val username: String
-) : SoftInterruptThread() {
+) {
+    var interrupted = false
     var lobby = AtomicReference<Lobby?>(null)
-    override fun run() = runBlocking {
-        withContext(Dispatchers.IO) {
-            while (!interrupted) {
-                delay(SLEEP_TIME_MILLIS)
 
-                val lobby = lobby.get()
-                val player = lobby?.players?.find { it.name == username }
+    private suspend fun run() {
+        while (!interrupted) {
+            delay(SLEEP_TIME_MILLIS)
 
-                if (lobby == null || player == null) {
-                    continue
-                }
+            val lobby = lobby.get()
 
-                doStuff(lobby, player)
-                doHostStuff(lobby, player)
+            Log.d("PING_THREAD", "${lobby?.id}")
+
+            val player = lobby?.players?.find { it.name == username }
+
+            if (lobby == null || player == null) {
+                continue
             }
+
+            doStuff(lobby, player)
+            doHostStuff(lobby, player)
+        }
+    }
+
+    suspend fun start() {
+        withContext(Dispatchers.IO) {
+            run()
         }
     }
 
@@ -58,6 +68,10 @@ class PingThread(
             .forEach { p ->
                 firebaseLobbyRepository.removePlayer(lobby.id, p.id)
             }
+    }
+
+    fun interrupt() {
+        interrupted = true
     }
 
     companion object {

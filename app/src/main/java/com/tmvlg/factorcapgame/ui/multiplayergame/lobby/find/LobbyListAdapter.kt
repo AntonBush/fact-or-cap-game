@@ -40,13 +40,16 @@ class LobbyListAdapter(
 
     class LobbyDiffCallback : DiffUtil.ItemCallback<Lobby>() {
         override fun areItemsTheSame(oldItem: Lobby, newItem: Lobby): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.name == newItem.name &&
+                oldItem.hostName == newItem.hostName &&
+                oldItem.players.size == oldItem.players.size
         }
 
         override fun areContentsTheSame(oldItem: Lobby, newItem: Lobby): Boolean {
             return oldItem.name == newItem.name &&
                 oldItem.hostName == newItem.hostName &&
                 oldItem.players.size == oldItem.players.size
+
         }
     }
 

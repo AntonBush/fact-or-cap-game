@@ -345,9 +345,10 @@ class MenuFragment : Fragment() {
             LOGO_SHAKING_AMPLITUDE
         )
         ObjectAnimator.ofPropertyValuesHolder(
-            binding.gameLogoTextview, translateY
+            binding.gameLogoTextview,
+            translateY
         ).apply {
-            duration = 3000L
+            duration = LOGO_SHAKING_DURATION
             repeatCount = ObjectAnimator.INFINITE
             repeatMode = ObjectAnimator.REVERSE
             start()
