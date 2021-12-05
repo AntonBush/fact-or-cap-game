@@ -1,13 +1,14 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,11 +48,15 @@ class FindLobbyFragment : Fragment() {
             override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
                 with(binding.bgLayout) {
                     Log.d("FindLobby", "OnSelect: $isSelected")
-                    if (isSelected) {
-                        setSelected(true)
+                    val selectionColorId = if (isSelected) {
+                        R.attr.colorPrimaryVariant
                     } else {
-                        setSelected(false)
+                        R.attr.textAppearanceHeadline5
                     }
+                    val typedValue = TypedValue()
+                    val theme = requireContext().theme
+                    theme.resolveAttribute(selectionColorId, typedValue, true)
+                    backgroundTintList = ColorStateList.valueOf(typedValue.data)
                 }
             }
         }
@@ -102,14 +107,15 @@ class FindLobbyFragment : Fragment() {
         binding.joinButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
             isEnabled = false
-            val selectedPosition = lobbyListAdapter.selectedPosition
-            if (selectedPosition == null) {
+            val selectedLobby = lobbyListAdapter.currentList
+                .find { it.id == lobbyListAdapter.selectedId }
+            if (selectedLobby == null) {
                 Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
                 isEnabled = true
                 return@setOnClickListener
             }
 
-            viewModel.connectLobby(lobbyListAdapter.currentList[selectedPosition])
+            viewModel.connectLobby(selectedLobby)
         }
         binding.findLobbyEdittext.addTextChangedListener { text ->
             filterText(textString = text?.toString())

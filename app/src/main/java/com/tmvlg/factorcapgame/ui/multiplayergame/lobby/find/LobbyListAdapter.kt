@@ -11,7 +11,7 @@ import com.tmvlg.factorcapgame.databinding.LobbyBinding
 class LobbyListAdapter(
     var onLobbySelectedListener: OnLobbySelectedListener? = null
 ) : ListAdapter<Lobby, LobbyListAdapter.LobbyViewHolder>(LobbyDiffCallback()) {
-    var selectedPosition: Int? = null
+    var selectedId: String? = null
         private set
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LobbyViewHolder {
@@ -26,21 +26,11 @@ class LobbyListAdapter(
             binding.lobby.text = lobby.name
             binding.host.text = lobby.hostName
             binding.playersNumber.text = lobby.players.size.toString()
-            binding.root.setOnClickListener { v ->
-                selectedPosition = if (selectedPosition == position) {
-                    null
-                } else {
-                    position
-                }
-                val listener = onLobbySelectedListener
-                if (listener != null) {
-                    listener.onLobbySelected(
-                        binding,
-                        selectedPosition == position
-                    )
-                    notifyItemRangeChanged(0, itemCount)
-                }
+            binding.root.setOnClickListener {
+                selectedId = lobby.id
+                notifyItemRangeChanged(0, itemCount)
             }
+            onLobbySelectedListener?.onLobbySelected(binding, selectedId == lobby.id)
         }
     }
 
