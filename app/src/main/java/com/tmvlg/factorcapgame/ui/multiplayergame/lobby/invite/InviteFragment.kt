@@ -34,6 +34,7 @@ class InviteFragment : Fragment() {
     }
 
     private lateinit var lobbyId: String
+    private lateinit var userName: String
 
     private lateinit var searchedUsersAdapter: SearchedUsersAdapter
 
@@ -124,9 +125,9 @@ class InviteFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.searchedPlayers.observe(viewLifecycleOwner) {
-            Log.d("1", "getPlayers: obseved $it")
-            searchedUsersAdapter.submitList(it)
+        viewModel.searchedPlayers.observe(viewLifecycleOwner) { players ->
+            Log.d("1", "getPlayers: obseved $players")
+            searchedUsersAdapter.submitList(players.filter { it.name != userName })
         }
     }
 
@@ -138,21 +139,26 @@ class InviteFragment : Fragment() {
     // saves data to bundle
     private fun saveState(outState: Bundle) {
         outState.putString(KEY_LOBBY_ID, lobbyId)
+        outState.putString(KEY_USER_NAME, userName)
     }
 
     // loads data from bundle
     private fun loadState(bundle: Bundle) {
         lobbyId = bundle.getString(KEY_LOBBY_ID)
             ?: throw IllegalArgumentException("Bundle must contain lobbyId")
+        userName = bundle.getString(KEY_USER_NAME)
+            ?: throw IllegalArgumentException("Bundle must contain userName")
     }
 
     companion object {
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
+        const val KEY_USER_NAME = "KEY_USER_NAME"
 
-        fun newInstance(lobbyId: String): InviteFragment {
+        fun newInstance(lobbyId: String, userName: String): InviteFragment {
             return InviteFragment().apply {
                 arguments = Bundle().apply {
                     putString(KEY_LOBBY_ID, lobbyId)
+                    putString(KEY_USER_NAME, userName)
                 }
             }
         }

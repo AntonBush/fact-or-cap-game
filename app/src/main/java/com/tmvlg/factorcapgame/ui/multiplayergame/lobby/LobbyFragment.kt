@@ -75,7 +75,10 @@ class LobbyFragment : Fragment() {
         binding.inviteButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, InviteFragment.newInstance(lobbyId))
+                .replace(
+                    R.id.main_fragment_container,
+                    InviteFragment.newInstance(lobbyId, viewModel.username)
+                )
                 .addToBackStack("lobby")
                 .commit()
         }

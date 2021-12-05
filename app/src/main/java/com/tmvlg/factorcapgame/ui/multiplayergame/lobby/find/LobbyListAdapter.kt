@@ -32,7 +32,14 @@ class LobbyListAdapter(
                 } else {
                     position
                 }
-                onLobbySelectedListener?.onLobbySelected(binding, selectedPosition == position)
+                val listener = onLobbySelectedListener
+                if (listener != null) {
+                    listener.onLobbySelected(
+                        binding,
+                        selectedPosition == position
+                    )
+                    notifyItemRangeChanged(0, itemCount)
+                }
             }
         }
     }
