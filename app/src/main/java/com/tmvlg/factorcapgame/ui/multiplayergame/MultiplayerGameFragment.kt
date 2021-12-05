@@ -90,6 +90,8 @@ class MultiplayerGameFragment : Fragment() {
     // all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.agreeButton.isSoundEffectsEnabled = false
+        binding.disagreeButton.isSoundEffectsEnabled = false
         setupListeners()
         observeViewModel()
     }
@@ -131,7 +133,6 @@ class MultiplayerGameFragment : Fragment() {
                 viewModel.sendAnswer(true)
             }
         }
-
         // sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
             if (isEnabled) {
@@ -141,7 +142,6 @@ class MultiplayerGameFragment : Fragment() {
                 viewModel.sendAnswer(false)
             }
         }
-
         lobbyId.observe(viewLifecycleOwner) {
             viewModel.startGame(it)
         }
@@ -224,7 +224,7 @@ class MultiplayerGameFragment : Fragment() {
     }
 
 
-    fun funkyAnimationCorrect() {
+    private fun funkyAnimationCorrect() {
         (this.activity as MainActivity).correctSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_correct_answer)
         binding.singleGameAnimationText.text = congratsArray.random()

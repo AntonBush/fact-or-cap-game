@@ -70,11 +70,13 @@ class SingleGameFragment : Fragment() {
     // all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.agreeButton.isSoundEffectsEnabled = false
+        binding.disagreeButton.isSoundEffectsEnabled = false
         // sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
             if (isEnabled) {
-                isEnabled = false
                 (activity as MainActivity).snapSEStart()
+                isEnabled = false
                 binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(true)
             }
@@ -82,8 +84,8 @@ class SingleGameFragment : Fragment() {
         // sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
             if (isEnabled) {
-                isEnabled = false
                 (activity as MainActivity).snapSEStart()
+                isEnabled = false
                 binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(false)
             }

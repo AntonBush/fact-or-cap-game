@@ -38,11 +38,6 @@ class SingleGameFinishedFragment : Fragment() {
         return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     // all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,11 +45,27 @@ class SingleGameFinishedFragment : Fragment() {
             loadState(savedInstanceState)
         }
 
+        binding.menuButton.isSoundEffectsEnabled = false
+        binding.restartButton.isSoundEffectsEnabled = false
+
+        // return to menu
+        binding.menuButton.setOnClickListener {
+            (activity as MainActivity).snapSEStart()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, MenuFragment())
+                .commit()
+        }
+        // restart a game
+        binding.restartButton.setOnClickListener {
+            (activity as MainActivity).snapSEStart()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, SingleGameFragment())
+                .commit()
+        }
         // updates your score when it loaded from previous fragment
         score.observe(viewLifecycleOwner) { score ->
             binding.tvScorePoints.text = ("$score Points")
         }
-
         // shows high score label if it's a new record
         isHighScore.observe(viewLifecycleOwner) { isHighScore ->
             binding.tvHighscore.visibility = if (isHighScore) {
@@ -63,22 +74,11 @@ class SingleGameFinishedFragment : Fragment() {
                 View.INVISIBLE
             }
         }
+    }
 
-        // return to menu
-        binding.menuButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
-                .commit()
-        }
-
-        // restart a game
-        binding.restartButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, SingleGameFragment())
-                .commit()
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

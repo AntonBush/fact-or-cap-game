@@ -86,6 +86,10 @@ class FindLobbyFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.findLobbyRecyclerview.adapter = lobbyListAdapter
         binding.findLobbyRecyclerview.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.returnButton.isSoundEffectsEnabled = false
+        binding.joinButton.isSoundEffectsEnabled = false
+
         setupListeners()
         observeViewModel()
     }
@@ -97,14 +101,14 @@ class FindLobbyFragment : Fragment() {
 
     private fun setupListeners() {
         binding.returnButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             viewModel.stopListenLobbies()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
         binding.joinButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             isEnabled = false
             val selectedPosition = lobbyListAdapter.selectedPosition
             if (selectedPosition == null) {

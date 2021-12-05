@@ -65,13 +65,21 @@ class LobbyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.returnButton.isSoundEffectsEnabled = false
+        binding.inviteButton.isSoundEffectsEnabled = false
+        binding.startButton.isSoundEffectsEnabled = false
+
         binding.returnButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             goTo(FindLobbyFragment.newInstance())
         }
         binding.inviteButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
-            goTo(InviteFragment.newInstance(lobbyId))
+            (activity as MainActivity).snapSEStart()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, InviteFragment.newInstance(lobbyId))
+                .addToBackStack("lobby")
+                .commit()
         }
         listAdapter = LobbyUserListAdapter(
             onClickListener = object : LobbyUserListAdapter.OnClickListener {
@@ -121,7 +129,7 @@ class LobbyFragment : Fragment() {
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
                 binding.startButton.setOnClickListener {
-                    if ((this.activity as MainActivity).soundEnabled) (this.activity as MainActivity).snapSE.start()
+                    (activity as MainActivity).snapSEStart()
                     viewModel.startGame()
                 }
             } else {
