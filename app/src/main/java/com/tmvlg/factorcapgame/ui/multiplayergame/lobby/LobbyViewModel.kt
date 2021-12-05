@@ -43,7 +43,6 @@ class LobbyViewModel(
         Log.d("LobbyViewModel", "username: $username")
         Log.d("LobbyViewModel", "players: ${l.players}")
         l.players.none { it.name == username }
-        false
     }
 
     var pingThread: PingThread? = null

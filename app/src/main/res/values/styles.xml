@@ -2,14 +2,45 @@
 <resources>
     <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+        <item name="android:background">@color/white</item>
     </style>
 
     <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
-        <item name="android:textColor">@color/font_color</item>
+        <item name="android:textColor">?attr/textAppearanceHeadline2</item>
+        <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="Widget.App.ButtonPositive" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="colorPrimaryVariant">?attr/colorOnPrimary</item>
+        <item name="colorSecondaryVariant">?attr/colorOnPrimary</item>
         <item name="materialThemeOverlay">?attr/colorOnPrimary</item>
+        <item name="android:textColor">@color/font_color</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="backgroundTint">@color/secondary_green</item>
+    </style>
+
+    <style name="Widget.App.ButtonNegative" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="colorPrimaryVariant">?attr/colorAccent</item>
+        <item name="colorSecondaryVariant">?attr/colorAccent</item>
+        <item name="materialThemeOverlay">?attr/colorAccent</item>
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+    </style>
+
+    <style name="Widget.App.ButtonPositiveDark" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="colorPrimaryVariant">?attr/colorOnPrimary</item>
+        <item name="colorSecondaryVariant">?attr/colorOnPrimary</item>
+        <item name="materialThemeOverlay">?attr/colorOnPrimary</item>
+        <item name="android:textColor">@color/c6</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="backgroundTint">@color/c2</item>
+    </style>
+
+    <style name="Widget.App.ButtonNegativeDark" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="colorPrimaryVariant">?attr/colorAccent</item>
+        <item name="colorSecondaryVariant">?attr/colorAccent</item>
+        <item name="materialThemeOverlay">?attr/colorAccent</item>
+        <item name="android:textColor">?attr/colorAccent</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
     </style>
 
