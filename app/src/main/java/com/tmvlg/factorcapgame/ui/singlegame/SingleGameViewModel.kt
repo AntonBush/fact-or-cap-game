@@ -31,7 +31,7 @@ class SingleGameViewModel(
     init {
         viewModelScope.launch {
             username = FactOrCapAuth.currentUser.value?.name
-                ?: throw IllegalStateException("User is unauthorized")
+                ?: ""
         }
     }
     // exception that throws when can't fetch a fact

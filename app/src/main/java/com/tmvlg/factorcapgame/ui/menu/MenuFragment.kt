@@ -1,5 +1,7 @@
 package com.tmvlg.factorcapgame.ui.menu
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -144,6 +146,7 @@ class MenuFragment : Fragment() {
                 .commit()
 //            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
+        animateLogo()
     }
 
     private fun setupGameButtonsListeners() {
@@ -172,9 +175,7 @@ class MenuFragment : Fragment() {
                 createDialog(
                     DialogParams(
                         "Auth required",
-                        "You are not authorized yet." +
-                            " You should authorize via Google to play multiplayer." +
-                            " Do you want to proceed?",
+                        "Please, sign in",
                         "Sign in with Google",
                         "Cancel"
                     )
@@ -189,10 +190,8 @@ class MenuFragment : Fragment() {
             val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
             createDialog(
                 DialogParams(
-                    "New room name",
-                    "You are going to create new lobby." +
-                        " You should enter the name of new room to play multiplayer." +
-                        " Do you want to proceed?",
+                    "Create room",
+                    "Please, enter room name",
                     "Create room",
                     "Cancel"
                 )
@@ -313,6 +312,22 @@ class MenuFragment : Fragment() {
         binding.joinRoomButton.startAnimation(lowerAnim)
     }
 
+    private fun animateLogo() {
+        val translateY = PropertyValuesHolder.ofFloat(
+            View.TRANSLATION_Y,
+            -LOGO_SHAKING_AMPLITUDE,
+            LOGO_SHAKING_AMPLITUDE
+        )
+        ObjectAnimator.ofPropertyValuesHolder(
+            binding.gameLogoTextview, translateY
+        ).apply {
+            duration = 3000L
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+            start()
+        }
+    }
+
     private data class DialogParams(
         val title: String,
         val message: String,
@@ -322,6 +337,8 @@ class MenuFragment : Fragment() {
 
     companion object {
         const val XOR_VISIBLE_VALUE_2 = 4
+        private const val LOGO_SHAKING_AMPLITUDE = 15F
+        private const val LOGO_SHAKING_DURATION = 3000L
         private const val TAG = "MenuFragment"
 
         fun newInstance(): MenuFragment {
