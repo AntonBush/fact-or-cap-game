@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
@@ -15,59 +15,60 @@ import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 
 class StatisticsFragment : Fragment() {
+    private val viewModel: StatisticsViewModel by viewModels {
+        val app = activity?.application as FactOrCapApplication
+        return@viewModels StatisticsViewModelFactory(
+            app.userRepository,
+            app.gameRepository
+        )
+    }
 
-    private lateinit var viewModel: StatisticsViewModel
     private var _binding: FragmentStatisticsBinding? = null
     private val binding: FragmentStatisticsBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
-    val statisticsViewModelFactory by lazy {
-        StatisticsViewModelFactory(
-            (activity?.application as FactOrCapApplication).userRepository,
-            (activity?.application as FactOrCapApplication).gameRepository
-        )
-    }
+    val adapter = GameListAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentStatisticsBinding.inflate(inflater, container, false)
-
-        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
-
-        binding.returnButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MenuFragment())
-                .commit()
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this, statisticsViewModelFactory)[StatisticsViewModel::class.java]
-
-        observeStatisticViewModel()
+        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
         val recyclerView = binding.gamesStatisticsList
-        val adapter = GameListAdapter()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        viewModel.allGames.observe(viewLifecycleOwner) { games ->
-            games.let {
-                adapter.updateList(it)
-            }
-        }
+        binding.returnButton.isSoundEffectsEnabled = false
+        binding.statisticsToggleButton.isSoundEffectsEnabled = false
+        binding.gamesToggleButton.isSoundEffectsEnabled = false
 
+        setupListeners()
+        observeViewModel()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun setupListeners() {
+        binding.returnButton.setOnClickListener {
+            (activity as MainActivity).snapSEStart()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_fragment_container, MenuFragment())
+                .commit()
+        }
         binding.statisticsToggleButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             if (binding.grid.visibility == View.VISIBLE) {
                 binding.grid.visibility = View.GONE
                 binding.gamesStatisticsList.visibility = View.VISIBLE
@@ -80,9 +81,8 @@ class StatisticsFragment : Fragment() {
                 binding.gamesToggleButton.rotation = FLOAT_ZERO
             }
         }
-
         binding.gamesToggleButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             if (binding.gamesStatisticsList.visibility == View.VISIBLE) {
                 binding.grid.visibility = View.VISIBLE
                 binding.gamesStatisticsList.visibility = View.GONE
@@ -97,12 +97,12 @@ class StatisticsFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun observeStatisticViewModel() {
+    private fun observeViewModel() {
+        viewModel.allGames.observe(viewLifecycleOwner) { games ->
+            games.let {
+                adapter.updateList(it)
+            }
+        }
         viewModel.totalGames.observe(viewLifecycleOwner) {
             binding.totalGamesValue.text = it.toString()
         }

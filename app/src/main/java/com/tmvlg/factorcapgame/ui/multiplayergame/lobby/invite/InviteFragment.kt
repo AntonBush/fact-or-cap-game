@@ -16,10 +16,7 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentInviteBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.userslist.SearchedUsersAdapter
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragmentViewModel
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.invite.InviteFragmentViewModelFactory
 
 class InviteFragment : Fragment() {
 
@@ -75,15 +72,19 @@ class InviteFragment : Fragment() {
         if (savedInstanceState != null) {
             loadState(savedInstanceState)
         }
+
+        binding.returnButton.isSoundEffectsEnabled = false
+        binding.confirmButton.isSoundEffectsEnabled = false
+        binding.searchButton.isSoundEffectsEnabled = false
+
         binding.returnButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, LobbyFragment.newInstance(lobbyId))
-                .commit()
+            (activity as MainActivity).snapSEStart()
+            requireActivity().supportFragmentManager
+                .popBackStackImmediate()
         }
 
         binding.confirmButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             if (selectedPlayerName != null) {
                 val userToBeInvited = selectedPlayerName!!
                 viewModel.invite(userToBeInvited, lobbyId)
@@ -94,7 +95,7 @@ class InviteFragment : Fragment() {
         }
 
         binding.searchButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             val query = binding.findUsersEdittext.text
             viewModel.findPlayers(query.toString())
             try {

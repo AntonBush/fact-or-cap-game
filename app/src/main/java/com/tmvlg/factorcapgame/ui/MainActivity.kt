@@ -1,5 +1,6 @@
 package com.tmvlg.factorcapgame.ui
 
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
@@ -7,24 +8,44 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
-import com.tmvlg.factorcapgame.ui.menu.MenuViewModel
-
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity() {
     val launcher = FactOrCapAuth.SignInLauncher.newInstance(this)
 
-    lateinit var viewModel: MenuViewModel
-    lateinit var username: String
     lateinit var snapSE: MediaPlayer
+    fun snapSEStart() {
+        if (soundEnabled) {
+            snapSE.start()
+        }
+    }
+
     lateinit var correctSE: MediaPlayer
+    fun correctSEStart() {
+        if (soundEnabled) {
+            correctSE.start()
+        }
+    }
+
     lateinit var wrongSE: MediaPlayer
+    fun wrongSEStart() {
+        if (soundEnabled) {
+            wrongSE.start()
+        }
+    }
+
     var soundEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        soundEnabled = PreferenceProvider(this).isTurnedVolume()
 
         snapSE = MediaPlayer.create(this, R.raw.click_s_e)
         correctSE = MediaPlayer.create(this, R.raw.correct_answer_s_e)
@@ -40,7 +61,6 @@ class MainActivity : AppCompatActivity() {
             FactOrCapAuth.signIn(this, launcher)
             navigateToLobby(lobbyId)
         } else {
-
             // Set MenuFragment as first
             navigateToMenu()
         }

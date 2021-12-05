@@ -77,6 +77,14 @@ class PreferenceProvider(context: Context) {
         preference.edit().putString(KEY_REGISTRATION_TOKEN, token).apply()
     }
 
+    fun turnVolume(turnOn: Boolean) {
+        preference.edit().putBoolean(KEY_TURN_ON_VOLUME, turnOn).apply()
+    }
+
+    fun isTurnedVolume(): Boolean {
+        return preference.getBoolean(KEY_TURN_ON_VOLUME, false)
+    }
+
     companion object {
         const val APP_USER_PREFERENCES = "userprefs"
         const val KEY_TOTAL_GAMES = "keyTotalGames"
@@ -86,5 +94,6 @@ class PreferenceProvider(context: Context) {
         const val KEY_ALL_SCORES = "keyAllScores"
         const val KEY_USERNAME = "keyUsername"
         const val KEY_REGISTRATION_TOKEN = "keyRegistrationToken"
+        const val KEY_TURN_ON_VOLUME = "keyTurnOnVolume"
     }
 }

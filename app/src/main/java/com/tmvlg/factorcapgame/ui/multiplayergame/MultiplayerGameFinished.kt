@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
@@ -20,7 +19,6 @@ import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.scoreboard.PlayersScoreboardAdapter
 
 class MultiplayerGameFinished : Fragment() {
-
     private val viewModel: MultiplayerGameFinishedViewModel by viewModels {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
@@ -28,15 +26,14 @@ class MultiplayerGameFinished : Fragment() {
             app.firebaseGameRepository
         )
     }
-    private var _binding: FragmentMultiplayerGameFinishedBinding? = null
 
+    private var _binding: FragmentMultiplayerGameFinishedBinding? = null
     private val binding: FragmentMultiplayerGameFinishedBinding
         get() = _binding ?: throw IllegalStateException("null binding at $this")
 
     private lateinit var scoreboardAdapter: PlayersScoreboardAdapter
 
     val score = MutableLiveData<Int>()
-
     val lobbyId = MutableLiveData<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,14 +58,16 @@ class MultiplayerGameFinished : Fragment() {
         if (savedInstanceState != null) {
             loadState(savedInstanceState)
         }
+        binding.findLobbyButton.isSoundEffectsEnabled = false
+        binding.menuButton.isSoundEffectsEnabled = false
         binding.findLobbyButton.setOnClickListener {
-          if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, FindLobbyFragment.newInstance())
                 .commit()
         }
         binding.menuButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment.newInstance())
                 .commit()

@@ -1,7 +1,6 @@
 package com.tmvlg.factorcapgame.data.repository.firebase
 
 import android.os.Parcelable
-import android.util.Log
 import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
 
@@ -30,7 +29,6 @@ data class Player(
     companion object {
         fun newInstance(key: String, mapped: Mapped): Player {
             return Player().apply {
-                Log.d("Player.newInstance", "$key|$mapped")
                 id = key
                 loaded = mapped.loaded
                 name = mapped.playerName

@@ -1,15 +1,18 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame.lobby
 
 import android.util.Log
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
-import com.tmvlg.factorcapgame.data.repository.firebase.Player
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
@@ -25,38 +28,50 @@ class LobbyViewModel(
         }
     }
 
-    val lobby = firebaseLobbyRepository.lobby.map {
-        Log.d("LobbyViewModel.lobby", "$it")
-        it
-    }
+    private val _lobby = MutableLiveData<Lobby>(null)
+    val lobby = _lobby.map { it }
     val isHost = lobby.map { it?.hostName == username }
 
     val isGameStarted = lobby.map {
-        Log.d("LobbyViewModel", "------------ $it")
-        Log.d("LobbyViewModel", "------------ ${it?.started ?: false}")
         it?.started ?: false
     }
 
     val isDisconnected = lobby.map { lobby ->
         val l = lobby ?: return@map false
-
-        Log.d("LobbyViewModel", "username: $username")
-        Log.d("LobbyViewModel", "players: ${l.players}")
         l.players.none { it.name == username }
     }
 
-    var pingThread: PingThread? = null
+    private var receivingJob: Job? = null
+    private var pingThread: PingThread? = null
 
     fun listenLobby(lobbyId: String) = viewModelScope.launch {
         firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
         firebaseLobbyRepository.listenLobby(lobbyId)
+
         val thread = PingThread(
             firebaseLobbyRepository,
-            username,
-            lobby
+            username
         )
         thread.start()
         pingThread = thread
+
+        Log.d("LobbyViewModel", "Before receive job launched")
+        receivingJob = viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                while (true) {
+                    val receivedLobby = firebaseLobbyRepository.lobby.get()
+
+                    if (receivedLobby != null) {
+                        _lobby.postValue(receivedLobby)
+                        thread.lobby.set(receivedLobby)
+                    }
+
+                    delay(PingThread.SLEEP_TIME_MILLIS)
+                }
+            }
+        }
+
+        Log.d("LobbyViewModel", "Listen lobby end")
     }
 
     fun stopListenLobby() = viewModelScope.launch {
@@ -65,79 +80,38 @@ class LobbyViewModel(
             thread.interrupt()
             pingThread = null
         }
+        val job = receivingJob
+        if (job != null) {
+            job.cancel()
+            receivingJob = null
+        }
         firebaseLobbyRepository.stopListenLobby()
     }
 
     fun startGame() = viewModelScope.launch {
         val lobbyId = lobby.value?.id
-        Log.d("LobbyViewModel", "+++++ $lobbyId")
         if (lobbyId != null) {
-            Log.d("LobbyViewModel", "+++++ $lobbyId")
             firebaseLobbyRepository.startGame(lobbyId)
         }
     }
 
-    fun removePlayer(userName: String) {
+    fun removePlayer(userId: String) = viewModelScope.launch {
         val lobby = lobby.value
-        if (isHost.value == true && lobby != null && lobby.hostName != userName) {
-            val userIdToRemove = lobby.players.find { it.name == userName }?.id ?: return
-            firebaseLobbyRepository.removePlayer(
-                lobby.id,
-                userIdToRemove
-            )
+
+        if (isHost.value == false ||
+            lobby == null ||
+            lobby.hostName == lobby.players.find { it.id == userId }?.name
+        ) {
+            return@launch
         }
+
+        firebaseLobbyRepository.removePlayer(
+            lobby.id,
+            userId
+        )
     }
 
-    class PingThread(
-        private val firebaseLobbyRepository: FirebaseLobbyRepository,
-        private val username: String,
-        private val lobbyLiveData: LiveData<Lobby?>
-    ) : SoftInterruptThread() {
-        override fun run() {
-            while (!interrupted) {
-                val lobby = lobbyLiveData.value
-                val player = lobby?.players?.find { it.name == username }
-
-                if (lobby == null || player == null) {
-                    continue
-                }
-
-                firebaseLobbyRepository.updatePing(lobby.id, player.id)
-
-//                if (lobby.lastTimeHostPing)
-
-                doHostStuff(lobby, player)
-
-                sleep(SLEEP_TIME_MILLIS)
-            }
-        }
-
-        private fun doHostStuff(lobby: Lobby, player: Player) {
-            if (lobby.hostName != player.name) {
-                return
-            }
-
-            firebaseLobbyRepository.updateLobbyPing(lobby.id)
-
-            val currentMillis = System.currentTimeMillis()
-
-            lobby.players.forEach { p ->
-                if (p.name == lobby.hostName) {
-                    return@forEach
-                }
-
-                val diff = currentMillis - p.lastTimePing
-                if (diff > PLAYER_TIMEOUT_MILLIS) {
-                    firebaseLobbyRepository.removePlayer(lobby.id, p.id)
-                }
-            }
-        }
-
-//        private fun isActualTime()
-
-        companion object {
-            const val SLEEP_TIME_MILLIS = 1_000L
-            const val PLAYER_TIMEOUT_MILLIS = 10_000L
-        }
+    companion object {
+        const val TAG = "LobbyViewModel"
     }
 }

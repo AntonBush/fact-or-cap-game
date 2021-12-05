@@ -13,19 +13,16 @@ import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentSingleGameBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.NoInternetFragment
-import kotlinx.coroutines.delay
-import kotlin.random.Random
 
 class SingleGameFragment : Fragment() {
 
-    private val viewModel: SingleGameViewModel by viewModels{
+    private val viewModel: SingleGameViewModel by viewModels {
         // inits viewmodel
         val app = activity?.application as FactOrCapApplication
         return@viewModels SingleGameViewModelFactory(
             app.gameRepository,
             app.factRepository,
-            app.userRepository,
-            this
+            app.userRepository
         )
     }
 
@@ -48,7 +45,8 @@ class SingleGameFragment : Fragment() {
 
         binding.gameContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
-        congratsArray = arrayOf(getString(R.string.correct_answer_string_1),
+        congratsArray = arrayOf(
+            getString(R.string.correct_answer_string_1),
             getString(R.string.correct_answer_string_2),
             getString(R.string.correct_answer_string_3),
             getString(R.string.correct_answer_string_4),
@@ -57,7 +55,8 @@ class SingleGameFragment : Fragment() {
             getString(R.string.correct_answer_string_7),
             getString(R.string.correct_answer_string_8),
             getString(R.string.correct_answer_string_9),
-            getString(R.string.correct_answer_string_10))
+            getString(R.string.correct_answer_string_10)
+        )
 
         return binding.root
     }
@@ -70,19 +69,23 @@ class SingleGameFragment : Fragment() {
     // all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.agreeButton.isSoundEffectsEnabled = false
+        binding.disagreeButton.isSoundEffectsEnabled = false
         // sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
             if (isEnabled) {
-                binding.tvFact.visibility = View.INVISIBLE
+                (activity as MainActivity).snapSEStart()
                 isEnabled = false
+                binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(true)
             }
         }
         // sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
             if (isEnabled) {
-                binding.tvFact.visibility = View.INVISIBLE
+                (activity as MainActivity).snapSEStart()
                 isEnabled = false
+                binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(false)
             }
         }
@@ -108,16 +111,25 @@ class SingleGameFragment : Fragment() {
         // bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
             binding.tvFact.text = it.text
+            binding.tvFact.visibility = View.VISIBLE
             isEnabled = true
         }
         // right answers counter
         viewModel.rightAnswersCount.observe(viewLifecycleOwner) {
             binding.tvScore.text = it.toString()
         }
+        viewModel.isRightAnswer.observe(viewLifecycleOwner) { isRightAnswer ->
+            isRightAnswer ?: return@observe
+            if (isRightAnswer) {
+                funkyAnimationCorrect()
+            } else {
+                funkyAnimationWrong()
+            }
+        }
     }
 
-    fun funkyAnimationCorrect(){
-        if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).correctSE.start()
+    fun funkyAnimationCorrect() {
+        (activity as MainActivity).correctSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_correct_answer)
         binding.singleGameAnimationText.text = congratsArray.random()
         binding.singleGameAnimationImage.startAnimation(animation)
@@ -126,8 +138,8 @@ class SingleGameFragment : Fragment() {
         binding.singleGameAnimationText.visibility = View.INVISIBLE
     }
 
-    fun funkyAnimationWrong(){
-        if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).wrongSE.start()
+    fun funkyAnimationWrong() {
+        (activity as MainActivity).wrongSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_wrong_answer)
         binding.gameContainer.startAnimation(animation)
     }
@@ -145,12 +157,5 @@ class SingleGameFragment : Fragment() {
                 )
             )
             .commit()
-    }
-
-    fun hideText() {
-        binding.tvFact.visibility = View.INVISIBLE
-    }
-    fun showText() {
-        binding.tvFact.visibility = View.VISIBLE
     }
 }

@@ -1,15 +1,15 @@
 package com.tmvlg.factorcapgame.ui.multiplayergame
 
 import android.animation.ValueAnimator
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,17 +18,7 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.databinding.FragmentMultiplayerGameBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
-import java.lang.RuntimeException
 import java.lang.IllegalArgumentException
-import androidx.annotation.ColorInt
-
-
-import android.content.res.Resources.Theme
-
-import android.util.TypedValue
-
-
-
 
 class MultiplayerGameFragment : Fragment() {
 
@@ -37,8 +27,7 @@ class MultiplayerGameFragment : Fragment() {
         val app = activity?.application as FactOrCapApplication
         return@viewModels MultiplayerGameViewModelFactory(
             app.factRepository,
-            app.firebaseGameRepository,
-            this
+            app.firebaseGameRepository
         )
     }
 
@@ -57,7 +46,9 @@ class MultiplayerGameFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        loadState(requireArguments())
+        Log.d("1", "loadState: loading")
+        lobbyId.value = requireArguments().getString(KEY_LOBBY_ID)
+            ?: throw IllegalArgumentException("Bundle must contain lobbyId")
     }
 
     override fun onCreateView(
@@ -67,9 +58,15 @@ class MultiplayerGameFragment : Fragment() {
     ): View {
         _binding = FragmentMultiplayerGameBinding.inflate(inflater, container, false)
 
-        binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
+        binding.pageContainer.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.fragment_change
+            )
+        )
 
-        congratsArray = arrayOf(getString(R.string.correct_answer_string_1),
+        congratsArray = arrayOf(
+            getString(R.string.correct_answer_string_1),
             getString(R.string.correct_answer_string_2),
             getString(R.string.correct_answer_string_3),
             getString(R.string.correct_answer_string_4),
@@ -78,7 +75,8 @@ class MultiplayerGameFragment : Fragment() {
             getString(R.string.correct_answer_string_7),
             getString(R.string.correct_answer_string_8),
             getString(R.string.correct_answer_string_9),
-            getString(R.string.correct_answer_string_10))
+            getString(R.string.correct_answer_string_10)
+        )
 
         return binding.root
     }
@@ -86,6 +84,8 @@ class MultiplayerGameFragment : Fragment() {
     // all the bindings here
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.agreeButton.isSoundEffectsEnabled = false
+        binding.disagreeButton.isSoundEffectsEnabled = false
         setupListeners()
         observeViewModel()
     }
@@ -96,46 +96,32 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        saveState(outState)
-        super.onSaveInstanceState(outState)
-    }
-
-    // saves data to bundle
-    private fun saveState(outState: Bundle) {
         val lid = lobbyId.value
         if (lid != null) {
             outState.putString(KEY_LOBBY_ID, lid)
         }
-    }
-
-    // loads data from bundle
-    private fun loadState(bundle: Bundle) {
-        Log.d("1", "loadState: loading")
-        lobbyId.postValue(
-            bundle.getString(KEY_LOBBY_ID)
-                ?: throw IllegalArgumentException("Bundle must contain lobbyId")
-        )
+        super.onSaveInstanceState(outState)
     }
 
     private fun setupListeners() {
         // sends agree answer if button is enabled
         binding.agreeButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             if (isEnabled) {
                 isEnabled = false
+                (activity as MainActivity).snapSEStart()
+                binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(true)
             }
         }
-
         // sends disagree answer if button is enabled
         binding.disagreeButton.setOnClickListener {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
             if (isEnabled) {
                 isEnabled = false
+                (activity as MainActivity).snapSEStart()
+                binding.tvFact.visibility = View.INVISIBLE
                 viewModel.sendAnswer(false)
             }
         }
-
         lobbyId.observe(viewLifecycleOwner) {
             viewModel.startGame(it)
         }
@@ -158,6 +144,7 @@ class MultiplayerGameFragment : Fragment() {
         // bind new fact
         viewModel.fact.observe(viewLifecycleOwner) {
             _binding?.tvFact?.text = it.text
+            binding.tvFact.visibility = View.VISIBLE
             isEnabled = true
         }
         // right answers counter
@@ -180,13 +167,17 @@ class MultiplayerGameFragment : Fragment() {
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
             Log.d("1", "answer coorect = : $isCorrect")
 
+            if (isCorrect) {
+                funkyAnimationCorrect()
+            }
+
             val typedValue = TypedValue()
             val theme = requireContext().theme
 
-            theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
+            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
             @ColorInt val colorCorrect = typedValue.data
 
-            theme.resolveAttribute(R.attr.colorSecondaryVariant, typedValue, true)
+            theme.resolveAttribute(R.attr.colorAccent, typedValue, true)
             @ColorInt val colorIncorrect = typedValue.data
 
             val startColor = if (isCorrect) {
@@ -212,9 +203,8 @@ class MultiplayerGameFragment : Fragment() {
         }
     }
 
-
-    fun funkyAnimationCorrect(){
-        if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).correctSE.start()
+    private fun funkyAnimationCorrect() {
+        (this.activity as MainActivity).correctSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_correct_answer)
         binding.singleGameAnimationText.text = congratsArray.random()
         binding.singleGameAnimationImage.startAnimation(animation)
@@ -239,14 +229,8 @@ class MultiplayerGameFragment : Fragment() {
             .commit()
     }
 
-    fun hideText() {
-        binding.tvFact.visibility = View.INVISIBLE
-    }
-    fun showText() {
-        binding.tvFact.visibility = View.VISIBLE
-    }
-
     companion object {
+        const val TAG = "MultiplayerGameFragment"
         const val KEY_LOBBY_ID = "KEY_LOBBY_ID"
         const val RIGHT_ANSWER_ANIMATION_DURATION = 200L
         const val IS_ANSWER_CORRECT_ANIMATION_DURATION = 2_000L
@@ -258,25 +242,20 @@ class MultiplayerGameFragment : Fragment() {
             duration: Long
         ) {
             try {
-            val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
-            animator.addUpdateListener { anim ->
-                binding?.tvTimer?.setTextColor(
-                    ColorUtils.blendARGB(
-                        startColor,
-                        endColor,
-                        anim.animatedFraction
+                val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+                animator.addUpdateListener { anim ->
+                    binding?.tvTimer?.setTextColor(
+                        ColorUtils.blendARGB(
+                            startColor,
+                            endColor,
+                            anim.animatedFraction
+                        )
                     )
-                )
+                }
+                animator.setDuration(duration).start()
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, e.message ?: "")
             }
-            animator.setDuration(duration).start()
-            } catch (e: IllegalStateException) { }
-        }
-
-        private fun getColor(colorId: Int, context: Context): Int {
-            return AppCompatResources.getColorStateList(
-                context,
-                colorId
-            ).defaultColor
         }
 
         // calls from MultiplayerGameFragment.kt to create this fragment

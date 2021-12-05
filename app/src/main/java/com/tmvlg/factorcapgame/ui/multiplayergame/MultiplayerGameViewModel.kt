@@ -9,11 +9,6 @@ import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.repository.fact.Fact
 import com.tmvlg.factorcapgame.data.repository.fact.FactRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseGameRepository
-import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
-import com.tmvlg.factorcapgame.data.repository.game.GameRepository
-import com.tmvlg.factorcapgame.data.repository.user.UserRepository
-import com.tmvlg.factorcapgame.ui.singlegame.SingleGameFragment
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -22,11 +17,8 @@ import kotlin.NoSuchElementException
 
 class MultiplayerGameViewModel(
     private val factRepository: FactRepository,
-    private val firebaseGameRepository: FirebaseGameRepository,
-    private val fragment: MultiplayerGameFragment
+    private val firebaseGameRepository: FirebaseGameRepository
 ) : ViewModel() {
-    private var firstFact = true
-
     private val _exception = MutableLiveData<IOException?>(null)
     val exception = _exception.map { it }
 
@@ -50,18 +42,16 @@ class MultiplayerGameViewModel(
     private val _factsLoadingState = MutableLiveData(true)
     val factsLoadingState = _factsLoadingState.map { it }
 
-    private var timeElapsed: Long = 0
     private var timeLeft: Long = GAME_DURATION_MS
 
     fun sendAnswer(answer: Boolean) = viewModelScope.launch {
         if (fact.value?.isTrue == answer) {
             _rightAnswersCount.postValue(rightAnswersCount.value?.plus(1))
-            fragment.funkyAnimationCorrect()
+            _isAnswerCorrect.postValue(true)
             timeLeft += EXTRA_TIME_FOR_RIGHT_ANSWER
-            _isAnswerCorrect.value = false
         } else {
+            _isAnswerCorrect.postValue(false)
             timeLeft -= LOST_TIME_FOR_WRONG_ANSWER
-            _isAnswerCorrect.value = true
         }
 //        _timeLeftFormatted.value = formatTime(timeLeft)
         getFact()
@@ -73,12 +63,6 @@ class MultiplayerGameViewModel(
             Log.d("1", "loadFactsList: ${_factsList.size}")
             try {
                 val fact = _factsList.pop()
-                if (!firstFact) {
-                    fragment.hideText()
-                    delay(800)
-                    fragment.showText()
-                }
-                else firstFact = false
                 _fact.postValue(fact)
                 break
             } catch (e: NoSuchElementException) {
@@ -113,20 +97,12 @@ class MultiplayerGameViewModel(
             _factsLoadingState.postValue(false)
         }
         startTimer()
-        startCountingGameDuration()
-    }
-
-    private fun startCountingGameDuration() = viewModelScope.launch {
-        do {
-            timeElapsed += MS_TENTH_DELAY
-            delay(MS_TENTH_DELAY.toLong())
-        } while (!_gameFinished.value!!)
     }
 
     private fun startTimer() = viewModelScope.launch {
         do {
             timeLeft -= MS_DELAY
-            _timeLeftFormatted.value = formatTime(timeLeft)
+            _timeLeftFormatted.postValue(formatTime(timeLeft))
             delay(MS_DELAY.toLong())
         } while (timeLeft > 0)
         _gameFinished.postValue(true)
@@ -139,16 +115,15 @@ class MultiplayerGameViewModel(
     }
 
     companion object {
-        const val MS_TENTH_DELAY = 100
-        const val MS_DELAY = 1000
-        const val MS_IN_MINUTE = 60000
-        const val MS_IN_SECOND = 1000
+        const val MS_DELAY = 100
+        const val MS_IN_SECOND = 1_000
         const val SECONDS_IN_MINUTE = 60
-        const val GAME_DURATION_MS = 120000L
-        const val EXTRA_TIME_FOR_RIGHT_ANSWER = 3000L
-        const val LOST_TIME_FOR_WRONG_ANSWER = 15000L
+        const val MS_IN_MINUTE = SECONDS_IN_MINUTE * MS_IN_SECOND
+        const val GAME_DURATION_MS = 120_000L
+        const val EXTRA_TIME_FOR_RIGHT_ANSWER = 3_000L
+        const val LOST_TIME_FOR_WRONG_ANSWER = 15_000L
         const val FACTS_TO_BE_LOADED_COUNT = 20
-        const val CHECK_TIME_IS_PLAYERS_LOADED = 2000L
+        const val CHECK_TIME_IS_PLAYERS_LOADED = 2_000L
         const val CHECK_TIME_IS_FACT_LOADED = 300L
     }
 }

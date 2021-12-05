@@ -30,16 +30,18 @@ class LeaderboardFragment : Fragment() {
 
         binding.pageContainer.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.fragment_change))
 
+        binding.returnButton.isSoundEffectsEnabled = false
+        binding.leaderboardRefreshButton.isSoundEffectsEnabled = false
+
         binding.returnButton.setOnClickListener() {
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
+            (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.main_fragment_container, MenuFragment())
                 .commit()
         }
-        binding.leaderboardRefreshButton.setOnClickListener(){
-            if ((this.activity as MainActivity).soundEnabled)(this.activity as MainActivity).snapSE.start()
-
+        binding.leaderboardRefreshButton.setOnClickListener() {
+            (activity as MainActivity).snapSEStart()
             viewModel.loadDataFromDB()
         }
         return binding.root

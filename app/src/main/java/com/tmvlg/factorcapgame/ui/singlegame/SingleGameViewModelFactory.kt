@@ -10,21 +10,18 @@ import com.tmvlg.factorcapgame.data.repository.user.UserRepository
 class SingleGameViewModelFactory(
     private val gameRepository: GameRepository,
     private val factRepository: FactRepository,
-    private val userRepository: UserRepository,
-    private val fragment: SingleGameFragment
+    private val userRepository: UserRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return try {
             modelClass.getConstructor(
                 GameRepository::class.java,
                 FactRepository::class.java,
-                UserRepository::class.java,
-                SingleGameFragment::class.java
+                UserRepository::class.java
             ).newInstance(
                 gameRepository,
                 factRepository,
-                userRepository,
-                fragment
+                userRepository
             )
         } catch (e: ReflectiveOperationException) {
             val exception = IllegalArgumentException("Unknown view model class $modelClass")

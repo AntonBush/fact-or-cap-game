@@ -12,8 +12,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.util.concurrent.atomic.AtomicReference
 
 class FirebaseLobbyRepository {
     private val database = Firebase.database
@@ -71,7 +73,7 @@ class FirebaseLobbyRepository {
     ) = withContext(Dispatchers.IO) {
         val lobbyRef = lobbiesRef.child(lobbyId)
         val lobbyPlayersRef = lobbyRef.child("players")
-        lobbyRef.get().addOnSuccessListener { lobbyData ->
+        val task = lobbyRef.get().addOnSuccessListener { lobbyData ->
             val lobbyPlayers = lobbyData.child("players").getValue<Map<String, Player.Mapped>>()
                 ?.map { Player.newInstance(it.key, it.value) }
                 ?: emptyList()
@@ -90,12 +92,15 @@ class FirebaseLobbyRepository {
             newPlayer.id = newPlayerKey
             lobbyPlayersRef.child(newPlayerKey).setValue(newPlayer.toMapped())
         }
+
+        while (!task.isComplete || !task.isComplete) {
+            delay(1)
+        }
     }
 
 // -------------------------------- LOOK ROOM -----------------------------------
 
-    private val _lobby = MutableLiveData<Lobby?>(null)
-    val lobby = _lobby.map { it }
+    val lobby = AtomicReference<Lobby?>(null)
 
     private var lobbyRef: DatabaseReference? = null
     private var lobbyEventListener: ValueEventListener? = null
@@ -109,11 +114,8 @@ class FirebaseLobbyRepository {
                     ?: throw IOException("lobby does not contain key")
                 val firebaseLobbyValue = firebaseLobby.getValue<Lobby.Mapped>()
                     ?: throw IOException("lobby does not contain value")
-                Log.d("LISTEN LOBBY", "${firebaseLobby.getValue<Map<String, Any?>>()}")
-                Log.d("LISTEN LOBBY", "$firebaseLobbyValue")
-                _lobby.postValue(
-                    Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue)
-                )
+
+                lobby.set(Lobby.newInstance(firebaseLobbyId, firebaseLobbyValue))
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -132,7 +134,7 @@ class FirebaseLobbyRepository {
         if (localLobbyEventListener != null) {
             val lr = lobbyRef ?: throw IllegalStateException("lobbyRef is null")
             lr.removeEventListener(localLobbyEventListener)
-            _lobby.postValue(null)
+            lobby.set(null)
         }
     }
 
@@ -178,6 +180,7 @@ class FirebaseLobbyRepository {
             .setValue(System.currentTimeMillis())
     }
 
+    @WorkerThread
     fun removePlayer(lobbyId: String, userId: String) {
         lobbiesRef.child(lobbyId)
             .child("players")

@@ -79,10 +79,7 @@ object FactOrCapAuth {
 
         firebaseAuth.signOut()
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(activity.getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+        val gso = getGso(activity)
 
         GoogleSignIn.getClient(activity.applicationContext, gso)
             .signOut()

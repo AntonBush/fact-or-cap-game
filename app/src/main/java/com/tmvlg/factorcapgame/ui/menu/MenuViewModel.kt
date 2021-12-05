@@ -1,11 +1,14 @@
 package com.tmvlg.factorcapgame.ui.menu
 
+import android.content.Context
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
+import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import kotlinx.coroutines.launch
 
@@ -39,6 +42,10 @@ class MenuViewModel(
         FactOrCapAuth.signOut(activity)
     }
 
+    fun turnVolume(turnOnVolume: Boolean, context: Context) = viewModelScope.launch {
+        PreferenceProvider(context).turnVolume(turnOnVolume)
+    }
+
     fun createLobby(roomName: String) = viewModelScope.launch {
         try {
             val roomId = firebaseLobbyRepository.createLobby(
@@ -46,6 +53,7 @@ class MenuViewModel(
                 roomName
             )
             _errorMessage.postValue(null)
+            Log.d(TAG, "create lobby id: $roomId")
             createdLobbyId.postValue(roomId)
         } catch (e: IllegalStateException) {
             _errorMessage.postValue(e.message)
