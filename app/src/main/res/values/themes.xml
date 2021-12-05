@@ -52,12 +52,16 @@
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="colorPrimary">@color/secondary_green</item>
         <item name="colorSecondary">@color/secondary_green</item>
-        <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/font_color</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.ButtonPositive</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.ButtonNegative</item>
+    </style>
+    
+    <style name="TextInputLayoutTheme" parent="Widget.Design.TextInputLayout">
+        <item name="colorPrimary">@color/offline_indicator_color</item>
+        <item name="colorOnSurface">@color/font_color</item>
     </style>
 
 

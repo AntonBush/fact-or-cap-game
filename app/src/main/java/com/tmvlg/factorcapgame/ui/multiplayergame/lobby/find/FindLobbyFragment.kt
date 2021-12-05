@@ -46,17 +46,16 @@ class FindLobbyFragment : Fragment() {
         object : LobbyListAdapter.OnSelectedListener {
             override fun onSelected(binding: LobbyBinding, isSelected: Boolean) {
                 with(binding.lobbyItem) {
+    private val lobbyListSection = ListSection<Lobby>()
+    private val lobbyListAdapter = newLobbyListAdapter(
+        object : LobbyBinder.OnLobbySelectedListener {
+            override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
+                with(binding.bgLayout) {
                     Log.d("FindLobby", "OnSelect: $isSelected")
-                    background = if (isSelected) {
-                        AppCompatResources.getDrawable(
-                            context,
-                            R.color.primary_red
-                        )
+                    if (isSelected) {
+                        setSelected(true)
                     } else {
-                        AppCompatResources.getDrawable(
-                            context,
-                            R.color.transparent
-                        )
+                        setSelected(false)
                     }
                 }
             }

@@ -39,7 +39,6 @@
         <!-- Wallpapers. -->
         <item name="android:windowBackground">@color/c5</item>
 
-        <item name="colorBackgroundFloating">@color/c5</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
 
     </style>
@@ -53,14 +52,20 @@
 
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
-        <item name="colorPrimary">@color/c1</item>
+        <item name="colorPrimary">@color/c9</item>
         <item name="colorSecondary">@color/c1</item>
-        <item name="colorSurface">@color/c6</item>
-        <item name="colorOnSurface">@color/c7</item>
+        <item name="colorOnSurface">@color/white</item>
         <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
-        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.App.ButtonPositiveDark</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.App.ButtonNegativeDark</item>
+    </style>
+
+    <style name="TextInputLayoutTheme" parent="Widget.Design.TextInputLayout">
+        <item name="colorPrimary">@color/c6</item>
+        <item name="colorOnPrimary">@color/font_color</item>
+        <item name="colorOnSurface">?attr/colorControlNormal</item>
+
     </style>
 
 

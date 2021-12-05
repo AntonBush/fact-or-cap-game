@@ -18,9 +18,10 @@
             android:backgroundTint="@color/transparent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bg_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/game_history_item"
+                android:background="@drawable/lobby_item_selectable"
                 android:padding="7dp">
 
             <TextView

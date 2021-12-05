@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/game_container">
+
     <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -18,7 +19,8 @@
             android:layout_marginBottom="36dp"
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             app:layout_constraintTop_toBottomOf="@+id/score_container"
-            app:layout_constraintBottom_toTopOf="@id/agree_button">
+            app:layout_constraintBottom_toTopOf="@id/agree_button"
+            android:id="@+id/scrollView3">
 
 
         <TextView
@@ -90,21 +92,21 @@
             app:layout_constraintRight_toRightOf="parent">
 
     </ImageButton>
+
     <ImageView
             android:id="@+id/single_game_animation_image"
             android:visibility="invisible"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="175dp"
+            android:layout_height="175dp"
             android:background="@drawable/green_round_background"
             android:src="@drawable/ic_agree"
             android:contentDescription="correct answer"
             tools:ignore="TouchTargetSizeCheck"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="50dp"
-            />
+            app:layout_constraintBottom_toTopOf="@+id/agree_button" />
+
     <TextView
             android:id="@+id/single_game_animation_text"
             android:layout_width="match_parent"
@@ -112,12 +114,13 @@
             tools:text="The sharks are dangerous birds"
             android:textSize="40sp"
             android:fontFamily="@font/norwester"
-            android:textColor="@color/font_color"
+            android:textColor="?attr/textAppearanceHeadline2"
             android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@id/single_game_animation_image"
             android:visibility="invisible"
-            android:layout_marginTop="15dp"
-            />
+            android:layout_marginTop="25dp"
+            app:layout_constraintEnd_toEndOf="@+id/single_game_animation_image"
+            app:layout_constraintStart_toStartOf="@+id/single_game_animation_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
