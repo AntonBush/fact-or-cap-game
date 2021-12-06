@@ -2,15 +2,19 @@ package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
+import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragmentTest.Companion.menuElems
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.IOException
 
 
 @RunWith(AndroidJUnit4::class)
@@ -30,10 +34,20 @@ class FindLobbyFragmentTest : BaseTest(){
                 .commit()
         }
 
+        val database = Firebase.database
+        val lobbiesRef = database.getReference("Lobbies")
+        val newLobby = Lobby(
+            hostName = "TEST",
+            name = "TEST_ROOM"
+        )
+        val newLobbyKey = lobbiesRef.push().key ?: throw IOException("can't add new lobby")
+        lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMapped()))
     }
+
 
     @Test
     fun elementsFindLobbyIsDisplayed(){
+        Thread.sleep(10000)
         checkDisplayedAll(*findLobbyElems)
     }
 
@@ -53,7 +67,6 @@ class FindLobbyFragmentTest : BaseTest(){
         val findLobbyElems = intArrayOf(
             R.id.tv_join_lobby,
             R.id.find_lobby_edittext,
-            R.id.menu_button,
             R.id.join_button,
             R.id.return_button
         )
