@@ -13,84 +13,86 @@
             android:id="@+id/page_container">
 
 
+        <ImageButton
+                android:id="@+id/return_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:padding="14dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/green_round_background"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_return"
+                android:contentDescription="@string/go_back_previous_tab"
+                tools:ignore="TouchTargetSizeCheck" />
 
-    <ImageButton
-            android:id="@+id/return_button"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="14dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/green_round_background"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_return"
-            android:contentDescription="@string/go_back_previous_tab"
-            tools:ignore="TouchTargetSizeCheck" />
+        <TextView
+                android:id="@+id/tv_join_lobby"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/join_lobby"
+                android:textSize="45sp"
+                android:fontFamily="@font/norwester"
+                android:textColor="?attr/textAppearanceHeadline2"
+                android:maxLines="1"
+                app:autoSizeTextType="uniform"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/return_button"
+                android:layout_marginTop="18dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginEnd="18dp"
+                android:layout_marginBottom="18dp" />
 
-    <TextView
-            android:id="@+id/tv_join_lobby"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/join_lobby"
-            android:textSize="45sp"
-            android:layout_margin="18dp"
-            android:fontFamily="@font/norwester"
-            android:textColor="?attr/textAppearanceHeadline2"
-            android:maxLines="1"
-            app:autoSizeTextType="uniform"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/return_button" />
+        <EditText
+                android:id="@+id/find_lobby_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:hint="@string/type_here_string"
+                android:textColorHint="?attr/colorOnSecondary"
+                android:inputType="text"
+                android:autofillHints="name"
+                android:maxLines="1"
+                android:imeOptions="actionDone"
+                android:textSize="25sp"
+                android:textColor="?attr/textAppearanceHeadline2"
+                android:drawableStart="@drawable/search_toggle_icon"
+                android:drawablePadding="12dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="72dp"
+                android:background="@drawable/edit_text_background"
+                android:layout_below="@id/tv_join_lobby"
+                android:layout_marginTop="12dp" />
 
-    <EditText
-            android:id="@+id/find_lobby_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:hint="@string/type_here_string"
-            android:textColorHint="?attr/colorOnSecondary"
-            android:inputType="text"
-            android:autofillHints="name"
-            android:maxLines="1"
-            android:imeOptions="actionDone"
-            android:textSize="25sp"
-            android:textColor="?attr/textAppearanceHeadline2"
-            android:drawableStart="@drawable/search_toggle_icon"
-            android:drawablePadding="12dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="72dp"
-            android:background="@drawable/edit_text_background"
-            android:layout_below="@id/tv_join_lobby"
-            android:layout_marginTop="12dp" />
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/find_lobby_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="18dp"
+                tools:listitem="@layout/lobby"
+                tools:itemCount="10"
+                android:layout_below="@id/find_lobby_edittext"
+                android:layout_above="@id/join_button"
+                android:layout_centerHorizontal="true" />
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/find_lobby_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_marginBottom="18dp"
-            tools:listitem="@layout/lobby"
-            tools:itemCount="10"
-            android:layout_below="@id/find_lobby_edittext"
-            android:layout_above="@id/join_button"
-            android:layout_centerHorizontal="true" />
-
-    <Button
-            android:id="@+id/join_button"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            app:cornerRadius="80dp"
-            android:textAllCaps="false"
-            android:letterSpacing="0"
-            android:padding="13dp"
-            android:text="@string/join"
-            android:textSize="35sp"
-            android:textColor="?attr/textAppearanceHeadline2"
-            android:fontFamily="@font/norwester"
-            android:src="@drawable/green_round_background"
-            android:theme="@style/Button.Main"
-            android:maxLines="1"
-            app:autoSizeTextType="uniform"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
+        <Button
+                android:id="@+id/join_button"
+                android:layout_width="270dp"
+                android:layout_height="wrap_content"
+                app:cornerRadius="80dp"
+                android:textAllCaps="false"
+                android:letterSpacing="0"
+                android:padding="13dp"
+                android:text="@string/join"
+                android:textSize="35sp"
+                android:textColor="?attr/textAppearanceHeadline2"
+                android:fontFamily="@font/norwester"
+                android:src="@drawable/green_round_background"
+                android:theme="@style/Button.Main"
+                android:maxLines="1"
+                app:autoSizeTextType="uniform"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
 </RelativeLayout>
