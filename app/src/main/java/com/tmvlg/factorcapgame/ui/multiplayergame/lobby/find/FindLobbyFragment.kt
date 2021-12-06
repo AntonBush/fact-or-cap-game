@@ -146,7 +146,6 @@ class FindLobbyFragment : Fragment() {
         val text = textString ?: binding.findLobbyEdittext.text?.toString() ?: return
         val lobbies = lobbyList ?: viewModel.lobbies.value ?: return
         val regex = text.toRegex(RegexOption.IGNORE_CASE)
-        Log.d("CHANGE_PLAYER_COUNT", "$lobbies")
         lobbyListAdapter.submitList(
             lobbies.filter { lobby ->
                 return@filter regex.containsMatchIn(lobby.name)

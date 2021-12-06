@@ -15,25 +15,30 @@ class PingThread(
     private val username: String
 ) {
     var interrupted = false
+    var isStarted = AtomicReference(false)
     var lobby = AtomicReference<Lobby?>(null)
 
     private suspend fun run() {
         while (!interrupted) {
-            delay(SLEEP_TIME_MILLIS)
-
             val lobby = lobby.get()
-
-            Log.d("PING_THREAD", "${lobby?.id}")
-
             val player = lobby?.players?.find { it.name == username }
-
-            if (lobby == null || player == null) {
+            if (lobby != null && player != null) {
+//                Log.d("PING_THREAD", "NON_NULL")
+                doStuff(lobby, player)
+//                Log.d("PING_THREAD", "IF")
+                if (!isStarted.get()) {
+                    isStarted.set(true)
+                }
+                doHostStuff(lobby, player)
+            } else {
+//                Log.d("PING_THREAD", "SHORT")
+                delay(SHORT_SLEEP_TIME_MILLIS)
                 continue
             }
 
-            doStuff(lobby, player)
-            doHostStuff(lobby, player)
+            delay(SLEEP_TIME_MILLIS)
         }
+        isStarted.set(false)
     }
 
     suspend fun start() {
@@ -83,6 +88,7 @@ class PingThread(
         }
 
         const val SLEEP_TIME_MILLIS = 1_000L
+        const val SHORT_SLEEP_TIME_MILLIS = 50L
         const val PLAYER_TIMEOUT_MILLIS = 10_000L
     }
 }

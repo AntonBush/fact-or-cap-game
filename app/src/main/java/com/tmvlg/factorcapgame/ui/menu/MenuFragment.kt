@@ -189,13 +189,8 @@ class MenuFragment : Fragment() {
             (activity as MainActivity).snapSEStart()
             isEnabled = false
             // Calling toggle mpb function
-            Log.d(
-                "-----------------------",
-                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
-            )
             if (viewModel.isUserSignedIn.value == true) {
                 toggleMultiplayerButton()
-                Log.d("-------------------tog-", "")
                 isEnabled = true
             } else {
                 createDialog(

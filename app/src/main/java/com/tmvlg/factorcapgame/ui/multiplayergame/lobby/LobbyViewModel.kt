@@ -13,7 +13,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.concurrent.thread
 
 class LobbyViewModel(
     private val firebaseLobbyRepository: FirebaseLobbyRepository
@@ -30,9 +29,16 @@ class LobbyViewModel(
     }
 
     private val _lobby = MutableLiveData<Lobby>(null)
-    val lobby = _lobby.map { it }
+    val lobby = _lobby.map {
+        return@map if (isLoaded.value == true) {
+            it
+        } else {
+            null
+        }
+    }
     val isHost = lobby.map { it?.hostName == username }
 
+    private val isLoaded = MutableLiveData(false)
     val isGameStarted = lobby.map {
         it?.started ?: false
     }
@@ -49,6 +55,21 @@ class LobbyViewModel(
         username
     )
 
+    // DEBUG
+//    fun debugTime(tag: String, condition: () -> Boolean, delayDuration: Long) =
+//        viewModelScope.launch {
+//            withContext(Dispatchers.IO) {
+//                val startTime = System.nanoTime()
+//                while (condition()) {
+//                    val elapsedTime = (System.nanoTime() - startTime) / NANOS_IN_MILLIS
+//                    Log.d("TIME ELAPSED: $elapsedTime", tag)
+//                    delay(delayDuration)
+//                }
+//                val elapsedTime = (System.nanoTime() - startTime) / NANOS_IN_MILLIS
+//                Log.d("TOTAL TIME ELAPSED: $elapsedTime", tag)
+//            }
+//        }
+
     fun listenLobby(lobbyId: String) = viewModelScope.launch {
         firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
         firebaseLobbyRepository.listenLobby(lobbyId)
@@ -56,6 +77,22 @@ class LobbyViewModel(
         pingThread.interrupted = false
         pingJob = viewModelScope.launch {
             pingThread.start()
+        }
+
+        // DEBUG
+//        debugTime("START_PING", { isLoaded.value != true }, 10)
+//        debugTime("FIRST_NON_LOBBY", { firebaseLobbyRepository.lobby.get() == null }, 10)
+//        debugTime("LOCAL_FIRST_NON_LOBBY", { _lobby.value == null }, 10)
+//        debugTime("PING", { pingThread.lobby.get() == null }, 10)
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                while (!pingThread.interrupted && !pingThread.isStarted.get()) {
+                    delay(PingThread.SHORT_SLEEP_TIME_MILLIS)
+                }
+                isLoaded.postValue(true)
+                Log.d(TAG, "Ping loaded")
+            }
         }
         Log.d("LobbyViewModel", "Before receive job launched")
         receivingJob = viewModelScope.launch {
@@ -68,9 +105,11 @@ class LobbyViewModel(
                         pingThread.lobby.set(receivedLobby)
                     }
 
-                    Log.d("RECEIVING_JOB", "${receivedLobby?.id}")
-
-                    delay(PingThread.SLEEP_TIME_MILLIS)
+                    if (!pingThread.isStarted.get()) {
+                        delay(SHORT_SLEEP_TIME_MILLIS)
+                    } else {
+                        delay(SLEEP_TIME_MILLIS)
+                    }
                 }
             }
         }
@@ -88,6 +127,7 @@ class LobbyViewModel(
             job.cancel()
             receivingJob = null
         }
+        isLoaded.postValue(false)
         firebaseLobbyRepository.stopListenLobby()
     }
 
@@ -116,5 +156,8 @@ class LobbyViewModel(
 
     companion object {
         const val TAG = "LobbyViewModel"
+        const val NANOS_IN_MILLIS = 1_000_000L
+        const val SLEEP_TIME_MILLIS = 300L
+        const val SHORT_SLEEP_TIME_MILLIS = 30L
     }
 }
