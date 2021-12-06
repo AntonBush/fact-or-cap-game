@@ -5,7 +5,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.MainActivity
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -13,7 +12,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class StatisticsFragmentTest : BaseTest(){
-
 
 
     @get:Rule
