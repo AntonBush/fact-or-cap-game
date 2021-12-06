@@ -96,7 +96,7 @@ class SingleGameFragment : Fragment() {
         // throws exception if can't fetch a fact for some reason
         viewModel.exception.observe(viewLifecycleOwner) { e ->
             if (e != null) {
-                Toast.makeText(this.context, e.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.main_fragment_container, NoInternetFragment())
                     .commit()
