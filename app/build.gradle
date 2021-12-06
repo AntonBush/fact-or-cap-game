@@ -108,4 +108,11 @@ dependencies {
     // RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
+
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    implementation "androidx.fragment:fragment-ktx:1.4.0"
+    debugImplementation "androidx.fragment:fragment-testing:1.4.0"
 }
