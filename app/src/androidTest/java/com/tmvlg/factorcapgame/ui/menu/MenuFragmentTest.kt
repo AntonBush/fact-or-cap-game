@@ -9,11 +9,11 @@ import com.tmvlg.factorcapgame.ui.MainActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
+import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragmentTest.Companion.leaderboardElems
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragmentTest.Companion.statisticElems
 
 
@@ -63,6 +63,12 @@ class MenuFragmentTest : BaseTest() {
         }
     }
 
+    @Test
+    fun testGoToLeaderboard(){
+        click(R.id.leaderboard_button)
+        Thread.sleep(5000)
+        checkDisplayedAll(*leaderboardElems)
+    }
 
 
 fun isConnected(context: Context): Boolean {
