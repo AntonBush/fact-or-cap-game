@@ -3,41 +3,23 @@ package com.tmvlg.factorcapgame.ui.menu
 import android.content.Context
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.tmvlg.factorcapgame.ActionsForTests
+import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.MainActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.net.NetworkInfo
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
+import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragmentTest.Companion.statisticElems
 
 
 @RunWith(AndroidJUnit4::class)
-class MenuFragmentTest : ActionsForTests() {
+class MenuFragmentTest : BaseTest() {
 
-    private val statisticsElems = intArrayOf(
-        R.id.return_button,
-        R.id.statistics_header,
-        R.id.total_games_text,
-        R.id.total_games_value,
-        R.id.highest_score_text,
-        R.id.highest_score_value,
-        R.id.last_score_text,
-        R.id.last_score_value,
-        R.id.average_score_text,
-        R.id.average_score_value,
-        R.id.your_games_header,
-        R.id.games_toggle_button,
-//        R.id.games_statistics_list
-//        R.id.score,
-//        R.id.duration,
-//        R.id.date
-    )
 
     private val singleGameElems : IntArray = intArrayOf(
         R.id.agree_button,
@@ -46,27 +28,39 @@ class MenuFragmentTest : ActionsForTests() {
         R.id.tv_fact
     )
 
+    private val noInternetElems : IntArray = intArrayOf(
+        R.id.tv_error_message,
+        R.id.error_icon,
+        R.id.tv_error_description,
+        R.id.menu_button
+    )
+
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
 
 
     @Test
-    fun testGoToStatic() {
+    fun menuIsDisplayed(){
+        checkDisplayedAll(*menuElems)
+    }
+
+    @Test
+    fun testGoToStatic(){
         click(R.id.stat_button)
-        checkDisplayedAll(*statisticsElems)
+        checkDisplayedAll(*statisticElems)
     }
 
 
     @Test
-    fun testGoToSingleGame(){
+    fun testGoToSingleGameWithOrNoInternet(){
         click(R.id.single_game_button)
-        checkDisplayedAll(*singleGameElems)
-    }
-
-    @Test
-    fun testNoInternet(){
-        assert(isConnected(ApplicationProvider.getApplicationContext()))
+        if (isConnected(ApplicationProvider.getApplicationContext())){
+            checkDisplayedAll(*singleGameElems)
+        }
+        else{
+            checkDisplayedAll(*noInternetElems)
+        }
     }
 
 
@@ -87,5 +81,18 @@ fun isConnected(context: Context): Boolean {
         return nwInfo.isConnected
     }
 }
+
+
+    companion object {
+        val menuElems = intArrayOf(
+            R.id.game_logo_textview,
+            R.id.single_game_button,
+            R.id.multiplayer_game_button,
+            R.id.stat_button,
+            R.id.leaderboard_button,
+            R.id.change_volume_button,
+            R.id.status_buttons_layout
+        )
+    }
 
 }

@@ -7,7 +7,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 
 
-open class ActionsForTests {
+open class BaseTest {
 
     fun click(btn: Int){
         onView(withId(btn)).perform(click())
