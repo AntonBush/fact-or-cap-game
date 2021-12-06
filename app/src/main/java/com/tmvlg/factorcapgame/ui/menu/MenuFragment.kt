@@ -211,9 +211,9 @@ class MenuFragment : Fragment() {
             val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
             createDialog(
                 DialogParams(
-                    "Create room",
-                    "Please, enter room name",
-                    "Create room",
+                    "Create Room",
+                    null,
+                    "Create",
                     "Cancel"
                 )
             ) { viewModel.createLobby(b.editRoomName.text.toString()) }
@@ -352,7 +352,7 @@ class MenuFragment : Fragment() {
 
     private data class DialogParams(
         val title: String,
-        val message: String,
+        val message: String?,
         val positiveButtonText: String,
         val negativeButtonText: String
     )
