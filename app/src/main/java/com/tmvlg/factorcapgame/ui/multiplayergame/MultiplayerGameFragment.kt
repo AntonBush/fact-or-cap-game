@@ -131,7 +131,7 @@ class MultiplayerGameFragment : Fragment() {
         // throws exception if can't fetch a fact for some reason
         viewModel.exception.observe(viewLifecycleOwner) { e ->
             if (e != null) {
-                Toast.makeText(this.context, e.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
             }
         }
         // observes if game finished (timer is 00:00)
@@ -204,7 +204,7 @@ class MultiplayerGameFragment : Fragment() {
     }
 
     private fun funkyAnimationCorrect() {
-        (this.activity as MainActivity).correctSEStart()
+        (activity as MainActivity).correctSEStart()
         val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.game_correct_answer)
         binding.singleGameAnimationText.text = congratsArray.random()
         binding.singleGameAnimationImage.startAnimation(animation)

@@ -78,7 +78,7 @@ class MenuFragment : Fragment() {
             )
         )
 
-        if (!(this.activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(
+        if (!(activity as MainActivity).soundEnabled) binding.changeVolumeButton.setImageResource(
             R.drawable.ic_volume_off
         )
 

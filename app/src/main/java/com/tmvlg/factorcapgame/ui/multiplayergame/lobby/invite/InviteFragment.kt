@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -78,6 +79,10 @@ class InviteFragment : Fragment() {
         binding.confirmButton.isSoundEffectsEnabled = false
         binding.searchButton.isSoundEffectsEnabled = false
 
+        binding.findUsersEdittext.addTextChangedListener { text ->
+            val t = text?.toString() ?: return@addTextChangedListener
+            searchUser(t)
+        }
         binding.returnButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager
@@ -97,18 +102,16 @@ class InviteFragment : Fragment() {
 
         binding.searchButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
-            val query = binding.findUsersEdittext.text
-            viewModel.findPlayers(query.toString())
+            searchUser()
             try {
                 val imm = requireActivity()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE)
-                    as InputMethodManager
+                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(
                     requireActivity().currentFocus?.windowToken,
                     0
                 )
             } catch (e: IllegalStateException) {
-                TODO("Handle exception")
+                Log.w("InviteFragment", e.message ?: "")
             }
         }
 
@@ -122,6 +125,11 @@ class InviteFragment : Fragment() {
         }
 
         observeViewModel()
+    }
+
+    private fun searchUser(text: String? = null) {
+        val query = text ?: binding.findUsersEdittext.text?.toString() ?: return
+        viewModel.findPlayers(query)
     }
 
     private fun observeViewModel() {

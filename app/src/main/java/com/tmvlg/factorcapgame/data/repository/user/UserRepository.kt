@@ -63,24 +63,26 @@ class UserRepository(
         val usersReference = db.collection("users")
         val players = mutableListOf<Player>()
         val searchedPlayers = usersReference.orderBy("username")
-            .startAt(query.trim())
-            .endAt(query.trim() + '\uf8ff')
-            .limit(SEARCH_FOR_PLAYERS_LIMIT)
-        searchedPlayers.get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                for (document in task.result) {
-                    val username = document.data.get("username").toString()
-                    val player = Player()
-                    player.name = username
+//            .startAt(q)
+//            .endAt(q + '\uf8ff')
+//            .limit(SEARCH_FOR_PLAYERS_LIMIT)
+        searchedPlayers.get().addOnSuccessListener { result ->
+            val regex = query.lowercase().toRegex()
+            for (document in result) {
+                val username = document.data["username"].toString()
+                val player = Player()
+                player.name = username
+                if (regex.containsMatchIn(username.lowercase())) {
                     players.add(player)
-                    Log.d("1", "getPlayers: $username")
                 }
-                playersLD.postValue(players)
+                Log.d(TAG, "getPlayers: $username")
             }
+            playersLD.postValue(players)
         }
     }
 
     companion object {
-        const val SEARCH_FOR_PLAYERS_LIMIT = 3L
+        const val TAG = "UserRepository"
+//        const val SEARCH_FOR_PLAYERS_LIMIT = 3L
     }
 }
