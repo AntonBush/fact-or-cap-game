@@ -2,9 +2,7 @@ package com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.databinding.LobbyBinding
 
@@ -13,6 +11,7 @@ class LobbyListAdapter(
 ) : ListAdapter<Lobby, LobbyListAdapter.LobbyViewHolder>(LobbyDiffCallback()) {
     var selectedId: String? = null
         private set
+    private var selectedPosition = RecyclerView.NO_POSITION
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LobbyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -27,8 +26,13 @@ class LobbyListAdapter(
             binding.host.text = lobby.hostName
             binding.playersNumber.text = lobby.players.size.toString()
             binding.root.setOnClickListener {
+                val oldPositionSelection = selectedPosition
+                selectedPosition = holder.bindingAdapterPosition
                 selectedId = lobby.id
-                notifyItemRangeChanged(0, itemCount)
+                notifyItemChanged(holder.bindingAdapterPosition)
+                if (oldPositionSelection != selectedPosition) {
+                    notifyItemChanged(oldPositionSelection)
+                }
             }
             onLobbySelectedListener?.onLobbySelected(binding, selectedId == lobby.id)
         }
@@ -40,20 +44,17 @@ class LobbyListAdapter(
 
     class LobbyDiffCallback : DiffUtil.ItemCallback<Lobby>() {
         override fun areItemsTheSame(oldItem: Lobby, newItem: Lobby): Boolean {
-            return oldItem.name == newItem.name &&
-                oldItem.hostName == newItem.hostName &&
-                oldItem.players.size == oldItem.players.size
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Lobby, newItem: Lobby): Boolean {
-            return oldItem.name == newItem.name &&
-                oldItem.hostName == newItem.hostName &&
-                oldItem.players.size == oldItem.players.size
-
+            return oldItem.name == newItem.name
+                    && oldItem.hostName == newItem.hostName
+                    && oldItem.players.size == newItem.players.size
         }
     }
 
-    interface OnLobbySelectedListener {
+    fun interface OnLobbySelectedListener {
         fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean)
     }
 }

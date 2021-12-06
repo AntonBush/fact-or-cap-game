@@ -20,14 +20,6 @@ class FindLobbyViewModel(
     private val filteredLobbies = MutableLiveData<List<Lobby>>(emptyList())
     val lobbies = filteredLobbies.map { it }
 
-//        firebaseLobbyRepository.lobbyList.map { lobbyList ->
-//        val currentMillis = System.currentTimeMillis()
-//        return@map lobbyList.filter {
-//            return@filter (currentMillis - it.lastTimeHostPing < LOBBY_TIMEOUT_MILLIS)
-//                    && !it.started
-//        }
-//    }
-
     val connectedLobbyId = MutableLiveData<String?>(null)
 
     var filteringThread: FilteringThread? = null
