@@ -1,6 +1,5 @@
 package com.tmvlg.factorcapgame.ui
 
-import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
@@ -11,9 +10,6 @@ import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.data.preferences.PreferenceProvider
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity() {
     val launcher = FactOrCapAuth.SignInLauncher.newInstance(this)

@@ -125,7 +125,6 @@ class LobbyFragment : Fragment() {
             listAdapter.submitList(lobby.players)
         }
         viewModel.isHost.observe(viewLifecycleOwner) { isHost ->
-            Log.d("LobbyFragment", "isHost: $isHost")
             listAdapter.isHost = isHost
             if (isHost) {
                 binding.startButton.visibility = View.VISIBLE
@@ -139,13 +138,13 @@ class LobbyFragment : Fragment() {
             }
         }
         viewModel.isGameStarted.observe(viewLifecycleOwner) { isGameStarted ->
-            Log.d("LobbyFragment", "IS STARTED : $isGameStarted")
             if (isGameStarted) {
                 goTo(MultiplayerGameFragment.newInstance(lobbyId))
             }
         }
         viewModel.isDisconnected.observe(viewLifecycleOwner) { isDisconnected ->
             if (isDisconnected == true) {
+                Log.i(TAG, "Disconnected")
                 MaterialAlertDialogBuilder(
                     requireContext(),
                     R.style.ThemeOverlay_App_MaterialAlertDialog

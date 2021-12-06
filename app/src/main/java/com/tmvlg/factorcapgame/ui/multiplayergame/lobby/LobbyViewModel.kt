@@ -29,9 +29,16 @@ class LobbyViewModel(
     }
 
     private val _lobby = MutableLiveData<Lobby>(null)
-    val lobby = _lobby.map { it }
+    val lobby = _lobby.map {
+        return@map if (isLoaded.value == true) {
+            it
+        } else {
+            null
+        }
+    }
     val isHost = lobby.map { it?.hostName == username }
 
+    private val isLoaded = MutableLiveData(false)
     val isGameStarted = lobby.map {
         it?.started ?: false
     }
@@ -42,19 +49,51 @@ class LobbyViewModel(
     }
 
     private var receivingJob: Job? = null
-    private var pingThread: PingThread? = null
+    private var pingJob: Job? = null
+    private val pingThread = PingThread(
+        firebaseLobbyRepository,
+        username
+    )
+
+    // DEBUG
+//    fun debugTime(tag: String, condition: () -> Boolean, delayDuration: Long) =
+//        viewModelScope.launch {
+//            withContext(Dispatchers.IO) {
+//                val startTime = System.nanoTime()
+//                while (condition()) {
+//                    val elapsedTime = (System.nanoTime() - startTime) / NANOS_IN_MILLIS
+//                    Log.d("TIME ELAPSED: $elapsedTime", tag)
+//                    delay(delayDuration)
+//                }
+//                val elapsedTime = (System.nanoTime() - startTime) / NANOS_IN_MILLIS
+//                Log.d("TOTAL TIME ELAPSED: $elapsedTime", tag)
+//            }
+//        }
 
     fun listenLobby(lobbyId: String) = viewModelScope.launch {
         firebaseLobbyRepository.addPlayerToLobby(username, lobbyId)
         firebaseLobbyRepository.listenLobby(lobbyId)
 
-        val thread = PingThread(
-            firebaseLobbyRepository,
-            username
-        )
-        thread.start()
-        pingThread = thread
+        pingThread.interrupted = false
+        pingJob = viewModelScope.launch {
+            pingThread.start()
+        }
 
+        // DEBUG
+//        debugTime("START_PING", { isLoaded.value != true }, 10)
+//        debugTime("FIRST_NON_LOBBY", { firebaseLobbyRepository.lobby.get() == null }, 10)
+//        debugTime("LOCAL_FIRST_NON_LOBBY", { _lobby.value == null }, 10)
+//        debugTime("PING", { pingThread.lobby.get() == null }, 10)
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                while (!pingThread.interrupted && !pingThread.isStarted.get()) {
+                    delay(PingThread.SHORT_SLEEP_TIME_MILLIS)
+                }
+                isLoaded.postValue(true)
+                Log.d(TAG, "Ping loaded")
+            }
+        }
         Log.d("LobbyViewModel", "Before receive job launched")
         receivingJob = viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -63,28 +102,32 @@ class LobbyViewModel(
 
                     if (receivedLobby != null) {
                         _lobby.postValue(receivedLobby)
-                        thread.lobby.set(receivedLobby)
+                        pingThread.lobby.set(receivedLobby)
                     }
 
-                    delay(PingThread.SLEEP_TIME_MILLIS)
+                    if (!pingThread.isStarted.get()) {
+                        delay(SHORT_SLEEP_TIME_MILLIS)
+                    } else {
+                        delay(SLEEP_TIME_MILLIS)
+                    }
                 }
             }
         }
-
         Log.d("LobbyViewModel", "Listen lobby end")
     }
 
     fun stopListenLobby() = viewModelScope.launch {
-        val thread = pingThread
-        if (thread != null) {
-            thread.interrupt()
-            pingThread = null
+        val ping = pingJob
+        if (ping != null) {
+            pingThread.interrupt()
+            ping.join()
         }
         val job = receivingJob
         if (job != null) {
             job.cancel()
             receivingJob = null
         }
+        isLoaded.postValue(false)
         firebaseLobbyRepository.stopListenLobby()
     }
 
@@ -113,5 +156,8 @@ class LobbyViewModel(
 
     companion object {
         const val TAG = "LobbyViewModel"
+        const val NANOS_IN_MILLIS = 1_000_000L
+        const val SLEEP_TIME_MILLIS = 300L
+        const val SHORT_SLEEP_TIME_MILLIS = 30L
     }
 }

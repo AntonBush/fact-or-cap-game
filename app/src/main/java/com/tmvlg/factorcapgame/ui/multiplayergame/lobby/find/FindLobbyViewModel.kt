@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
@@ -20,14 +19,6 @@ class FindLobbyViewModel(
     val dummyLobbies = originLobbies.map { it }
     private val filteredLobbies = MutableLiveData<List<Lobby>>(emptyList())
     val lobbies = filteredLobbies.map { it }
-
-//        firebaseLobbyRepository.lobbyList.map { lobbyList ->
-//        val currentMillis = System.currentTimeMillis()
-//        return@map lobbyList.filter {
-//            return@filter (currentMillis - it.lastTimeHostPing < LOBBY_TIMEOUT_MILLIS)
-//                    && !it.started
-//        }
-//    }
 
     val connectedLobbyId = MutableLiveData<String?>(null)
 

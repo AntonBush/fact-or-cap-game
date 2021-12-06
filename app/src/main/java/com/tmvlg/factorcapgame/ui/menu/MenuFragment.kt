@@ -172,7 +172,7 @@ class MenuFragment : Fragment() {
                 .commit()
 //            Toast.makeText(this.context, "In development", Toast.LENGTH_SHORT).show()
         }
-        animateLogo()
+        animateLogo(binding)
     }
 
     private fun setupGameButtonsListeners() {
@@ -189,13 +189,8 @@ class MenuFragment : Fragment() {
             (activity as MainActivity).snapSEStart()
             isEnabled = false
             // Calling toggle mpb function
-            Log.d(
-                "-----------------------",
-                "${viewModel.isUserSignedIn.value}:${viewModel.isUserSignedIn.value == true}"
-            )
             if (viewModel.isUserSignedIn.value == true) {
                 toggleMultiplayerButton()
-                Log.d("-------------------tog-", "")
                 isEnabled = true
             } else {
                 createDialog(
@@ -216,9 +211,9 @@ class MenuFragment : Fragment() {
             val b = CreateRoomDialogBinding.inflate(LayoutInflater.from(requireContext()))
             createDialog(
                 DialogParams(
-                    "Create room",
-                    "Please, enter room name",
-                    "Create room",
+                    "Create Room",
+                    null,
+                    "Create",
                     "Cancel"
                 )
             ) { viewModel.createLobby(b.editRoomName.text.toString()) }
@@ -338,25 +333,9 @@ class MenuFragment : Fragment() {
         binding.joinRoomButton.startAnimation(lowerAnim)
     }
 
-    private fun animateLogo() {
-        val translateY = PropertyValuesHolder.ofFloat(
-            View.TRANSLATION_Y,
-            -LOGO_SHAKING_AMPLITUDE,
-            LOGO_SHAKING_AMPLITUDE
-        )
-        ObjectAnimator.ofPropertyValuesHolder(
-            binding.gameLogoTextview, translateY
-        ).apply {
-            duration = 3000L
-            repeatCount = ObjectAnimator.INFINITE
-            repeatMode = ObjectAnimator.REVERSE
-            start()
-        }
-    }
-
     private data class DialogParams(
         val title: String,
-        val message: String,
+        val message: String?,
         val positiveButtonText: String,
         val negativeButtonText: String
     )
@@ -366,6 +345,23 @@ class MenuFragment : Fragment() {
         private const val LOGO_SHAKING_AMPLITUDE = 15F
         private const val LOGO_SHAKING_DURATION = 3000L
         private const val TAG = "MenuFragment"
+
+        private fun animateLogo(binding: FragmentMenuBinding) {
+            val translateY = PropertyValuesHolder.ofFloat(
+                View.TRANSLATION_Y,
+                -LOGO_SHAKING_AMPLITUDE,
+                LOGO_SHAKING_AMPLITUDE
+            )
+            ObjectAnimator.ofPropertyValuesHolder(
+                binding.gameLogoTextview,
+                translateY
+            ).apply {
+                duration = LOGO_SHAKING_DURATION
+                repeatCount = ObjectAnimator.INFINITE
+                repeatMode = ObjectAnimator.REVERSE
+                start()
+            }
+        }
 
         fun newInstance(): MenuFragment {
             return MenuFragment()

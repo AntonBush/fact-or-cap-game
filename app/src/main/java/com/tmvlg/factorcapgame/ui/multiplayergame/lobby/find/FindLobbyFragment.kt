@@ -17,7 +17,6 @@ import com.tmvlg.factorcapgame.FactOrCapApplication
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.databinding.FragmentFindLobbyBinding
-import com.tmvlg.factorcapgame.databinding.LobbyBinding
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragment
 import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyFragment
@@ -43,24 +42,23 @@ class FindLobbyFragment : Fragment() {
             binding.root.isEnabled = value
         }
 
-    private val lobbyListAdapter = LobbyListAdapter(
-        object : LobbyListAdapter.OnLobbySelectedListener {
-            override fun onLobbySelected(binding: LobbyBinding, isSelected: Boolean) {
-                with(binding.bgLayout) {
-                    Log.d("FindLobby", "OnSelect: $isSelected")
-                    val selectionColorId = if (isSelected) {
-                        R.attr.colorPrimaryVariant
-                    } else {
-                        R.attr.textAppearanceHeadline5
-                    }
-                    val typedValue = TypedValue()
-                    val theme = requireContext().theme
-                    theme.resolveAttribute(selectionColorId, typedValue, true)
-                    backgroundTintList = ColorStateList.valueOf(typedValue.data)
+    private val lobbyListAdapter = LobbyListAdapter()
+
+    init {
+        lobbyListAdapter.onLobbySelectedListener =
+            LobbyListAdapter.OnLobbySelectedListener { binding, isSelected ->
+                Log.d("FindLobby", "OnSelect: $isSelected")
+                val selectionColorId = if (isSelected) {
+                    R.attr.colorPrimaryVariant
+                } else {
+                    R.attr.textAppearanceHeadline5
                 }
+                val typedValue = TypedValue()
+                val theme = requireContext().theme
+                theme.resolveAttribute(selectionColorId, typedValue, true)
+                binding.bgLayout.backgroundTintList = ColorStateList.valueOf(typedValue.data)
             }
-        }
-    )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
