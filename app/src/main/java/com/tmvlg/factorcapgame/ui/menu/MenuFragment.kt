@@ -216,7 +216,12 @@ class MenuFragment : Fragment() {
                     "Create",
                     "Cancel"
                 )
-            ) { viewModel.createLobby(b.editRoomName.text.toString()) }
+            ) {
+                viewModel.createLobby(
+                    b.editRoomName.text.toString()
+                        .replace("\\s".toRegex(), " ").trim()
+                )
+            }
                 .setView(b.root)
                 .show()
         }
