@@ -8,6 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: TEST_KEY
     steps:
       - uses: actions/checkout@v2
       - name: ☕ Set up JDK 11
@@ -17,8 +18,12 @@ jobs:
       - name: 🔐 Set up permission
         run: chmod +x gradlew
       - name: 🔨 Build debug
+        env:
+          TEST_KEY: '"${{ secrets.TEST_KEY }}"'
         run: ./gradlew assembleDebug
       - name: 🛠️ Unit-test
+        env:
+          TEST_KEY: '"${{ secrets.TEST_KEY }}"'
         run: ./gradlew test
   static_analysis:
     runs-on: ubuntu-latest
@@ -45,6 +50,7 @@ jobs:
         run: ./detekt
   check_aseemble:
     runs-on: ubuntu-latest
+    environment: TEST_ENV
     steps:
       - uses: actions/checkout@v2
       - name: ☕ Set up JDK 11
@@ -54,6 +60,8 @@ jobs:
       - name: 🔐 Set up permission
         run: chmod +x gradlew
       - name: 🔨 Build internal release
+        env:
+          TEST_KEY: '"${{ secrets.TEST_KEY }}"'
         run: ./gradlew assembleDebug
       - name: 🔄 Upload debug apk
         uses: actions/upload-artifact@v2
