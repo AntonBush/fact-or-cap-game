@@ -8,7 +8,7 @@
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/c1</item>
         <item name="colorSecondaryVariant">@color/c2</item>
-        <item name="colorOnSecondary">@color/offline_indicator_color</item>
+        <item name="colorOnSecondary">@color/ripple_color</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
@@ -30,6 +30,9 @@
         <item name="textAppearanceHeadline4">@color/c9</item>
         <item name="textAppearanceHeadline5">@color/c7</item>
         <item name="textAppearanceHeadline6">@color/c7</item>
+
+        <!-- Accent Button. -->
+        <item name="textAppearanceHeadline1">@color/c1</item>
 
         <!-- Ripple colors. -->
         <item name="textAppearanceBody1">@color/ripple_color_light</item>

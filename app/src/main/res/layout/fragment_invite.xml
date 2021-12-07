@@ -64,12 +64,12 @@
 
     <ImageButton
             android:id="@+id/search_button"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:scaleType="fitCenter"
             android:maxLines="1"
             android:layout_marginRight="1dp"
-            android:background="@drawable/green_round_background"
+            android:background="@drawable/accent_round_background"
             android:src="@drawable/ic_next"
             app:layout_constraintTop_toTopOf="@id/find_users_edittext"
             app:layout_constraintRight_toRightOf="@id/find_users_edittext"

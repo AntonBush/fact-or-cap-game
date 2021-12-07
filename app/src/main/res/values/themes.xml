@@ -31,6 +31,9 @@
         <item name="textAppearanceHeadline5">@color/primary_green</item>
         <item name="textAppearanceHeadline6">@color/primary_red</item>
 
+        <!-- Accent Button. -->
+        <item name="textAppearanceHeadline1">@color/primary_green</item>
+
         <!-- Ripple colors. -->
         <item name="textAppearanceBody1">@color/ripple_color_light</item>
         <item name="textAppearanceBody2">@color/ripple_color_item</item>
