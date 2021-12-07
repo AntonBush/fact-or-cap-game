@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -108,7 +107,7 @@ class FindLobbyFragment : Fragment() {
             val selectedLobby = lobbyListAdapter.currentList
                 .find { it.id == lobbyListAdapter.selectedId }
             if (selectedLobby == null) {
-                Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
                 isEnabled = true
                 return@setOnClickListener
             }
@@ -127,7 +126,7 @@ class FindLobbyFragment : Fragment() {
         }
         viewModel.connectedLobbyId.observe(viewLifecycleOwner) { lobbyId ->
             if (lobbyId == null) {
-                Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "Select lobby!", Toast.LENGTH_SHORT).show()
                 return@observe
             }
 

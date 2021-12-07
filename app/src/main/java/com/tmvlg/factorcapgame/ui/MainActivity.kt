@@ -3,7 +3,6 @@ package com.tmvlg.factorcapgame.ui
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.data.FactOrCapAuth
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         if (lobbyId != null && lobbyId != "") {
             Log.d("1", "onCreate: lobbyid = $lobbyId")
-            Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this, lobbyId, Toast.LENGTH_SHORT).show()
             FactOrCapAuth.signIn(this, launcher)
             navigateToLobby(lobbyId)
         } else {
