@@ -11,12 +11,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
 class SingleGameFinishedFragmentTest : BaseTest() {
 
-
-    private val singleGameFinishedElems : IntArray = intArrayOf(
+    private val singleGameFinishedElems: IntArray = intArrayOf(
         R.id.tv_gamescore,
         R.id.tv_score_points,
         R.id.tv_highscore,
@@ -28,7 +26,6 @@ class SingleGameFinishedFragmentTest : BaseTest() {
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
 
-
     @Before
     fun setup() {
         activityRule.scenario.onActivity {
@@ -36,7 +33,6 @@ class SingleGameFinishedFragmentTest : BaseTest() {
                 .replace(R.id.main_fragment_container, SingleGameFinishedFragment.newInstance(100, true))
                 .commit()
         }
-
     }
 
     @Test
@@ -45,18 +41,18 @@ class SingleGameFinishedFragmentTest : BaseTest() {
     }
 
     @Test
-    fun testGoToMenu(){
+    fun testGoToMenu() {
         click(R.id.menu_button)
         checkDisplayedAll(*menuElems)
     }
 
     @Test
-    fun testClickPlayAgain(){
+    fun testClickPlayAgain() {
         click(R.id.restart_button)
         checkDisplayedAll(*singleGameElems)
     }
 
-    private val singleGameElems : IntArray = intArrayOf(
+    private val singleGameElems: IntArray = intArrayOf(
         R.id.agree_button,
         R.id.disagree_button,
         R.id.tv_score,

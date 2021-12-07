@@ -12,7 +12,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class LeaderboardFragmentTest : BaseTest(){
+class LeaderboardFragmentTest : BaseTest() {
 
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
@@ -25,22 +25,19 @@ class LeaderboardFragmentTest : BaseTest(){
                 .replace(R.id.main_fragment_container, LeaderboardFragment())
                 .commit()
         }
-
     }
 
     @Test
-    fun leaderboardIsDisplayed(){
+    fun leaderboardIsDisplayed() {
         Thread.sleep(5000)
         checkDisplayedAll(*leaderboardElems)
     }
 
-
     @Test
-    fun goToMenu(){
+    fun goToMenu() {
         click(R.id.return_button)
         checkDisplayedAll(*menuElems)
     }
-
 
     companion object {
         val leaderboardElems = intArrayOf(

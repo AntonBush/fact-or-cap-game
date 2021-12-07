@@ -11,43 +11,42 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-@RunWith(AndroidJUnit4::class)
-class MultiplayerGameFinishedTest : BaseTest(){
 
+@RunWith(AndroidJUnit4::class)
+class MultiplayerGameFinishedTest : BaseTest() {
 
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
 
-
     @Before
     fun setup() {
         activityRule.scenario.onActivity {
             it.supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, MultiplayerGameFinished.newInstance(13,"2313"))
+                .replace(
+                    R.id.main_fragment_container,
+                    MultiplayerGameFinished.newInstance(13, "2313")
+                )
                 .commit()
         }
-
     }
 
     @Test
-    fun elementsFinishedMiltiplayerGameIsDisplayed(){
+    fun elementsFinishedMiltiplayerGameIsDisplayed() {
         checkDisplayedAll(*gameFinishedElems)
     }
 
     @Test
-    fun goToMenu(){
+    fun goToMenu() {
         click(R.id.menu_button)
         checkDisplayedAll(*menuElems)
     }
 
-
     @Test
-    fun goToLobby(){
+    fun goToLobby() {
         click(R.id.find_lobby_button)
         checkDisplayedAll(*findLobbyElems)
     }
-
 
     companion object {
         val gameFinishedElems = intArrayOf(
@@ -55,5 +54,5 @@ class MultiplayerGameFinishedTest : BaseTest(){
             R.id.find_lobby_button,
             R.id.menu_button
         )
-   }
+    }
 }

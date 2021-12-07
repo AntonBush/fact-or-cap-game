@@ -6,28 +6,21 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
-import com.tmvlg.factorcapgame.data.FactOrCapAuth
-import com.tmvlg.factorcapgame.data.auth.User
-import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragmentTest.Companion.menuElems
-import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 
-
 @RunWith(AndroidJUnit4::class)
-class FindLobbyFragmentTest : BaseTest(){
-
+class FindLobbyFragmentTest : BaseTest() {
 
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
-
 
     @Before
     fun setup() {
@@ -47,15 +40,14 @@ class FindLobbyFragmentTest : BaseTest(){
         lobbiesRef.updateChildren(mapOf(newLobbyKey to newLobby.toMapped()))
     }
 
-
     @Test
-    fun elementsFindLobbyIsDisplayed(){
+    fun elementsFindLobbyIsDisplayed() {
         Thread.sleep(10000)
         checkDisplayedAll(*findLobbyElems)
     }
 
     @Test
-    fun goToMenu(){
+    fun goToMenu() {
         click(R.id.return_button)
         checkDisplayedAll(*menuElems)
     }

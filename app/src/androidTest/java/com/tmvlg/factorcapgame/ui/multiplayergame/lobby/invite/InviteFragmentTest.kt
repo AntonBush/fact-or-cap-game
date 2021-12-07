@@ -10,16 +10,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
 class InviteFragmentTest : BaseTest() {
-
-
 
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
-
 
     @Before
     fun setup() {
@@ -28,7 +24,6 @@ class InviteFragmentTest : BaseTest() {
                 .replace(R.id.main_fragment_container, InviteFragment.newInstance("TEST", "TEST"))
                 .commit()
         }
-
     }
 
 //    @Test
@@ -49,8 +44,7 @@ class InviteFragmentTest : BaseTest() {
         checkDisplayedAll(*inviteFragmentElems)
     }
 
-
-    private val inviteFragmentElems : IntArray = intArrayOf(
+    private val inviteFragmentElems: IntArray = intArrayOf(
         R.id.find_users_edittext,
         R.id.return_button,
         R.id.search_button,

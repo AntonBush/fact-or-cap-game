@@ -12,13 +12,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class StatisticsFragmentTest : BaseTest(){
-
+class StatisticsFragmentTest : BaseTest() {
 
     @get:Rule
     var activityRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule(MainActivity::class.java)
-
 
     @Before
     fun setup() {
@@ -27,18 +25,16 @@ class StatisticsFragmentTest : BaseTest(){
                 .replace(R.id.main_fragment_container, StatisticsFragment())
                 .commit()
         }
-
     }
 
     @Test
-    fun checkLastGamesRecyclerIsDisplayed(){
+    fun checkLastGamesRecyclerIsDisplayed() {
         click(R.id.games_toggle_button)
         isDisplayed(R.id.games_statistics_list)
     }
 
-
     @Test
-    fun goToMenu(){
+    fun goToMenu() {
         click(R.id.return_button)
         checkDisplayedAll(*menuElems)
     }
@@ -60,6 +56,3 @@ class StatisticsFragmentTest : BaseTest(){
         )
     }
 }
-
-
-
