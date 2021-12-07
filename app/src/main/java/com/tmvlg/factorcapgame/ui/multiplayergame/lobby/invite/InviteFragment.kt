@@ -79,10 +79,6 @@ class InviteFragment : Fragment() {
         binding.confirmButton.isSoundEffectsEnabled = false
         binding.searchButton.isSoundEffectsEnabled = false
 
-        binding.findUsersEdittext.addTextChangedListener { text ->
-            val t = text?.toString() ?: return@addTextChangedListener
-            searchUser(t)
-        }
         binding.returnButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
             requireActivity().supportFragmentManager
@@ -102,7 +98,8 @@ class InviteFragment : Fragment() {
 
         binding.searchButton.setOnClickListener {
             (activity as MainActivity).snapSEStart()
-            searchUser()
+            val query = binding.findUsersEdittext.text
+            viewModel.findPlayers(query.toString())
             try {
                 val imm = requireActivity()
                     .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -125,11 +122,6 @@ class InviteFragment : Fragment() {
         }
 
         observeViewModel()
-    }
-
-    private fun searchUser(text: String? = null) {
-        val query = text ?: binding.findUsersEdittext.text?.toString() ?: return
-        viewModel.findPlayers(query)
     }
 
     private fun observeViewModel() {
