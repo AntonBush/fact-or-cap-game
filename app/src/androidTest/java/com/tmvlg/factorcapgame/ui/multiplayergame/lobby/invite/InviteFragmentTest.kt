@@ -50,12 +50,10 @@ class InviteFragmentTest : BaseTest() {
     }
 
 
-
     private val inviteFragmentElems : IntArray = intArrayOf(
         R.id.find_users_edittext,
         R.id.return_button,
         R.id.search_button,
-        R.id.rv_found_users,
         R.id.tv_invite_friend,
         R.id.confirm_button
     )
