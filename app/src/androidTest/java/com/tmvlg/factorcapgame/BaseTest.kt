@@ -41,8 +41,7 @@ open class BaseTest {
 
     fun clickOnRecyclerViewItem(recyclerId: Int) {
         onView(withId(recyclerId))
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                0,
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0,
                 click()))
     }
 
