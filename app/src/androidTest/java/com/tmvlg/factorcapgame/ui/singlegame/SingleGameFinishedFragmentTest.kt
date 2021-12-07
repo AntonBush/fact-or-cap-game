@@ -30,8 +30,13 @@ class SingleGameFinishedFragmentTest : BaseTest() {
     fun setup() {
         activityRule.scenario.onActivity {
             it.supportFragmentManager.beginTransaction()
-                .replace(R.id.main_fragment_container, SingleGameFinishedFragment.newInstance(100, true))
-                .commit()
+                .replace(
+                    R.id.main_fragment_container,
+                    SingleGameFinishedFragment.newInstance(
+                        100,
+                        true
+                    )
+                ).commit()
         }
     }
 

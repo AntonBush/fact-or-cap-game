@@ -89,7 +89,9 @@ class MenuFragmentTest : BaseTest() {
     }
 
     private fun isConnected(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = context.getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val nw = connectivityManager.activeNetwork
             val actNw = connectivityManager.getNetworkCapabilities(nw)
