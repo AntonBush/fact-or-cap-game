@@ -41,7 +41,9 @@ open class BaseTest {
 
     fun clickOnRecyclerViewItem(recyclerId: Int) {
         onView(withId(recyclerId))
-            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+            .perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()))
     }
 
     private fun waiting() {
