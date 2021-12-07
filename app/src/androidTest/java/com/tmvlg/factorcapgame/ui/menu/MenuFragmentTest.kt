@@ -46,6 +46,7 @@ class MenuFragmentTest : BaseTest() {
         checkDisplayedAll(*menuElems)
     }
 
+
     @Test
     fun testGoToStatic(){
         click(R.id.stat_button)

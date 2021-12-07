@@ -60,16 +60,14 @@ class FindLobbyFragmentTest : BaseTest(){
         checkDisplayedAll(*menuElems)
     }
 
-    @Test
-    fun inviteToSelectedRoom(){
-        enterData(R.id.find_lobby_edittext, "${FactOrCapAuth.currentUser.value?.name}")
-        Thread.sleep(4000)
-        clickOnRecyclerViewItem(R.id.find_lobby_recyclerview)
-        Thread.sleep(4000)
-        click(R.id.join_button)
-
-    }
-
+//    @Test
+//    fun inviteToSelectedRoom(){
+//        enterData(R.id.find_lobby_edittext, "TEST_ROOM")
+//        Thread.sleep(4000)
+//        clickOnRecyclerViewItem(R.id.find_lobby_recyclerview)
+//        click(R.id.join_button)
+//
+//    }
 
     companion object {
         val findLobbyElems = intArrayOf(
