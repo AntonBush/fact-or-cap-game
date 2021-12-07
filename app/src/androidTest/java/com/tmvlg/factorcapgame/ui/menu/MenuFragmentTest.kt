@@ -13,6 +13,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
 import com.tmvlg.factorcapgame.ui.leaderboard.LeaderboardFragmentTest.Companion.leaderboardElems
 import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragmentTest.Companion.statisticElems
 
@@ -41,7 +42,7 @@ class MenuFragmentTest : BaseTest() {
 
 
     @Test
-    fun menuIsDisplayed(){
+    fun testMenuIsDisplayed(){
         checkDisplayedAll(*menuElems)
     }
 
@@ -50,7 +51,6 @@ class MenuFragmentTest : BaseTest() {
         click(R.id.stat_button)
         checkDisplayedAll(*statisticElems)
     }
-
 
     @Test
     fun testGoToSingleGameWithOrNoInternet(){
@@ -70,8 +70,31 @@ class MenuFragmentTest : BaseTest() {
         checkDisplayedAll(*leaderboardElems)
     }
 
+    @Test
+    fun testGoToCreateRoom(){
+        click(R.id.multiplayer_game_button)
+        Thread.sleep(5000)
+        click(R.id.create_room_button)
+        Thread.sleep(5000)
+        enterDataByHint("Room name", "TEST")
+        Thread.sleep(5000)
+        clickByText("CREATE")
+    }
 
-fun isConnected(context: Context): Boolean {
+    @Test
+    fun testGoToSignOutAndGoToMultiplayer(){
+        Thread.sleep(3000)
+        clickByText("Hello, ${FactOrCapAuth.currentUser.value?.name}")
+        clickByText("Sign Out")
+        Thread.sleep(3000)
+        isDisplayed(R.id.google_sign_in_cardview)
+        click(R.id.multiplayer_game_button)
+        isDisplayedByText("Auth required")
+    }
+
+
+
+private fun isConnected(context: Context): Boolean {
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         val nw      = connectivityManager.activeNetwork ?: return false
@@ -100,5 +123,4 @@ fun isConnected(context: Context): Boolean {
             R.id.status_buttons_layout
         )
     }
-
 }

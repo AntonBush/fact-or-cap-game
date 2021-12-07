@@ -5,8 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.MainActivity
-import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
-import org.junit.Assert.*
+import com.tmvlg.factorcapgame.ui.menu.MenuFragmentTest.Companion.menuElems
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,13 +28,18 @@ class LeaderboardFragmentTest : BaseTest(){
 
     }
 
-
     @Test
     fun leaderboardIsDisplayed(){
         Thread.sleep(5000)
         checkDisplayedAll(*leaderboardElems)
     }
 
+
+    @Test
+    fun goToMenu(){
+        click(R.id.return_button)
+        checkDisplayedAll(*menuElems)
+    }
 
 
     companion object {

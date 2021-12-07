@@ -46,17 +46,13 @@ class SingleGameFinishedFragmentTest : BaseTest() {
 
     @Test
     fun testGoToMenu(){
-        Thread.sleep(5000)
         click(R.id.menu_button)
-        Thread.sleep(5000)
         checkDisplayedAll(*menuElems)
     }
 
     @Test
     fun testClickPlayAgain(){
-        Thread.sleep(5000)
         click(R.id.restart_button)
-        Thread.sleep(5000)
         checkDisplayedAll(*singleGameElems)
     }
 

@@ -6,8 +6,7 @@ import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragmentTest.Companion.menuElems
-import com.tmvlg.factorcapgame.ui.statisitics.StatisticsFragment
-import org.junit.Assert.*
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.find.FindLobbyFragmentTest.Companion.findLobbyElems
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +37,6 @@ class MultiplayerGameFinishedTest : BaseTest(){
 
     @Test
     fun goToMenu(){
-        Thread.sleep(10000)
         click(R.id.menu_button)
         checkDisplayedAll(*menuElems)
     }
@@ -46,10 +44,9 @@ class MultiplayerGameFinishedTest : BaseTest(){
 
     @Test
     fun goToLobby(){
-        click(R.id.lobby)
-
+        click(R.id.find_lobby_button)
+        checkDisplayedAll(*findLobbyElems)
     }
-
 
 
     companion object {

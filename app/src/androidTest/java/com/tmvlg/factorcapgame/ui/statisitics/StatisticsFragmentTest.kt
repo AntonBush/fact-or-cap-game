@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
 import com.tmvlg.factorcapgame.ui.MainActivity
+import com.tmvlg.factorcapgame.ui.menu.MenuFragmentTest.Companion.menuElems
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,6 +37,11 @@ class StatisticsFragmentTest : BaseTest(){
     }
 
 
+    @Test
+    fun goToMenu(){
+        click(R.id.return_button)
+        checkDisplayedAll(*menuElems)
+    }
 
     companion object {
         val statisticElems = intArrayOf(
@@ -51,10 +57,6 @@ class StatisticsFragmentTest : BaseTest(){
             R.id.average_score_value,
             R.id.your_games_header,
             R.id.games_toggle_button,
-//        R.id.games_statistics_list
-//        R.id.score,
-//        R.id.duration,
-//        R.id.date
         )
     }
 }

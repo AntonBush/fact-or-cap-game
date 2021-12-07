@@ -6,10 +6,13 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.tmvlg.factorcapgame.BaseTest
 import com.tmvlg.factorcapgame.R
+import com.tmvlg.factorcapgame.data.FactOrCapAuth
+import com.tmvlg.factorcapgame.data.auth.User
 import com.tmvlg.factorcapgame.data.repository.firebase.FirebaseLobbyRepository
 import com.tmvlg.factorcapgame.data.repository.firebase.Lobby
 import com.tmvlg.factorcapgame.ui.MainActivity
 import com.tmvlg.factorcapgame.ui.menu.MenuFragmentTest.Companion.menuElems
+import com.tmvlg.factorcapgame.ui.multiplayergame.lobby.LobbyViewModel
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -37,7 +40,7 @@ class FindLobbyFragmentTest : BaseTest(){
         val database = Firebase.database
         val lobbiesRef = database.getReference("Lobbies")
         val newLobby = Lobby(
-            hostName = "TEST",
+            hostName = "TEST_ROOM",
             name = "TEST_ROOM"
         )
         val newLobbyKey = lobbiesRef.push().key ?: throw IOException("can't add new lobby")
@@ -58,7 +61,12 @@ class FindLobbyFragmentTest : BaseTest(){
     }
 
     @Test
-    fun inviteToRoom(){
+    fun inviteToSelectedRoom(){
+        enterData(R.id.find_lobby_edittext, "${FactOrCapAuth.currentUser.value?.name}")
+        Thread.sleep(4000)
+        clickOnRecyclerViewItem(R.id.find_lobby_recyclerview)
+        Thread.sleep(4000)
+        click(R.id.join_button)
 
     }
 
