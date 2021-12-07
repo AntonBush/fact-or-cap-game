@@ -167,9 +167,9 @@ class MultiplayerGameFragment : Fragment() {
         viewModel.isAnswerCorrect.observe(viewLifecycleOwner) { isCorrect ->
             Log.d("1", "answer coorect = : $isCorrect")
 
-            if (isCorrect) {
-                funkyAnimationCorrect()
-            }
+//            if (isCorrect) {
+//                funkyAnimationCorrect()
+//            }
 
             val typedValue = TypedValue()
             val theme = requireContext().theme

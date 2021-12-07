@@ -283,13 +283,13 @@ class MenuFragment : Fragment() {
         }
         viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 isEnabled = true
             }
         }
         viewModel.authError.observe(viewLifecycleOwner) { message ->
             if (message != null) {
-                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 isEnabled = true
             }
         }
